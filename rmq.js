@@ -1,3 +1,10 @@
+const amqp = require("amqplib/callback_api");
+const config = require("./config");
+const rabbitmqHost = config.RABBITMQ_HOST;
+const exchange = config.EXCHANGE_NAME;
+const userName = config.RABBITMQ_USERNAME;
+const password = config.RABBITMQ_PASSWORD;
+
 // queue options
 const queueOptions = {
   exclusive: false,
@@ -5,7 +12,43 @@ const queueOptions = {
   expires: 600000,
 };
 
-const subscribeChannel = (io, channel, topic, username, exchange) => {
+var channel = null;
+var io = null;
+
+const Init = (_io) => {
+  io = _io;
+}
+
+// Receive messages from rabbitmq
+amqp.connect(
+  `amqp://${userName}:${password}@${rabbitmqHost}`,
+  (error0, connection) => {
+    if (error0) {
+      console.log(0);
+      throw error0;
+    }
+
+    connection.createChannel((error1, chan) => {
+      if (error1) {
+        throw error1;
+      }
+
+      chan.assertExchange(exchange, "topic", {
+        durable: true,
+      });
+
+      whenConnected(chan);
+    });
+  }
+);
+
+const whenConnected = (chan) => {
+  channel = chan
+};
+
+const subscribeChannel = (topic, username) => {
+  if (io == null || channel == null) return;
+
   channel.assertQueue(
     "System.String, mscorlib_" + topic + username,
     //+ parseInt(Math.random() * 10000, 10).toString()
@@ -26,7 +69,6 @@ const subscribeChannel = (io, channel, topic, username, exchange) => {
         q.queue,
         (msg) => {
           if (msg.content) {
-            //console.log(" %s : %s", topic, msg.content.toString());
             if (io != null && io != undefined)
                 io.emit(topic, msg.content.toString());
           }
@@ -40,5 +82,6 @@ const subscribeChannel = (io, channel, topic, username, exchange) => {
 };
 
 module.exports = {
+  Init,
   subscribeChannel,
 };

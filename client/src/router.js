@@ -13,13 +13,13 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   />
 )
 
-const AppRouter = ({ priceInfo }) => {
+const AppRouter = () => {
   return (
     <Router>
       <Switch>
-        <Route path="/settings" component={SettingsPage} />
+        <PrivateRoute path="/settings" component={SettingsPage} />
         <PrivateRoute path="/trading" component={TradingPage} />
-        <Route path="/" exact component={() => <HomePage priceInfo={priceInfo} />} />
+        <Route path="/" exact component={() => <HomePage />} />
       </Switch>
     </Router>
   );

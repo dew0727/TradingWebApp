@@ -1,23 +1,49 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Checkbox, Row, Col } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { Redirect } from "react-router-dom";
 
 import "./style.css";
-import { apiCall } from '../../utils/api';
-
-const authenticate = (res) => {
-    console.log("authenticate: " + res.auth);
-    if (res.auth !== undefined && res.auth === true)
-        localStorage.setItem("authToken", res.token);
-    else
-        localStorage.removeItem('authToken');
-}
+import { apiCall, saveAuth } from "../../utils/api";
 
 const HomePage = () => {
+  const [auth, setAuth] = useState({
+    username: "",
+    password: "",
+    auth: "",
+  });
+
+  useEffect(() => {
+    const user = localStorage.getItem("username");
+    const pass = localStorage.getItem("password");
+
+    if (user !== undefined && pass !== undefined)
+      apiCall(
+        "/api/login",
+        { username: user, password: pass },
+        "POST",
+        (res) => {
+          if (res === true)
+            setAuth({
+              auth: localStorage.getItem("authToken"),
+            });
+        }
+      );
+  }, []);
+
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
-    apiCall('/api/login', values, 'POST', authenticate);
+    apiCall("/api/login", values, "POST", (res, user, pass) => {
+      if (res === true) {
+        setAuth({
+          auth: localStorage.getItem("authToken"),
+        });
+      }
+    });
   };
+
+  if (auth.auth !== "") {
+    return <Redirect to={{ pathname: "/trading" }} />;
+  }
 
   return (
     <Row className="form-container" justify="center" align="middle">
