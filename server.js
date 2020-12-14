@@ -40,16 +40,21 @@ app.post("/api/login", (req, res) => {
   data = JSON.parse(data);
   const result = auth.authenticate(data.username, data.password);
   console.log("auth result: " + result);
-  
-  if (result == true){
+
+  if (result == true) {
     subscribeForUser(data.username);
   }
 
-  res.json({ auth: result, token: "true", user: data.username, pass: data.password });
+  res.json({
+    auth: result,
+    token: "true",
+    user: data.username,
+    pass: data.password,
+  });
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
 const subscribeForUser = (user) => {
   rmq.subscribeChannel(EVENTS.ON_PRICE_TICK, user);
-}
+};
