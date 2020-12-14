@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Redirect } from "react-router-dom";
 
 import "./style.css";
-import { apiCall, saveAuth } from "../../utils/api";
+import { apiCall } from "../../utils/api";
 
 const HomePage = () => {
   const [auth, setAuth] = useState({
