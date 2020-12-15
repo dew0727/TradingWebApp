@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Checkbox, Row, Col } from "antd";
+import { Form, Input, Button, Row, Col } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Redirect } from "react-router-dom";
 
 import "./style.css";
 import { apiCall } from "../../utils/api";
 
-const HomePage = () => {
+const Login = () => {
   const [auth, setAuth] = useState({
-    username: "",
-    password: "",
-    auth: "",
+    auth: '',
   });
 
   useEffect(() => {
     const user = localStorage.getItem("username");
     const pass = localStorage.getItem("password");
+    const token = localStorage.getItem("authToken");
 
-    if (user !== undefined && pass !== undefined)
+    if (token === undefined) {
+      if (user !== undefined && pass !== undefined)
       apiCall(
         "/api/login",
         { username: user, password: pass },
@@ -29,6 +29,7 @@ const HomePage = () => {
             });
         }
       );
+    }
   }, []);
 
   const onFinish = (values) => {
@@ -87,4 +88,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default Login;

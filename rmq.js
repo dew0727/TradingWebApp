@@ -69,8 +69,8 @@ const subscribeChannel = (topic, username) => {
         q.queue,
         (msg) => {
           if (msg.content) {
-            if (io != null && io != undefined)
-                io.emit(topic, msg.content.toString());
+            //if (io != null && io != undefined)
+            //    io.emit(topic, msg.content.toString());
           }
         },
         {

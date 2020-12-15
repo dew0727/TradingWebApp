@@ -1,0 +1,8 @@
+.traindg-home-page {
+    padding: 2vw;
+}
+
+.trading-cards-wrapper{
+    display: flex;
+    flex-wrap: wrap;
+}

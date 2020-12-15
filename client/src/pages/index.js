@@ -1,5 +1,4 @@
-import HomePage from './home'
-import SettingsPage from './settings'
+import Login from './login'
 import TradingPage from './trading'
 
-export { HomePage, SettingsPage, TradingPage }
+export { Login, TradingPage }

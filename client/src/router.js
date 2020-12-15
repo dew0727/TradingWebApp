@@ -1,25 +1,34 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
-import { HomePage, SettingsPage, TradingPage } from "./pages";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from "react-router-dom";
+import { Login, TradingPage } from "./pages";
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props => localStorage.getItem("authToken") ? (
-      <Component {...props} />
-    ) : (
-      <Redirect to={{ pathname: '/', state: { from: props.location }}} />
-    )}
-  />
-)
+
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        localStorage.getItem("authToken") ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to={{ pathname: "/", state: { from: props.location } }} />
+        )
+      }
+    />
+  );
+};
 
 const AppRouter = () => {
   return (
     <Router>
       <Switch>
-        <PrivateRoute path="/settings" component={SettingsPage} />
         <PrivateRoute path="/trading" component={TradingPage} />
-        <Route path="/" exact component={() => <HomePage />} />
+        <Route path="/" exact component={() => <Login />} />
       </Switch>
     </Router>
   );
