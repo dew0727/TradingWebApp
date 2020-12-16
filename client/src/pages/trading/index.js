@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Tabs, Form, Input, Button, Select, Table } from "antd";
+import { Row, Col, Tabs, Form, Input, Button, Select, Table } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
@@ -123,11 +123,13 @@ const TradingPage = () => {
           <div className="broker-selection-menu">
             <TradingMenu brokers={brokers} accounts={accounts} />
           </div>
-          <div className="site-card-wrapper trading-cards-wrapper">
-            {symbols.map((item) => {
-              return <TradingCard symbols={symbols} sym={item} />;
-            })}
-          </div>
+          <Row className="site-card-wrapper trading-cards-wrapper" gutter={[16, 16]}>
+            {symbols.map((item) => (
+              <Col>
+                <TradingCard symbols={symbols} sym={item} />
+              </Col>
+            ))}
+          </Row>
           <div className="trading-net-info">
             <div>
               <div className="trading-table-wrapper">
