@@ -56,6 +56,20 @@ const TradingPage = () => {
     setAccountList(acc_list);
   };
 
+  const onFinish = (values) => {
+    console.log(values);
+    const new_acc = {
+      broker: values.broker,
+      accNum: values.accNum,
+      login: values.login,
+      password: values.password,
+    };
+
+    let acc_list = [...account_list];
+    acc_list.push(new_acc);
+    setAccountList(acc_list);
+  };
+
   function callback(key) {
     console.log(key);
   }
@@ -139,25 +153,62 @@ const TradingPage = () => {
                 wrapperCol={{ span: 12, offset: 1 }}
                 layout="horizontal"
                 size="small"
+                onFinish={onFinish}
               >
-                <Form.Item label="Broker">
-                  <Select>
+                <Form.Item
+                  label="Broker"
+                  name="broker"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Select one!",
+                    },
+                  ]}
+                >
+                  <Select defaultValue="Select">
                     {brokers.map((item) => {
                       return <Select.Option value={item}>{item}</Select.Option>;
                     })}
                   </Select>
                 </Form.Item>
-                <Form.Item label="Account Number">
-                  <Input />
+                <Form.Item
+                  label="Account Number"
+                  name="accNum"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Input account number!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Account Number" />
                 </Form.Item>
-                <Form.Item label="Login">
-                  <Input />
+                <Form.Item
+                  label="Login"
+                  name="login"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Input login!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Login" />
                 </Form.Item>
-                <Form.Item label="Password">
-                  <Input />
+                <Form.Item
+                  label="Password"
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Input password!",
+                    },
+                  ]}
+                >
+                  <Input placeholder="Password" />
                 </Form.Item>
                 <Form.Item label=" " colon={false}>
-                  <Button type="primary" size="default" onClick={(data) => {console.log(data)}}>
+                  <Button type="primary" size="default" htmlType="submit">
                     Add Account
                   </Button>
                 </Form.Item>
