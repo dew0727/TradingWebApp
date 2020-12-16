@@ -1,0 +1,11 @@
+.trading-setting-menu {
+    display: flex;
+}
+
+.price-broker-selection{
+    margin: 0 5px 0 5px;
+}
+
+.price-account-selection{
+    margin: 0 5px 0 5px;
+}

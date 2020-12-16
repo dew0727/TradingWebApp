@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { Menu, Dropdown, Button } from "antd";
-import { DownOutlined, UserOutlined } from "@ant-design/icons";
+import { DownOutlined } from "@ant-design/icons";
 
-const SymbolSelector = ({ symbols, sym }) => {
+const SymbolSelector = ({ symbols, sym, callback }) => {
   const [symbol, setSym] = useState(sym);
 
   const handleMenuClick = (e) => {
     setSym(e.key);
+    if (callback !== undefined) callback(e.key);
   };
 
   const menu = (
     <Menu onClick={handleMenuClick}>
       {symbols.map((item) => {
         return (
-          <Menu.Item key={item}>
+          <Menu.Item key={item} danger={item === "Basket"}>
             {item}
           </Menu.Item>
         );

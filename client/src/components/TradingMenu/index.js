@@ -1,0 +1,36 @@
+import React, { useState } from "react";
+import SymbolSelector from "../../components/SymbolSelector";
+import "./style.css";
+
+const TradingMenu = ({ brokers, accounts }) => {
+  const handleBrokerClick = (key) => {
+    console.log(key);
+  };
+
+  const handleAccountClick = (key) => {
+    console.log(key);
+  };
+
+  return (
+    <div className="trading-setting-menu">
+      <div className="price-broker-selection">
+        <label>Price: </label>
+        <SymbolSelector
+          symbols={brokers}
+          sym={brokers[0]}
+          callback={handleBrokerClick}
+        />
+      </div>
+      <div className="traiding-account-selection">
+        <label>Account: </label>
+        <SymbolSelector
+          symbols={accounts}
+          sym={accounts[0]}
+          callback={handleAccountClick}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default TradingMenu;
