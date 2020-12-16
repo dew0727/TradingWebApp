@@ -1,0 +1,34 @@
+.traindg-home-page {
+    padding: 0.5vw;
+}
+
+.trading-cards-wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.broker-selection-menu {
+    margin-right: 2vw;
+  }
+
+.trading-net-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+ }
+
+.settings-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+ .settings-form-wrapper {
+     margin: 5px;
+     padding: 10px;
+ }
+
+ .account-list-wrapper {
+     margin: 5px;
+     padding: 10px;
+ }

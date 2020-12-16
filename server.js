@@ -1,17 +1,60 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require("express");
+const bodyParser = require("body-parser");
+const http = require("http");
+const config = require("./config");
+const socketIO = require("socket.io");
+const rmq = require("./rmq");
+const auth = require("./auth");
 
+// set config
+const port = config.SOCKET_PORT || 4001;
 const app = express();
-const port = process.env.PORT || 5000;
-
 app.use(bodyParser.json());
-app.get('/api/hello', (req, res) => {
-  res.send({ express: 'Hello From Express' });
+
+// server instance
+const server = http.createServer(app);
+
+const io = socketIO(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
 });
 
-app.post('/api/data', (req, res) => {
-  console.log(req.body);
-  res.send({ 'data': req.body.post });
+// Initialize rabbitmq client with socket.
+rmq.Init(io);
+
+const EVENTS = config.EVENTS;
+
+io.on(EVENTS.ON_CONNECTION, (socket) => {
+  console.log("Socket User connected");
+  socket.on(EVENTS.ON_DISCONNECT, () => {
+    console.log("Socket User Disconnected");
+  });
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+// http login
+app.post("/api/login", (req, res) => {
+  var data = req.body.body;
+  console.log("user authentication request " + data);
+  data = JSON.parse(data);
+  const result = auth.authenticate(data.username, data.password);
+  console.log("auth result: " + result);
+
+  if (result == true) {
+    subscribeForUser(data.username);
+  }
+
+  res.json({
+    auth: result,
+    token: "true",
+    user: data.username,
+    pass: data.password,
+  });
+});
+
+server.listen(port, () => console.log(`Listening on port ${port}`));
+
+const subscribeForUser = (user) => {
+  rmq.subscribeChannel(EVENTS.ON_PRICE_TICK, user);
+};
