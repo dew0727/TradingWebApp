@@ -1,21 +1,21 @@
 const SOCKET_PORT = 4001;
 const RABBITMQ_HOST = "localhost";
-const RABBITMQ_USERNAME = "webview";
-const RABBITMQ_PASSWORD = "webview";
+const RABBITMQ_USERNAME = "miracle";
+const RABBITMQ_PASSWORD = "miracle";
 const EXCHANGE_NAME = "System.String, mscorlib";
 
 // event names
 const EVENTS = {
     ON_CONNECTION: 'connection',
     ON_DISCONNECT: 'disconnect',
-    ON_SET_PARAM: 'FAT_PARAM_V2C',
-    ON_GET_PARAM: 'FAT_PARAM_C2V',
-    ON_VARIABEL: 'FAT_VARIABLE',
-    ON_POSITIONS: 'FAT_POSITIONS',
-    ON_POSHISTORY: 'FAT_POSHISTORY',
-    ON_LOG: 'FAT_LOG',
-    ON_ACCOUNT: 'FAT_ACCOUNT',
+    ON_RATE: 'RATE',
+    ON_POSLIST: 'POSLIST',
+    ON_ORDERLIST: 'ORDERLIST',
+    ON_ACCOUNT: 'ACCOUNT',
     ON_PRICE_TICK: 'FAT_PRICE_TICK',
+    ON_ORDER_RESPONSE: 'ORDER_RESPONSE',
+    ON_ORDER_REQUEST: 'ORDER_REQUEST',
+    ON_LOG: 'FAT_LOG',    
 }
 
 // registered users
