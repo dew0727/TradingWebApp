@@ -51,7 +51,7 @@ const TradingPage = () => {
   };
 
   const onHandleRemoveAccount = (index) => {
-    let acc_list = account_list;
+    let acc_list = [...account_list];
     acc_list.splice(index, 1);
     setAccountList(acc_list);
   };
@@ -157,7 +157,7 @@ const TradingPage = () => {
                   <Input />
                 </Form.Item>
                 <Form.Item label=" " colon={false}>
-                  <Button type="primary" size="default">
+                  <Button type="primary" size="default" onClick={(data) => {console.log(data)}}>
                     Add Account
                   </Button>
                 </Form.Item>
