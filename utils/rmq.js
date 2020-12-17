@@ -1,5 +1,5 @@
 const amqp = require("amqplib/callback_api");
-const config = require("./config");
+const config = require("../config");
 const rabbitmqHost = config.RABBITMQ_HOST;
 const exchange = config.EXCHANGE_NAME;
 const userName = config.RABBITMQ_USERNAME;
@@ -46,6 +46,16 @@ const whenConnected = (chan) => {
   channel = chan
 };
 
+const publishMessage = (topic, sMsg) =>{
+  channel.publish(exchange, topic, Buffer.from('"' + sMsg + '"'),
+    {
+      deliveryMode: 2,
+      type: exchange,
+    });
+  
+  console.log(sMsg);
+}
+
 const subscribeChannel = (topic, username) => {
   if (io == null || channel == null) return;
 
@@ -71,6 +81,8 @@ const subscribeChannel = (topic, username) => {
           if (msg.content) {
             //if (io != null && io != undefined)
             //    io.emit(topic, msg.content.toString());
+            console.log(topic, msg.content.toString());
+            processMessage(topic, msg.contnt.toString());
           }
         },
         {
@@ -81,7 +93,13 @@ const subscribeChannel = (topic, username) => {
   );
 };
 
+
+const processMessage = (topic, msg) => {
+  
+}
+
 module.exports = {
   Init,
   subscribeChannel,
+  publishMessage
 };
