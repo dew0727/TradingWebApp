@@ -1,4 +1,4 @@
-const SOCKET_ENDPOINT = "http://localhost:4001";
+const SOCKET_ENDPOINT = "http://127.0.0.1:4001";
 const EVENTS = {
     ON_CONNECTION: 'connection',
     ON_DISCONNECT: 'disconnect',
