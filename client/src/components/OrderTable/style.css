@@ -1,0 +1,8 @@
+.trading-table-wrapper{
+    max-width: 500px;
+    margin: 10px;
+}
+
+.ant-table-cell, .ant-table-title{
+    padding: 5px !important;
+}

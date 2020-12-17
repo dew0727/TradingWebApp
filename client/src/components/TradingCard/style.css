@@ -35,6 +35,15 @@
   text-align: center;
 }
 
+.command-header-int {
+  font-size: 16px;
+}
+
+.command-header-float {
+  font-size: 20px;
+  font-weight: bold;
+}
+
 .btn-control {
   background-color: forestgreen;
   color: white;
@@ -90,4 +99,12 @@
   display: flex;
   justify-content: center;
   place-items: center;
+}
+
+.lmt-price-value {
+  width: 100% !important;
+}
+
+.lmt-price-value input {
+  text-align-last: center !important;
 }

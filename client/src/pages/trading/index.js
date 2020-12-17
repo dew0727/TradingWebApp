@@ -6,7 +6,9 @@ import { TradingCard } from "../../components";
 import "./style.css";
 import TradingMenu from "../../components/TradingMenu";
 import PositionTable from "../../components/PositionList";
-import ColumnGroup from "antd/lib/table/ColumnGroup";
+import OrderTable from "../../components/OrderTable";
+import AccountSettingTable from "../../components/AccountSettingTable";
+
 
 const { TabPane } = Tabs;
 
@@ -133,17 +135,14 @@ const TradingPage = () => {
           <div className="trading-net-info">
             <div>
               <div className="trading-table-wrapper">
-                position
                 <PositionTable />
               </div>
               <div className="trading-table-wrapper">
-                orders
-                <PositionTable />
+                <OrderTable />
               </div>
             </div>
             <div className="trading-table-wrapper">
-              account
-              <PositionTable />
+              <AccountSettingTable />
             </div>
           </div>
         </TabPane>
