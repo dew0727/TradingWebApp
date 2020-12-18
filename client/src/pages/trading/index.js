@@ -64,24 +64,19 @@ const TradingPage = () => {
     });
   };
 
-  const parseData = useCallback(
-    (topic, { rateInfo, orders, postions, accInfo, symbols }) => {
-      if (topic === "RATE") {
-        console.log(rateInfo);
-        setRateInfo(rateInfo);
-      }
+  const parseData = (topic, {rateInfo, symbols}) => {
+    if (topic === "RATE") {
+      setRateInfo(rateInfo);
     }
-  );
+  }
 
   useEffect(() => {
     createSocket(parseData);
   }, []);
 
   useEffect(() => {
-    const rateData = { ...RateStore, ...rateInfo };
-    // console.log("RATE DATA - ", rateData);
-    setRateStore(rateData);
-  }, [RateStore, rateInfo]);
+    setRateStore(prevState => ({...prevState, ...rateInfo}));
+  }, [ rateInfo]);
 
   const onHandleRemoveAccount = (index) => {
     accountList.splice(index, 1);
