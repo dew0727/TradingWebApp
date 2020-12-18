@@ -9,137 +9,171 @@ import PositionTable from "../../components/PositionList";
 import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
 import { Account } from "../../utils/datatypes";
+import { EVENTS } from "../../config-client";
+import Search from "antd/lib/input/Search";
+import { apiCall } from "../../utils/api";
 
 const { TabPane } = Tabs;
 
+const brokers = ["GP", "YJFX", "Saxo"];
+
+
+const acc_columns = [
+  {
+    title: "Broker",
+    dataIndex: "broker",
+    align: "left",
+  },
+  {
+    title: "Account Number",
+    className: "account_number",
+    dataIndex: "number",
+    align: "right",
+  },
+  {
+    title: "Delete",
+    className: "account_delete",
+    align: "center",
+    render: (broker, number) => (
+      <Button
+        type="primary"
+        danger
+        icon={<CloseOutlined />}
+        onClick={() => {
+          onHandleRemoveAccount(broker, number);
+        }}
+      />
+    ),
+  },
+];
+
+const onHandleRemoveAccount = (broker, number) => {
+  apiCall("/api/delete-account", { broker, number }, "POST", (res, user, pass) => {
+    if (res === true) {
+      console.log("account deleted");
+    }
+  });
+};
+
+
+  
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("GPM2192267");
-  const [curAccount, setcurAccount] = useState(null);
-  const [accountList, setAccountList] = useState([]);
-  const [RateStore, setRateStore] = useState({});
-  const [rateInfo, setRateInfo] = useState({});
-  const [accountNames, setAccountNames] = useState([
-    "Basket",
-    "GPM2206812",
-    "GPM2192267",
-  ]);
-  const [symbolList, setSymbolList] = useState([
-    "EURUSD",
-    "GBPUSD",
-    "USDCNH",
-    "USDJPY",
-    "EURJPY",
-    "AUDJPY",
-    "EURGBP",
-    "AUDUSD",
-  ]);
+  const [curAccount, setCurAccount] = useState("Busket");
 
-  const updateRateStore = (rateInfo) => {
-    /* let newRateStore = RateStore;
-    console.log('RATE INFO - ', rateInfo, RateStore)
-    for (const key in rateInfo) {
-      newRateStore = {
-        ...newRateStore,
-        [key]: rateInfo[key]
-      };
-    }
-    console.log('NEW RATE STORE - ', newRateStore)
-    Object.keys(rateInfo).forEach(key => {
-      newRateStore = {...newRateStore, [key]: rateInfo[key]}
-    })
-    console.log('NEW RATE STORE - ', newRateStore)*/
-    const rateData = { ...RateStore, ...rateInfo };
-    console.log("RATE DATA - ", rateData);
-    setRateStore(rateData);
-  };
+  const [accounts, setAccounts] = useState([]);
+  const [posList, setPosList] = useState({});
+  const [orderList, setOrderList] = useState({});
+  const [rates, setRates] = useState({});
+  
 
-  const updateSymbolList = (symbols) => {
-    symbols.forEach((sym) => {
-      if (!symbolList.includes(sym)) {
-        if (typeof symbolList == typeof []) {
-          symbolList.push(sym);
-          setSymbolList([...symbolList]);
-        }
-      }
-    });
-  };
 
-  const parseData = (topic, {rateInfo, symbols}) => {
-    if (topic === "RATE") {
-      setRateInfo(rateInfo);
+  const getSymbols = () => {
+    return Object.keys(rates);
+  }
+
+   const getAccountNames = () => {
+    if (typeof (accounts) !== 'object')
+      return [];
+    return accounts.map(acc => acc.name);
+  }
+
+
+  const parseData = (topic, message) => {
+
+    switch (topic) {
+      case EVENTS.ON_RATE:
+        var rates = JSON.parse(message);
+        
+        setRates(rates);
+        break;
+      case EVENTS.ON_ACCOUNT:
+        var account = JSON.parse(message);
+      
+        if (accounts.find(acc => acc.name === account.name))
+          setAccounts(accounts.map(acc => acc.name === account.name ? account : acc));
+        else
+          setAccounts(accounts.push(account));
+        break;
+      case EVENTS.ON_POSLIST:
+        var accPos = JSON.parse(message);
+        console.log("pos", posList);
+        setPosList((prevState) => ({ [accPos.account]: accPos, ...prevState}));
+        break;
+      case EVENTS.ON_ORDERLIST:
+        var accOrders = JSON.parse(message);
+        
+        setOrderList((prevState)=>({ [accOrders.account]: accOrders, ...prevState }));
+        break;
+      default:
+        break;
     }
   }
+
+  const parseOrderList = () => {    
+    if (curAccount !== "Busket")
+      return orderList[curAccount].orders;
+    
+    var orders = [];
+    
+    Object.keys(orderList).forEach((account) => {
+      if (orderList[account].orders.length > 0)
+        orders = orders.concat(orderList[account].orders)
+    });
+    return orders;
+  }
+
+  const parsePosList = () => {
+    if (curAccount !== "Busket")
+      return posList[curAccount].positions;
+    
+    var positions = [];
+    Object.keys(posList).forEach((account) => {
+      if (posList[account].positions.length > 0)
+        positions = positions.concat(posList[account].positions);
+    });
+    return positions;
+  }
+
 
   useEffect(() => {
     createSocket(parseData);
   }, []);
 
-  useEffect(() => {
-    setRateStore(prevState => ({...prevState, ...rateInfo}));
-  }, [ rateInfo]);
-
-  const onHandleRemoveAccount = (index) => {
-    accountList.splice(index, 1);
-    setAccountList(...accountList);
-  };
 
   const onFinish = (values) => {
-    const new_acc = new Account(values.broker + values.accNum);
-    new_acc.login = values.login;
-    new_acc.password = values.password;
-    accountList.push(new_acc);
-    setAccountList(...accountList);
+    apiCall("/api/add-account", { ...values }, "POST", (res, user, pass) => {
+    if (res === true) {
+      console.log("account added");
+    }
+  });
   };
 
-  function callback(key) {
-    console.log(key);
-  }
+  const updateAccountOrPriceFeed = ({ selectedBroker, selectedAccount }) => {
+    
+    if (selectedBroker) {      
+      apiCall("/api/price-feed", {feed: selectedBroker}, "POST", (res, user, pass) => {
+        if (res === true) {
+          setcurBroker(selectedBroker);
+        }
+      });
+    }
+    if (selectedAccount) {      
+      setCurAccount(selectedAccount);
 
-  const brokers = ["GP", "YJFX", "Saxo"];
-  const acc_columns = [
-    {
-      title: "Broker",
-      dataIndex: "broker",
-      align: "left",
-    },
-    {
-      title: "Account Number",
-      className: "account_number",
-      dataIndex: "accNum",
-      align: "right",
-    },
-    {
-      title: "Delete",
-      className: "account_delete",
-      align: "center",
-      render: (text, record, index) => (
-        <Button
-          type="primary"
-          danger
-          icon={<CloseOutlined />}
-          onClick={() => {
-            onHandleRemoveAccount(index);
-          }}
-        />
-      ),
-    },
-  ];
+    }     
+  };
 
+ 
   return (
     <div className="traindg-home-page">
-      <Tabs onChange={callback} type="card" size="small">
+      <Tabs onChange={updateAccountOrPriceFeed} type="card" size="small">
         <TabPane tab="Home" key="home">
           <div className="broker-selection-menu">
             <TradingMenu
-              brokers={accountNames}
-              accounts={accountNames}
-              callback={({ selectedAccount, selectedBroker }) => {
-                selectedBroker
-                  ? setcurBroker(selectedBroker)
-                  : selectedAccount
-                  ? setcurAccount(selectedAccount)
-                  : console.log();
-              }}
+              brokers={getAccountNames()}
+              accounts={getAccountNames()}
+              callback={updateAccountOrPriceFeed}
             />
           </div>
           <Row
@@ -148,8 +182,8 @@ const TradingPage = () => {
           >
             <Col>
               {<TradingCard
-                symInfo={symbolList}
-                rateInfo={RateStore}
+                symbols={getSymbols(rates)}
+                rates={rates}
                 broker={curBroker}
               />}
             </Col>
@@ -157,14 +191,14 @@ const TradingPage = () => {
           <div className="trading-net-info">
             <div>
               <div className="trading-table-wrapper">
-                <PositionTable />
+                <PositionTable positions={parsePosList()}/>
               </div>
               <div className="trading-table-wrapper">
-                <OrderTable />
+                <OrderTable orders={ parseOrderList() }/>
               </div>
             </div>
             <div className="trading-table-wrapper">
-              <AccountSettingTable />
+              <AccountSettingTable accounts={accounts} />
             </div>
           </div>
         </TabPane>
@@ -200,7 +234,7 @@ const TradingPage = () => {
                 </Form.Item>
                 <Form.Item
                   label="Account Number"
-                  name="accNum"
+                  name="number"
                   rules={[
                     {
                       required: true,
@@ -212,7 +246,7 @@ const TradingPage = () => {
                 </Form.Item>
                 <Form.Item
                   label="Login"
-                  name="login"
+                  name="loginID"
                   rules={[
                     {
                       required: true,

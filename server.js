@@ -47,6 +47,8 @@ app.post("/api/login", (req, res) => {
     subscribeForUser(data.username);
     db.Init();
   }
+
+  console.log('pricefeed', db.GetPriceFeed());
   
   res.json({
     auth: result,
@@ -77,8 +79,23 @@ app.post("/api/add-account", (req, res) => {
   })
 });
 
+app.post("/api/delete-account", (req, res) => {
+  var data = req.body.body;
+  console.log("add account data: ") + data;
+
+  data = JSON.parse(data);
+  
+  db.DeleteAccount(data.broker, data.number);
+
+  res.json({
+    success: true,
+    error: ""
+  })
+});
+
 app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
+  data = JSON.parse(data);
   console.log("order request data: " + data);
 
   var sReq = "GPM2192267@ORDER_OPEN,EURUSD,BUY,0.3,1.23,0,0,MARKET";
@@ -90,10 +107,13 @@ app.post("/api/order-request", (req, res) => {
 })
 
 app.post("/api/price-feed", (req, res) => {
-  var feed = req.body.body.accountname;
+  var data = req.body.body;
+  data = JSON.parse(data);
+  var feed = data.feed;
+  console.log(feed);
 
   db.SetPriceFeed(feed);
-
+  console.log("Price-feed: ", db.GetPriceFeed());
   res.json({
     success: true
   })

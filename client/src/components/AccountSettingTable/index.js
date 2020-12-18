@@ -5,7 +5,7 @@ import "./style.css";
 const columns = [
   {
     title: "口座",
-    dataIndex: "account",
+    dataIndex: "name",
     align: "left",
   },
   {
@@ -61,78 +61,23 @@ const columns = [
     align: "right",
     editable: true,
   },
+  {
+    title: "Status",
+    className: "column-default-status",
+    dataIndex: "status",
+    align: "right",
+    editable: false,
+    render: (status) => status ? "live" : "dead"
+  },
 ];
 
-const data = [
-  {
-    key: "acc-1",
-    account: "Basket",
-    balance: 97000000,
-    margin: 800000,
-    profit: 6408,
-    equity: 97006408,
-    basket: true,
-    default: 1,
-  },
-  {
-    key: "acc-2",
-    account: "GP45643",
-    balance: 97000000,
-    margin: 800000,
-    profit: 6408,
-    equity: 97006408,
-    basket: true,
-    default: 1,
-  },
-  {
-    key: "acc-3",
-    account: "YJFX2134",
-    balance: 97000000,
-    margin: 800000,
-    profit: 6408,
-    equity: 97006408,
-    basket: true,
-    default: 1,
-  },
-  {
-    key: "acc-4",
-    account: "YJFX25698",
-    balance: 97000000,
-    margin: 800000,
-    profit: 6408,
-    equity: 97006408,
-    basket: false,
-    default: 1,
-  },
-  {
-    key: "acc-5",
-    account: "YJFX9865",
-    balance: 97000000,
-    margin: 800000,
-    profit: 6408,
-    equity: 97006408,
-    basket: true,
-    default: 5,
-  },
-  {
-    key: "acc-6",
-    account: "SAXO96432",
-    balance: 97000000,
-    margin: 800000,
-    profit: 6408,
-    equity: 97006408,
-    basket: false,
-    default: 1,
-  },
-
-];
-
-const AccountSettingTable = ({ positions }) => {
+const AccountSettingTable = ({ accounts }) => {
+  
   return (
     <>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={typeof(accounts) !== 'object' ? [] : accounts}
         bordered
         title={() => "口座情報"}
         pagination={false}

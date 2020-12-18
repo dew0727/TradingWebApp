@@ -60,51 +60,12 @@ const columns = [
   },
 ];
 
-const data = [
-  {
-    symbol: "USDJPY",
-    lots: "2",
-    open_price: "104.53",
-    current_price: "105.13",
-    profit: "-532.02",
-    swap: "0.2",
-    total_profit: "804.53",
-  },
-  {
-    symbol: "USDJPY",
-    lots: "4",
-    open_price: "104.53",
-    current_price: "105.13",
-    profit: "-532.02",
-    swap: "0.2",
-    total_profit: "804.53",
-  },
-  {
-    symbol: "USDJPY",
-    lots: "3",
-    open_price: "104.53",
-    current_price: "105.13",
-    profit: "-532.02",
-    swap: "0.2",
-    total_profit: "804.53",
-  },
-  {
-    symbol: "USDJPY",
-    lots: "1",
-    open_price: "104.53",
-    current_price: "105.13",
-    profit: "-532.02",
-    swap: "0.2",
-    total_profit: "804.53",
-  },
-];
-
 const PositionTable = ({ positions }) => {
   return (
     <>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={positions}
         bordered
         title={() => "Positions"}
         pagination={false}

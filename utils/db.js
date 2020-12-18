@@ -23,8 +23,8 @@ const Init = () => {
     })
   }
 
-  console.log(accounts);
-  console.log(accountStatus);
+  console.log("accounts", accounts);
+  console.log("status", accountStatus);
 }
 
 const AddAccount = (account) => {
@@ -48,13 +48,17 @@ const AddAccount = (account) => {
 }
 
 const DeleteAccount = (broker, number) => {
-  accounts = accounts.filter(x => x.broker !== broker && x.number !== number);
+  accounts = accounts.filter(acc => acc.broker !== broker && acc.number != number);
 
   SaveAccountsData();
 }
 
 const GetAccounts = () => {
   return accounts;
+}
+
+const GetAccount = (accName) => {
+  return accounts.find(acc => acc.name === accName);
 }
 
 const LoadAccountsData = () => {
@@ -66,6 +70,8 @@ const LoadAccountsData = () => {
   // });
 
   const sData = fs.readFileSync(DB_PATH_ACCOUNT);
+  if (sData === "")
+    return [];
   accounts = JSON.parse(sData);
 }
 
@@ -74,8 +80,8 @@ const SaveAccountsData = () => {
 }
 
 
-const GetAccountStatus = () => {
-  return accountStatus;
+const GetAccountStatus = (accName) => {
+  return accountStatus.find(acc => acc.name ===accName).status;
 }
 
 const UpdateAccountStatus = (name, status) => {
@@ -103,11 +109,19 @@ const UpdateAccountStatus = (name, status) => {
 }
 
 const SetPriceFeed = (feed) => {
-  fs.writeFileSync(DB_PATH_PRICE_FEED, feed);
+  priceFeed = feed;
+  var data = { feed };
+  data = JSON.stringify(data);
+  fs.writeFileSync(DB_PATH_PRICE_FEED, data);
 }
 
 const LoadPriceFeed = () => {
-  priceFeed = fs.readFileSync(DB_PATH_PRICE_FEED);
+  var data = fs.readFileSync(DB_PATH_PRICE_FEED);
+  console.log(data);
+  if (data === "{}")
+    return "";
+  data = JSON.parse(data);  
+  priceFeed = data.feed;  
 }
 
 const GetPriceFeed = () => {
@@ -118,6 +132,7 @@ module.exports = {
   Init,
   AddAccount,
   GetAccounts,
+  GetAccount,
   DeleteAccount,
   UpdateAccountStatus,  
   GetAccountStatus,

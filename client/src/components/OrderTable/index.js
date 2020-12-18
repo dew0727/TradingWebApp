@@ -17,6 +17,7 @@ const columns = [
     align: "center",
     width: 50,
     key: "command",
+    render: (command) => command.includes("BUY")? "買":"売",
   },
   {
     title: "　枚数",
@@ -29,10 +30,10 @@ const columns = [
   {
     title: "評価レート",
     className: "column-avg-price",
-    dataIndex: "avg_price",
+    dataIndex: "open_price",
     align: "center",
     width: 100,
-    key: "avg_price",
+    key: "open_price",
   },
   {
     title: " ",
@@ -56,36 +57,13 @@ const columns = [
   },
 ];
 
-const data = [
-  {
-    symbol: "USDJPY",
-    lots: "2",
-    avg_price: "104.53",
-    command: "売",
-    account: "GP44573",
-  },
-  {
-    symbol: "EURUSD",
-    lots: "2",
-    avg_price: "104.53",
-    command: "売",
-    account: "Basket",
-  },
-  {
-    symbol: "GBPUSD",
-    lots: "1",
-    avg_price: "104.53",
-    command: "買",
-    account: "GP4343",
-  },
-];
-
-const OrderTable = ({ positions }) => {
+const OrderTable = ({ orders }) => {
+  
   return (
     <>
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={orders}
         bordered
         title={() => "Orders"}
         pagination={false}

@@ -35,20 +35,23 @@ const posInfoSample = {
 };
 
 
-const TradingCard = ({ symInfo, posInfo, rateInfo, broker }) => {
+const TradingCard = ({ symbols, posInfo, rates, broker }) => {
   const [netPosInfo, setNetPosInfo] = useState(posInfoSample);
   const [curSym, setcurSym] = useState("EURUSD");
   const [orderType, setorderType] = useState("MKT");
-  // const [symList, setSymList] = useState(symInfo);
-  const [rates, setRates] = useState(rateInfo);
-  const [curBroker, setBroker] = useState(broker);
+  
+  let bid = 0, ask = 0;
 
+  if (curSym in rates) {
+    bid = rates[curSym].bid;
+    ask = rates[curSym].ask;
+  }
 
   return (
     <div className="trading-card-container">
       <div className="card-symbol-name">
         <SymbolSelector
-          symbols={symInfo}
+          symbols={symbols}
           callback={(key) => {
             setcurSym(key);
           }}
@@ -73,7 +76,7 @@ const TradingCard = ({ symInfo, posInfo, rateInfo, broker }) => {
       </Row>
       <Row gutter={[0, 10]} className="card-commands">
         <Col className="command-header-bid command-header-int" span={6}>
-          <span>{curBroker && rateInfo[curBroker] !== undefined && curSym ? rateInfo[curBroker][curSym].bid : 0 }</span>
+          <span>{curSym && bid}</span>
         </Col>
         <Col className="command-header-bid command-header-float" span={4}>
           <span>.381</span>
