@@ -65,7 +65,7 @@ const columns = [
 
 const data = [
   {
-    key: "1",
+    key: "acc-1",
     account: "Basket",
     balance: 97000000,
     margin: 800000,
@@ -75,7 +75,7 @@ const data = [
     default: 1,
   },
   {
-    key: "2",
+    key: "acc-2",
     account: "GP45643",
     balance: 97000000,
     margin: 800000,
@@ -85,7 +85,7 @@ const data = [
     default: 1,
   },
   {
-    key: "3",
+    key: "acc-3",
     account: "YJFX2134",
     balance: 97000000,
     margin: 800000,
@@ -95,7 +95,7 @@ const data = [
     default: 1,
   },
   {
-    key: "4",
+    key: "acc-4",
     account: "YJFX25698",
     balance: 97000000,
     margin: 800000,
@@ -105,7 +105,7 @@ const data = [
     default: 1,
   },
   {
-    key: "5",
+    key: "acc-5",
     account: "YJFX9865",
     balance: 97000000,
     margin: 800000,
@@ -115,7 +115,7 @@ const data = [
     default: 5,
   },
   {
-    key: "6",
+    key: "acc-6",
     account: "SAXO96432",
     balance: 97000000,
     margin: 800000,

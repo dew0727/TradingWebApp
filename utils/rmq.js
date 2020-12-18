@@ -1,4 +1,6 @@
 const amqp = require("amqplib/callback_api");
+const { socket }  = require("./socket");
+const { EVENTS } = require("../config");
 const config = require("../config");
 const rabbitmqHost = config.RABBITMQ_HOST;
 const exchange = config.EXCHANGE_NAME;
@@ -13,11 +15,6 @@ const queueOptions = {
 };
 
 var channel = null;
-var io = null;
-
-const Init = (_io) => {
-  io = _io;
-}
 
 // Receive messages from rabbitmq
 amqp.connect(
@@ -57,7 +54,7 @@ const publishMessage = (topic, sMsg) =>{
 }
 
 const subscribeChannel = (topic, username) => {
-  if (io == null || channel == null) return;
+  if (channel == null) return;
 
   channel.assertQueue(
     "System.String, mscorlib_" + topic + username,
@@ -79,10 +76,10 @@ const subscribeChannel = (topic, username) => {
         q.queue,
         (msg) => {
           if (msg.content) {
-            //if (io != null && io != undefined)
-            //    io.emit(topic, msg.content.toString());
-            console.log(topic, msg.content.toString());
-            processMessage(topic, msg.contnt.toString());
+            var str = msg.content.toString().replace('\"', '');
+            str = str.replace('\"', '');
+            //console.log(topic, str);
+            processMessage(topic, str);
           }
         },
         {
@@ -95,11 +92,17 @@ const subscribeChannel = (topic, username) => {
 
 
 const processMessage = (topic, msg) => {
-  
+  switch(topic)
+  {
+    case EVENTS.ON_RATE:
+      socket.emit(topic, msg);
+      break;
+    default:
+      break;
+  }
 }
 
 module.exports = {
-  Init,
   subscribeChannel,
   publishMessage
 };

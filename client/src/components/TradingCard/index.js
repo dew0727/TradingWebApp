@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Input, InputNumber } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
-import ColumnGroup from "antd/lib/table/ColumnGroup";
 
 const posInfoSample = {
   USDJPY: {
@@ -35,17 +34,21 @@ const posInfoSample = {
   },
 };
 
-const TradingCard = ({ symbols, sym, posInfo }) => {
+const TradingCard = ({ symInfo, posInfo, rateInfo, broker }) => {
   const [netPosInfo, setNetPosInfo] = useState(posInfoSample);
-  const [curSym, setcurSym] = useState(sym);
+  const [curSym, setcurSym] = useState(null);
   const [orderType, setorderType] = useState("MKT");
+  const [symList, setSymList] = useState(symInfo);
+  const [rates, setRates] = useState(rateInfo);
+  const [curBroker, setBroker] = useState(broker);
+
+  console.log(rateInfo);
 
   return (
     <div className="trading-card-container">
       <div className="card-symbol-name">
         <SymbolSelector
-          symbols={symbols}
-          sym={sym}
+          symbols={symList}
           callback={(key) => {
             setcurSym(key);
           }}
@@ -70,7 +73,7 @@ const TradingCard = ({ symbols, sym, posInfo }) => {
       </Row>
       <Row gutter={[0, 10]} className="card-commands">
         <Col className="command-header-bid command-header-int" span={4}>
-          <span>104</span>
+          <span>{curBroker && rates && curSym ? rates[curBroker][curSym].bid : 0 }</span>
         </Col>
         <Col className="command-header-bid command-header-float" span={6}>
           <span>.381</span>

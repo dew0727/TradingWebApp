@@ -8,6 +8,7 @@ const columns = [
     dataIndex: "symbol",
     align: "center",
     width: 80,
+    key: "symbol",
   },
   {
     title: "買売",
@@ -15,6 +16,7 @@ const columns = [
     dataIndex: "command",
     align: "center",
     width: 50,
+    key: "command",
   },
   {
     title: "　枚数",
@@ -22,6 +24,7 @@ const columns = [
     dataIndex: "lots",
     align: "center",
     width: 100,
+    key: "lots",
   },
   {
     title: "評価レート",
@@ -29,11 +32,13 @@ const columns = [
     dataIndex: "avg_price",
     align: "center",
     width: 100,
+    key: "avg_price",
   },
   {
     title: " ",
     className: "column-blank",
     width: 80,
+    key: "blank",
   },
   {
     title: "口座",
@@ -41,17 +46,18 @@ const columns = [
     dataIndex: "account",
     align: "center",
     width: 55,
+    key: "account",
   },
   {
     title: " ",
     className: "column-blank",
     width: 100,
+    key: "blank-2",
   },
 ];
 
 const data = [
   {
-    key: "1",
     symbol: "USDJPY",
     lots: "2",
     avg_price: "104.53",
@@ -59,7 +65,6 @@ const data = [
     account: "GP44573",
   },
   {
-    key: "1",
     symbol: "EURUSD",
     lots: "2",
     avg_price: "104.53",
@@ -67,7 +72,6 @@ const data = [
     account: "Basket",
   },
   {
-    key: "1",
     symbol: "GBPUSD",
     lots: "1",
     avg_price: "104.53",

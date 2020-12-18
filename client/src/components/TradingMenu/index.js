@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import SymbolSelector from "../../components/SymbolSelector";
 import "./style.css";
 
-const TradingMenu = ({ brokers, accounts }) => {
+const TradingMenu = ({ brokers, accounts, callback }) => {
   const handleBrokerClick = (key) => {
-    console.log(key);
+    callback({selectedBroker: key});
   };
 
   const handleAccountClick = (key) => {
-    console.log(key);
+    if (callback !== undefined){
+      callback({selectedAccount: key});
+    }
   };
 
   return (

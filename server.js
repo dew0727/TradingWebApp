@@ -23,7 +23,7 @@ const io = socketIO(server, {
 });
 
 // Initialize rabbitmq client with socket.
-rmq.Init(io);
+require("./utils/socket").socket.setIo(io);
 
 const EVENTS = config.EVENTS;
 
@@ -64,7 +64,7 @@ app.post("/api/add-account", (req, res) => {
   data = JSON.parse(data);
   var account = {
     name: data.broker + data.number,
-    busket: data.busket == undefined ? false : data.busket,
+    basket: data.basket == undefined ? false : data.basket,
     default: data.default == undefined ? 1 : data.default,
     ...data
   }

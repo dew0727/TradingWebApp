@@ -1,7 +1,7 @@
 const SOCKET_PORT = 4001;
 const RABBITMQ_HOST = "localhost";
-const RABBITMQ_USERNAME = "miracle";
-const RABBITMQ_PASSWORD = "miracle";
+const RABBITMQ_USERNAME = "localhost";
+const RABBITMQ_PASSWORD = "localhost";
 const EXCHANGE_NAME = "System.String, mscorlib";
 
 // event names

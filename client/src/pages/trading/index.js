@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Row, Col, Tabs, Form, Input, Button, Select, Table } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
@@ -8,75 +8,22 @@ import TradingMenu from "../../components/TradingMenu";
 import PositionTable from "../../components/PositionList";
 import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
-
+import { Account } from "../../utils/datatypes";
 
 const { TabPane } = Tabs;
 
 const TradingPage = () => {
-  const [priceInfo, setPriceInfo] = useState({
-    price: "",
-    value: "",
-  });
-
-  const [account_list, setAccountList] = useState([
-    {
-      broker: "GP",
-      accNum: 4444,
-      login: "3333",
-      password: "password123",
-    },
-    {
-      broker: "GP",
-      accNum: 555,
-      login: "55555",
-      password: "password123",
-    },
-    {
-      broker: "YJFX",
-      accNum: 222,
-      login: "666",
-      password: "password123",
-    },
+  const [curBroker, setcurBroker] = useState(null);
+  const [curAccount, setcurAccount] = useState(null);
+  const [accountList, setAccountList] = useState([]);
+  const [RateStore, setRateStore] = useState({});
+  const [rateInfo, setRateInfo] = useState({});
+  const [accountNames, setAccountNames] = useState([
+    "Basket",
+    "GPM2206812",
+    "GPM2192267",
   ]);
-
-  useEffect(() => {
-    createSocket(parseData);
-  }, []);
-
-  const parseData = (info) => {
-    // Parse info
-    console.log("INFO - ", info);
-
-    setPriceInfo({
-      price: info,
-    });
-  };
-
-  const onHandleRemoveAccount = (index) => {
-    let acc_list = [...account_list];
-    acc_list.splice(index, 1);
-    setAccountList(acc_list);
-  };
-
-  const onFinish = (values) => {
-    console.log(values);
-    const new_acc = {
-      broker: values.broker,
-      accNum: values.accNum,
-      login: values.login,
-      password: values.password,
-    };
-
-    let acc_list = [...account_list];
-    acc_list.push(new_acc);
-    setAccountList(acc_list);
-  };
-
-  function callback(key) {
-    console.log(key);
-  }
-
-  const symbols = [
+  const [symbolList, setSymbolList] = useState([
     "EURUSD",
     "GBPUSD",
     "USDCNH",
@@ -85,10 +32,74 @@ const TradingPage = () => {
     "AUDJPY",
     "EURGBP",
     "AUDUSD",
-  ];
+  ]);
+
+  const updateRateStore = (rateInfo) => {
+    /* let newRateStore = RateStore;
+    console.log('RATE INFO - ', rateInfo, RateStore)
+    for (const key in rateInfo) {
+      newRateStore = {
+        ...newRateStore,
+        [key]: rateInfo[key]
+      };
+    }
+    console.log('NEW RATE STORE - ', newRateStore)
+    Object.keys(rateInfo).forEach(key => {
+      newRateStore = {...newRateStore, [key]: rateInfo[key]}
+    })
+    console.log('NEW RATE STORE - ', newRateStore)*/
+    const rateData = { ...RateStore, ...rateInfo };
+    console.log("RATE DATA - ", rateData);
+    setRateStore(rateData);
+  };
+
+  const updateSymbolList = (symbols) => {
+    symbols.forEach((sym) => {
+      if (!symbolList.includes(sym)) {
+        if (typeof symbolList == typeof []) {
+          symbolList.push(sym);
+          setSymbolList([...symbolList]);
+        }
+      }
+    });
+  };
+
+  const parseData = useCallback(
+    (topic, { rateInfo, orders, postions, accInfo, symbols }) => {
+      if (topic === "RATE") {
+        setRateInfo(rateInfo);
+      }
+    }
+  );
+
+  useEffect(() => {
+    createSocket(parseData);
+  }, [parseData]);
+
+  useEffect(() => {
+    const rateData = { ...RateStore, ...rateInfo };
+    console.log("RATE DATA - ", rateData);
+    setRateStore(rateData);
+  }, [RateStore, rateInfo]);
+
+  const onHandleRemoveAccount = (index) => {
+    accountList.splice(index, 1);
+    setAccountList(...accountList);
+  };
+
+  const onFinish = (values) => {
+    const new_acc = new Account(values.broker + values.accNum);
+    new_acc.login = values.login;
+    new_acc.password = values.password;
+    accountList.push(new_acc);
+    setAccountList(...accountList);
+  };
+
+  function callback(key) {
+    console.log(key);
+  }
 
   const brokers = ["GP", "YJFX", "Saxo"];
-  const accounts = ["GP45643", "YJFX2134", "Basket"];
   const acc_columns = [
     {
       title: "Broker",
@@ -123,14 +134,29 @@ const TradingPage = () => {
       <Tabs onChange={callback} type="card" size="small">
         <TabPane tab="Home" key="home">
           <div className="broker-selection-menu">
-            <TradingMenu brokers={brokers} accounts={accounts} />
+            <TradingMenu
+              brokers={accountNames}
+              accounts={accountNames}
+              callback={({ selectedAccount, selectedBroker }) => {
+                selectedBroker
+                  ? setcurBroker(selectedBroker)
+                  : selectedAccount
+                  ? setcurAccount(selectedAccount)
+                  : console.log();
+              }}
+            />
           </div>
-          <Row className="site-card-wrapper trading-cards-wrapper" gutter={[16, 16]}>
-            {symbols.map((item) => (
-              <Col>
-                <TradingCard symbols={symbols} sym={item} />
-              </Col>
-            ))}
+          <Row
+            className="site-card-wrapper trading-cards-wrapper"
+            gutter={[16, 16]}
+          >
+            <Col>
+              {/*<TradingCard
+                symInfo={symbolList}
+                rateInfo={RateStore}
+                broker={curBroker}
+              />*/}
+            </Col>
           </Row>
           <div className="trading-net-info">
             <div>
@@ -167,8 +193,12 @@ const TradingPage = () => {
                   ]}
                 >
                   <Select defaultValue="Select">
-                    {brokers.map((item) => {
-                      return <Select.Option value={item}>{item}</Select.Option>;
+                    {brokers.map((item, index) => {
+                      return (
+                        <Select.Option key={index} value={item}>
+                          {item}
+                        </Select.Option>
+                      );
                     })}
                   </Select>
                 </Form.Item>
@@ -220,7 +250,7 @@ const TradingPage = () => {
                 bordered
                 title={() => "Account List"}
                 pagination={false}
-                dataSource={account_list}
+                dataSource={[]}
                 columns={acc_columns}
               />
             </div>

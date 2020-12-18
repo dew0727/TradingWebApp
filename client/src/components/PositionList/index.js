@@ -8,6 +8,7 @@ const columns = [
     dataIndex: "symbol",
     align: "center",
     width: 80,
+    key: "symbol"
   },
   {
     title: "Lots",
@@ -15,6 +16,7 @@ const columns = [
     dataIndex: "lots",
     align: "center",
     width: 50,
+    key: "lots"
   },
   {
     title: "Open Price",
@@ -22,6 +24,7 @@ const columns = [
     dataIndex: "open_price",
     align: "center",
     width: 100,
+    key: "open_price"
   },
   {
     title: "Current Price",
@@ -29,6 +32,7 @@ const columns = [
     dataIndex: "current_price",
     align: "center",
     width: 100,
+    key: "current_price"
   },
   {
     title: "Profit",
@@ -36,6 +40,7 @@ const columns = [
     dataIndex: "profit",
     align: "center",
     width: 80,
+    key: "profit"
   },
   {
     title: "Swap",
@@ -43,6 +48,7 @@ const columns = [
     dataIndex: "swap",
     align: "center",
     width: 55,
+    key: "swap"
   },
   {
     title: "Total Profit",
@@ -50,12 +56,12 @@ const columns = [
     dataIndex: "total_profit",
     align: "center",
     width: 100,
+    key: "total_profit"
   },
 ];
 
 const data = [
   {
-    key: "1",
     symbol: "USDJPY",
     lots: "2",
     open_price: "104.53",
@@ -65,7 +71,6 @@ const data = [
     total_profit: "804.53",
   },
   {
-    key: "2",
     symbol: "USDJPY",
     lots: "4",
     open_price: "104.53",
@@ -75,7 +80,6 @@ const data = [
     total_profit: "804.53",
   },
   {
-    key: "3",
     symbol: "USDJPY",
     lots: "3",
     open_price: "104.53",
@@ -85,7 +89,6 @@ const data = [
     total_profit: "804.53",
   },
   {
-    key: "4",
     symbol: "USDJPY",
     lots: "1",
     open_price: "104.53",
