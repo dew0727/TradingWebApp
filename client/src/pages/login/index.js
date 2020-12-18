@@ -11,26 +11,26 @@ const Login = () => {
     auth: '',
   });
 
-  useEffect(() => {
-    const user = localStorage.getItem("username");
-    const pass = localStorage.getItem("password");
-    const token = localStorage.getItem("authToken");
+  // useEffect(() => {
+  //   const user = localStorage.getItem("username");
+  //   const pass = localStorage.getItem("password");
+  //   const token = localStorage.getItem("authToken");
 
-    if (token === undefined) {
-      if (user !== undefined && pass !== undefined)
-      apiCall(
-        "/api/login",
-        { username: user, password: pass },
-        "POST",
-        (res) => {
-          if (res === true)
-            setAuth({
-              auth: localStorage.getItem("authToken"),
-            });
-        }
-      );
-    }
-  }, []);
+  //   if (token === undefined) {
+  //     if (user !== undefined && pass !== undefined)
+  //     apiCall(
+  //       "/api/login",
+  //       { username: user, password: pass },
+  //       "POST",
+  //       (res) => {
+  //         if (res === true)
+  //           setAuth({
+  //             auth: localStorage.getItem("authToken"),
+  //           });
+  //       }
+  //     );
+  //   }
+  // }, []);
 
   const onFinish = (values) => {
     apiCall("/api/login", values, "POST", (res, user, pass) => {

@@ -13,7 +13,7 @@ import { Account } from "../../utils/datatypes";
 const { TabPane } = Tabs;
 
 const TradingPage = () => {
-  const [curBroker, setcurBroker] = useState(null);
+  const [curBroker, setcurBroker] = useState("GPM2192267");
   const [curAccount, setcurAccount] = useState(null);
   const [accountList, setAccountList] = useState([]);
   const [RateStore, setRateStore] = useState({});
@@ -67,6 +67,7 @@ const TradingPage = () => {
   const parseData = useCallback(
     (topic, { rateInfo, orders, postions, accInfo, symbols }) => {
       if (topic === "RATE") {
+        console.log(rateInfo);
         setRateInfo(rateInfo);
       }
     }
@@ -74,11 +75,11 @@ const TradingPage = () => {
 
   useEffect(() => {
     createSocket(parseData);
-  }, [parseData]);
+  }, []);
 
   useEffect(() => {
     const rateData = { ...RateStore, ...rateInfo };
-    console.log("RATE DATA - ", rateData);
+    // console.log("RATE DATA - ", rateData);
     setRateStore(rateData);
   }, [RateStore, rateInfo]);
 
@@ -151,11 +152,11 @@ const TradingPage = () => {
             gutter={[16, 16]}
           >
             <Col>
-              {/*<TradingCard
+              {<TradingCard
                 symInfo={symbolList}
                 rateInfo={RateStore}
                 broker={curBroker}
-              />*/}
+              />}
             </Col>
           </Row>
           <div className="trading-net-info">
