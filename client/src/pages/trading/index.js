@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Tabs, Form, Input, Button, Select, Table } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
@@ -96,15 +96,16 @@ const TradingPage = () => {
       case EVENTS.ON_ACCOUNT:
         var account = JSON.parse(message);
 
-        if (accounts.find((acc) => acc.name === account.name))
-          setAccounts(
-            accounts.map((acc) => (acc.name === account.name ? account : acc))
-          );
-        else setAccounts(accounts.push(account));
+        setAccounts((prevState)=>{
+          if (prevState.some((acc) => acc.name === account.name))
+            return prevState.map((acc) => (acc.name === account.name ? account : acc));
+          else
+            return prevState.push(account);
+        })
+        
         break;
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
-        console.log("pos", posList);
         setPosList((prevState) => ({ [accPos.account]: accPos, ...prevState }));
         break;
       case EVENTS.ON_ORDERLIST:
@@ -142,7 +143,7 @@ const TradingPage = () => {
     });
     return positions;
   };
-
+  
   useEffect(() => {
     createSocket(parseData);
   }, []);
@@ -194,69 +195,7 @@ const TradingPage = () => {
                   symbols={getSymbols(rates)}
                   rates={rates}
                   broker={curBroker}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
+                  posInfo = {parsePosList()}
                 />
               }
             </Col>

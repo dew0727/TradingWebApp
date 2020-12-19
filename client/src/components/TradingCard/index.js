@@ -1,61 +1,47 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Row, Col, Button, Input, InputNumber } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
 
-const posInfoSample = {
-  USDJPY: {
-    BUY: {
-      Lots: 1,
-      AvgPrice: 104.23,
-      ProfitInPips: 0.081,
-      Profit: 801,
-    },
-    SELL: {
-      Lots: 0,
-      AvgPrice: 0,
-      ProfitInPips: 0,
-      Profit: 0,
-    },
-  },
-  EURUSD: {
-    BUY: {
-      Lots: 0,
-      AvgPrice: 0,
-      ProfitInPips: 0,
-      Profit: 0,
-    },
-    SELL: {
-      Lots: 2,
-      AvgPrice: 1.3,
-      ProfitInPips: 32,
-      Profit: 320,
-    },
-  },
-};
-
-
-const specPrice = (symbol, price, fixsize=5) => {
-  if (price === undefined || symbol === undefined) return {first: "", last: ""};
+const specPrice = (symbol, price, fixsize = 5) => {
+  if (price === undefined || symbol === undefined)
+    return { first: "", last: "" };
   const strPrice = Number.parseFloat(price).toFixed(fixsize);
   const last = strPrice.substr(-3);
-  const first = strPrice.substr(0, strPrice.length -3);
+  const first = strPrice.substr(0, strPrice.length - 3);
 
-  return {first: first, last: last};
-}
+  return { first: first, last: last };
+};
 
 const TradingCard = ({ symbols, posInfo, rates, broker }) => {
-  const [netPosInfo, setNetPosInfo] = useState(posInfoSample);
-  const [curSym, setcurSym] = useState("EURUSD");
+  const [netPosInfo, setNetPosInfo] = useState();
+  const [curSym, setcurSym] = useState();
   const [orderType, setorderType] = useState("MKT");
-  
-  let bid = 0, ask = 0, sp = 0, point;
 
-  if (curSym in rates) {
+  let bid = 0,
+    ask = 0,
+    sp = 0,
+    point;
+  let lots = [0, 0],
+    profit = [0, 0],
+    price = [0, 0];
+
+  if (curSym !== undefined && curSym in rates) {
     bid = rates[curSym].bid;
     ask = rates[curSym].ask;
     point = curSym.toUpperCase().includes("JPY") ? 3 : 5;
     sp = Math.abs(bid - ask) * (point === 5 ? 10000 : 100);
+
+    const posList = posInfo.filter((item) => item.symbol === curSym);
+
+    posList.map((pos) => {
+      lots[0] += pos.lots;
+      price[0] = pos.open_price * pos.lots;
+      profit[0] += pos.profit;
+    });
+
+    price[0] = lots[0] === 0 ? 0 : price[0] / lots[0];
+    price[1] = lots[1] === 0 ? 0 : price[1] / lots[1];
   }
 
   return (
@@ -87,19 +73,19 @@ const TradingCard = ({ symbols, posInfo, rates, broker }) => {
       </Row>
       <Row gutter={[0, 10]} className="card-commands">
         <Col className="command-header-bid command-header-int" span={6}>
-          <span>{specPrice(curSym,bid, point).first}</span>
+          <span>{specPrice(curSym, bid, point).first}</span>
         </Col>
         <Col className="command-header-bid command-header-float" span={4}>
-          <span>{specPrice(curSym,bid, point).last}</span>
+          <span>{specPrice(curSym, bid, point).last}</span>
         </Col>
         <Col className="command-header command-header-int" span={4}>
           <span>{sp.toFixed(1)}</span>
         </Col>
         <Col className="command-header-ask command-header-int" span={4}>
-          <span>{specPrice(curSym,ask, point).first}</span>
+          <span>{specPrice(curSym, ask, point).first}</span>
         </Col>
         <Col className="command-header-ask command-header-float" span={6}>
-          <span>{specPrice(curSym,ask, point).last}</span>
+          <span>{specPrice(curSym, ask, point).last}</span>
         </Col>
       </Row>
       <Row gutter={[0, 10]} justify="center" align="center">
@@ -199,59 +185,35 @@ const TradingCard = ({ symbols, posInfo, rates, broker }) => {
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
           <Col className="trading-card-value buy-lots" span={6}>
-            <span>
-              {netPosInfo[curSym]
-                ? netPosInfo[curSym].BUY.Lots
-                : netPosInfo["EURUSD"].BUY.Lots}
-            </span>
+            <span>{lots[0]}</span>
           </Col>
           <Col className="trading-card-label trading-card-value" span={12}>
             <span>建玉</span>
           </Col>
           <Col className="trading-card-value sell-lots" span={6}>
-            <span>
-              {netPosInfo[curSym]
-                ? netPosInfo[curSym].SELL.Lots
-                : netPosInfo["EURUSD"].SELL.Lots}
-            </span>
+            <span>{lots[1]}</span>
           </Col>
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
-          <Col className="trading-card-value buy-lots" span={6}>
-            <span>
-              {netPosInfo[curSym]
-                ? netPosInfo[curSym].BUY.AvgPrice
-                : netPosInfo["EURUSD"].BUY.AvgPrice}
-            </span>
+          <Col className="trading-card-value" span={6}>
+            <span>{price[0].toFixed(point)}</span>
           </Col>
           <Col className="trading-card-label trading-card-value" span={12}>
             <span>平均レート</span>
           </Col>
-          <Col className="trading-card-value sell-lots" span={6}>
-            <span>
-              {netPosInfo[curSym]
-                ? netPosInfo[curSym].SELL.AvgPrice
-                : netPosInfo["EURUSD"].SELL.AvgPrice}
-            </span>
+          <Col className="trading-card-value" span={6}>
+            <span>{price[1].toFixed(point)}</span>
           </Col>
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
-          <Col className="trading-card-value buy-lots" span={6}>
-            <span>
-              {netPosInfo[curSym]
-                ? netPosInfo[curSym].BUY.Profit
-                : netPosInfo["EURUSD"].BUY.Profit}
-            </span>
+          <Col className="trading-card-value" span={6}>
+            <span>{profit[0]}</span>
           </Col>
           <Col className="trading-card-label trading-card-value" span={12}>
             <span>損益（円）</span>
           </Col>
-          <Col className="trading-card-value sell-lots" span={6}>
-            <span>
-              {netPosInfo[curSym]
-                ? netPosInfo[curSym].SELL.Profit
-                : netPosInfo["EURUSD"].SELL.Profit}
-            </span>
+          <Col className="trading-card-value" span={6}>
+            <span>{profit[1]}</span>
           </Col>
         </Row>
       </div>
