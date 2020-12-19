@@ -1,1 +1,29 @@
-[{"name":"GPM2192267","broker":"GP","number":"2192267","loginID":"2192267","password":"4oxlndt","basket":false,"default":1},{"name":"GPM2206812","broker":"GP","number":"2206812","loginID":"2206812","password":"4oxlndt","basket":false,"default":1}]
+[
+    {
+        "name": "GPM2192267",
+        "broker": "GP",
+        "number": "2192267",
+        "loginID": "2192267",
+        "password": "4oxlndt",
+        "basket": false,
+        "default": 1
+    },
+    {
+        "name": "GPM2206812",
+        "broker": "GP",
+        "number": "2206812",
+        "loginID": "2206812",
+        "password": "4oxlndt",
+        "basket": false,
+        "default": 1
+    },
+    {
+        "name": "GP2515",
+        "basket": false,
+        "default": 1,
+        "broker": "GP",
+        "number": "2515",
+        "loginID": "36236",
+        "password": "235234"
+    }
+]

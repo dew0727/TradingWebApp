@@ -35,16 +35,27 @@ const posInfoSample = {
 };
 
 
+const specPrice = (symbol, price, fixsize=5) => {
+  if (price === undefined || symbol === undefined) return {first: "", last: ""};
+  const strPrice = Number.parseFloat(price).toFixed(fixsize);
+  const last = strPrice.substr(-3);
+  const first = strPrice.substr(0, strPrice.length -3);
+
+  return {first: first, last: last};
+}
+
 const TradingCard = ({ symbols, posInfo, rates, broker }) => {
   const [netPosInfo, setNetPosInfo] = useState(posInfoSample);
   const [curSym, setcurSym] = useState("EURUSD");
   const [orderType, setorderType] = useState("MKT");
   
-  let bid = 0, ask = 0;
+  let bid = 0, ask = 0, sp = 0, point;
 
   if (curSym in rates) {
     bid = rates[curSym].bid;
     ask = rates[curSym].ask;
+    point = curSym.toUpperCase().includes("JPY") ? 3 : 5;
+    sp = Math.abs(bid - ask) * (point === 5 ? 10000 : 100);
   }
 
   return (
@@ -76,19 +87,19 @@ const TradingCard = ({ symbols, posInfo, rates, broker }) => {
       </Row>
       <Row gutter={[0, 10]} className="card-commands">
         <Col className="command-header-bid command-header-int" span={6}>
-          <span>{curSym && bid}</span>
+          <span>{specPrice(curSym,bid, point).first}</span>
         </Col>
         <Col className="command-header-bid command-header-float" span={4}>
-          <span>.381</span>
+          <span>{specPrice(curSym,bid, point).last}</span>
         </Col>
         <Col className="command-header command-header-int" span={4}>
-          <span>0.1</span>
+          <span>{sp.toFixed(1)}</span>
         </Col>
         <Col className="command-header-ask command-header-int" span={4}>
-          <span>104</span>
+          <span>{specPrice(curSym,ask, point).first}</span>
         </Col>
         <Col className="command-header-ask command-header-float" span={6}>
-          <span>.381</span>
+          <span>{specPrice(curSym,ask, point).last}</span>
         </Col>
       </Row>
       <Row gutter={[0, 10]} justify="center" align="center">
