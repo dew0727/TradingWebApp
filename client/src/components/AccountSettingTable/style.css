@@ -1,0 +1,17 @@
+.account-setting-control-panel {
+  max-width: 600px;
+  margin: 10px;
+}
+
+.column-basket-on-off {
+  cursor: pointer;
+}
+
+.column-basket-on-off:active {
+  cursor: default;
+}
+
+.account-settings-default-lots-input {
+  width: 100% !important;
+  max-width: 50px !important;
+}

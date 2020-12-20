@@ -46,6 +46,7 @@ const whenConnected = (chan) => {
 };
 
 const publishMessage = (topic, sMsg) =>{
+  console.log("publish msg", topic, sMsg);
   channel.publish(exchange, topic, Buffer.from('"' + sMsg + '"'),
     {
       deliveryMode: 2,
@@ -123,6 +124,7 @@ const processMessage = (topic, msg) => {
           ...rates,
         };
       }
+      
       socket.emit(topic, JSON.stringify(rates));
       break;
     case EVENTS.ON_ACCOUNT:
@@ -130,14 +132,14 @@ const processMessage = (topic, msg) => {
 
       var accounts = db.GetAccounts();
       if (!accounts.some(acc => acc.name === accName))
-        return;
+      return;
       
       db.UpdateAccountStatus(accName, true);
       var items = msg.split('@')[1].split(',');
-
+      
       var account = db.GetAccount(accName);    
       if (account === undefined)
-        return;
+      return;
       
       var status = db.GetAccountStatus(accName);
       
@@ -157,7 +159,7 @@ const processMessage = (topic, msg) => {
         default: account.default ? account.default : 1,
         status,
       }
-
+      
       socket.emit(topic, JSON.stringify(accountInfo));
       break;
     case EVENTS.ON_POSLIST:
@@ -172,7 +174,6 @@ const processMessage = (topic, msg) => {
         
       var items = sContent.split(';');
 
-      
       var positions = [];
       var total_profit = 0;
       for (var i = 0; i < items.length; i++) {
@@ -180,12 +181,12 @@ const processMessage = (topic, msg) => {
         
         var symbol = posItems[0];
         var lots = Number.parseFloat(posItems[1]);
-        var open_price = Number.parseFloat(posItems[2]).toFixed(5);
-        var current_price = open_price;
+        var open_price = Number.parseFloat(posItems[2]).toFixed(5);        
         var swap = Number.parseFloat(posItems[3]);
         var profit = Number.parseFloat(posItems[4]);
         total_profit += profit;
         var posCount = Number.parseFloat(posItems[5]);
+        var current_price = Number.parseFloat(posItems[6]);
           
         var position = {
           symbol,

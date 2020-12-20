@@ -1,6 +1,5 @@
 import socketIOClient from "socket.io-client";
 import { SOCKET_ENDPOINT, EVENTS } from "./config-client";
-import { Account, Rate, parseRateMsg, parseRatePiece } from "./utils/datatypes";
 
 const createSocket = (parseData) => {
     const sockClient = socketIOClient(SOCKET_ENDPOINT);

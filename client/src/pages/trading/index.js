@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Tabs, Form, Input, Button, Select, Table } from "antd";
+import {
+  Row,
+  Col,
+  Tabs,
+  Form,
+  Input,
+  Button,
+  Select,
+  Table,
+  notification,
+} from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
@@ -14,48 +24,6 @@ import { apiCall } from "../../utils/api";
 const { TabPane } = Tabs;
 
 const brokers = ["GP", "YJFX", "Saxo"];
-
-const acc_columns = [
-  {
-    title: "Broker",
-    dataIndex: "broker",
-    align: "left",
-  },
-  {
-    title: "Account Number",
-    className: "account_number",
-    dataIndex: "number",
-    align: "right",
-  },
-  {
-    title: "Delete",
-    className: "account_delete",
-    align: "center",
-    render: (broker, number) => (
-      <Button
-        type="primary"
-        danger
-        icon={<CloseOutlined />}
-        onClick={() => {
-          onHandleRemoveAccount(broker, number);
-        }}
-      />
-    ),
-  },
-];
-
-const onHandleRemoveAccount = (broker, number) => {
-  apiCall(
-    "/api/delete-account",
-    { broker, number },
-    "POST",
-    (res, user, pass) => {
-      if (res === true) {
-        console.log("account deleted");
-      }
-    }
-  );
-};
 
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
@@ -72,14 +40,83 @@ const TradingPage = () => {
   const [orderList, setOrderList] = useState({});
   const [rates, setRates] = useState({});
 
+  const acc_columns = [
+    {
+      title: "Account Name",
+      dataIndex: "name",
+      align: "left",
+    },
+    {
+      title: "Delete",
+      className: "account_delete",
+      align: "center",
+      render: (acc) => (
+        <Button
+          type="primary"
+          danger
+          icon={<CloseOutlined />}
+          onClick={() => {
+            onHandleRemoveAccount(acc);
+          }}
+        />
+      ),
+    },
+  ];
+
+  const onHandleRemoveAccount = (account) => {
+    console.log(account);
+    apiCall("/api/delete-account", account.name, "POST", (res, user, pass) => {
+      if (res.success === true) {
+        console.log("account deleted");
+        setAccounts(getAccounts().filter((acc) => acc.name !== account.name));
+      }
+    });
+  };
+
+  const requestOrderApi = (reqMsg) => {
+    console.log("request order: ", reqMsg);
+    apiCall("/api/order-request", reqMsg, "POST", (res) => {
+      if (res.success === true) {
+        notification.success({
+          message: "Success",
+          description: "Server accepted request!",
+          duration: 10,
+        });
+      } else {
+        notification.error({
+          message: "Rejected",
+          description: "Server rejected request!",
+          duration: 10,
+        });
+      }
+    });
+  };
+
+  const reqOrder = (order) => {
+    const orderMsg = `${curAccount}@${order.Mode},${order.Symbol},${order.Command},${order.Lots},${order.Price},${order.SL},${order.TP},${order.Type}`;
+    const title =
+      "Request " +
+      (order.Mode === "CLOSE_ALL"
+        ? "CLOSE ALL"
+        : `${order.Type} ${order.Command} Order`);
+    const disMsg = `Account: ${curAccount}, Symbol: ${order.Symbol}, Lots: ${order.Lots}, Price: ${order.Price}, SL: ${order.SL}, TP: ${order.TP}`;
+    notification.info({
+      message: title,
+      description: disMsg,
+      duration: 10,
+    });
+
+    requestOrderApi(orderMsg);
+  };
+
   const getSymbols = () => {
     return Object.keys(rates);
   };
 
   const getAccounts = () => {
     if (typeof accounts !== "object") return [];
-    return accounts.filter((acc) => acc.name !== 'Basket')
-  }
+    return accounts.filter((acc) => acc.name !== "Basket");
+  };
 
   const getAccountNames = () => {
     if (typeof accounts !== "object") return [];
@@ -95,14 +132,23 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_ACCOUNT:
         var account = JSON.parse(message);
-
-        setAccounts((prevState)=>{
+        setAccounts((prevState) => {
+          if (typeof prevState !== "object")
+            return [
+              {
+                name: "Basket",
+                status: false,
+                time: Date.now(),
+              },
+              account,
+            ];
           if (prevState.some((acc) => acc.name === account.name))
-            return prevState.map((acc) => (acc.name === account.name ? account : acc));
-          else
-            return prevState.push(account);
-        })
-        
+            return prevState.map((acc) =>
+              acc.name === account.name ? account : acc
+            );
+          else return [...prevState, account];
+        });
+
         break;
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
@@ -143,15 +189,30 @@ const TradingPage = () => {
     });
     return positions;
   };
-  
+
   useEffect(() => {
     createSocket(parseData);
   }, []);
 
   const onFinish = (values) => {
     apiCall("/api/add-account", { ...values }, "POST", (res, user, pass) => {
-      if (res === true) {
+      if (res.success === true) {
         console.log("account added");
+        var account = {
+          name: values.broker + values.number,
+          basket: values.basket === undefined ? false : values.basket,
+          default: values.default === undefined ? 1 : values.default,
+          ...values,
+        };
+        console.log(account);
+        setAccounts([...accounts, account]);
+        notification.success({ message: "Created new account." });
+        return;
+      } else {
+        notification.error({
+          message: "Failed to create new account.",
+          description: res.error,
+        });
       }
     });
   };
@@ -172,6 +233,32 @@ const TradingPage = () => {
     if (selectedAccount) {
       setCurAccount(selectedAccount);
     }
+  };
+
+  const onHandleAccSetting = (accname, basket, defaultLots) => {
+    if (accname === undefined) return;
+    const account = getAccounts().find((acc) => acc.name === accname);
+    if (account === undefined || account.name === "Basket") return;
+    let sMsg = `${account.name} `;
+    if (basket !== undefined) {
+      account.basket = basket;
+      sMsg += " basket turned " + (basket ? "on" : "off");
+    }
+
+    if (defaultLots !== undefined) {
+      account.default = defaultLots;
+      sMsg += ` default value is ${defaultLots}`;
+    }
+    apiCall("/api/update-account", account, "POST", (res, user, pass) => {
+      if (res.success === true) {
+        setAccounts((prevState) => {
+          return prevState.map((acc) =>
+            acc.name === account.name ? account : acc
+          );
+        });
+        notification.success({ message: sMsg });
+      }
+    });
   };
 
   return (
@@ -195,7 +282,8 @@ const TradingPage = () => {
                   symbols={getSymbols(rates)}
                   rates={rates}
                   broker={curBroker}
-                  posInfo = {parsePosList()}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
                 />
               }
             </Col>
@@ -203,14 +291,30 @@ const TradingPage = () => {
           <div className="trading-net-info">
             <div>
               <div className="trading-table-wrapper">
-                <PositionTable positions={parsePosList()} />
+                <PositionTable
+                  positions={parsePosList()}
+                  onClickCloseAll={() => {
+                    notification.info({
+                      message: "Request Close All",
+                      description: "Close all positions of system",
+                      duration: 10,
+                    });
+
+                    requestOrderApi("Basket@CLOSE_ALL");
+                  }}
+                />
               </div>
               <div className="trading-table-wrapper">
                 <OrderTable orders={parseOrderList()} />
               </div>
             </div>
             <div className="trading-table-wrapper">
-              <AccountSettingTable accounts={getAccounts()} />
+              <AccountSettingTable
+                accounts={getAccounts()}
+                callback={({ accname, basket, defaultLots }) =>
+                  onHandleAccSetting(accname, basket, defaultLots)
+                }
+              />
             </div>
           </div>
         </TabPane>
@@ -292,7 +396,7 @@ const TradingPage = () => {
                 bordered
                 title={() => "Account List"}
                 pagination={false}
-                dataSource={[]}
+                dataSource={getAccounts()}
                 columns={acc_columns}
               />
             </div>

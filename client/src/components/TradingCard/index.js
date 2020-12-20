@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Input, InputNumber } from "antd";
+import { Row, Col, Button, Input, InputNumber, message } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
 
@@ -13,10 +13,76 @@ const specPrice = (symbol, price, fixsize = 5) => {
   return { first: first, last: last };
 };
 
-const TradingCard = ({ symbols, posInfo, rates, broker }) => {
-  const [netPosInfo, setNetPosInfo] = useState();
+const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
   const [curSym, setcurSym] = useState();
-  const [orderType, setorderType] = useState("MKT");
+  const [orderType, setorderType] = useState("MARKET");
+  const [orderContent, setOrderContent] = useState({
+    lots: 0,
+    sl: 0,
+    tp: 0,
+    price: 0,
+  });
+
+  //ORDER_OPEN,EURUSD,BUY,0.3,1.23,0,0,MARKET
+  const newSignal = (type, command, price) => {
+    if (type === undefined) {
+      message.error({ content: "Invalid request parameters!" });
+      return;
+    }
+
+    if (curSym === undefined) {
+      message.error({ content: "Please select symbol!" });
+      return;
+    }
+
+    if (type === "CLOSE_ALL") {
+      reqOrder({ Mode: "CLOSE_ALL", Symbol: curSym });
+      return;
+    }
+
+    if (orderType === "LIMIT") {
+      price = orderContent.price;
+    }
+
+    if (price === 0) {
+      message.error({ content: "Invalid price! " + price });
+      return;
+    }
+
+    if (command === undefined) {
+      message.error({ content: "Invalid request parameters!" });
+      return;
+    }
+
+    if (orderContent.lots === 0) {
+      message.error({ content: "Invalid lots to request!" });
+      return;
+    }
+
+    const orderMsg = {
+      Mode: type,
+      Symbol: curSym,
+      Command: command,
+      Lots: orderContent.lots,
+      Price: price,
+      SL: orderContent.sl,
+      TP: orderContent.tp,
+      Type: orderType,
+    };
+    reqOrder(orderMsg);
+  };
+
+  const reset = () => {
+    setOrderLots(0);
+  };
+
+  const setOrderLots = (size, isPlus) => {
+    console.log(orderContent.lots);
+    setOrderContent({
+      ...orderContent,
+      lots: isPlus ? orderContent.lots + size : size,
+    });
+  };
 
   let bid = 0,
     ask = 0,
@@ -34,7 +100,7 @@ const TradingCard = ({ symbols, posInfo, rates, broker }) => {
 
     const posList = posInfo.filter((item) => item.symbol === curSym);
 
-    posList.map((pos) => {
+    posList.forEach((pos) => {
       lots[0] += pos.lots;
       price[0] = pos.open_price * pos.lots;
       profit[0] += pos.profit;
@@ -90,20 +156,39 @@ const TradingCard = ({ symbols, posInfo, rates, broker }) => {
       </Row>
       <Row gutter={[0, 10]} justify="center" align="center">
         <Col span={18}>
-          <Button block htmlType className="btn-control">
+          <Button
+            block
+            htmlType
+            className="btn-control"
+            onClick={() => {
+              newSignal("CLOSE_ALL", "", 0);
+            }}
+          >
             前決済
           </Button>
         </Col>
       </Row>
       <Row gutter={[0, 10]} align="center">
         <Col span={10}>
-          <Button block className="command-header-bid">
-            買
+          <Button
+            block
+            className="command-header-bid"
+            onClick={() => {
+              newSignal("ORDER_OPEN", "SELL", bid);
+            }}
+          >
+            売
           </Button>
         </Col>
         <Col span={10} offset={4}>
-          <Button block className="command-header-ask">
-            売
+          <Button
+            block
+            className="command-header-ask"
+            onClick={() => {
+              newSignal("ORDER_OPEN", "BUY", ask);
+            }}
+          >
+            買
           </Button>
         </Col>
       </Row>
@@ -113,36 +198,79 @@ const TradingCard = ({ symbols, posInfo, rates, broker }) => {
             <Row>枚数</Row>
           </Col>
           <Col span={6} className="trading-card-input-lots-wrapper">
-            <Input size="small" />
+            <Input
+              defaultValue={0}
+              value={orderContent.lots}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value);
+                setOrderLots(Number.isNaN(val) ? 0 : val);
+              }}
+            />
           </Col>
           <Col span={4}></Col>
-          <Col span={8}>
-            <Button>リセット</Button>
+          <Col span={8} className="trading-card-reset-btn">
+            <Button
+              onClick={(e) => {
+                reset();
+              }}
+            >
+              リセット
+            </Button>
           </Col>
         </Row>
         <div className="trading-card-input trading-card-quick-set-lots">
           <div className="trading-card-quick-set-btn">
-            <Button block size="small">
+            <Button
+              block
+              size="small"
+              onClick={() => {
+                setOrderLots(1, 1);
+              }}
+            >
               +1
             </Button>
           </div>
           <div className="trading-card-quick-set-btn">
-            <Button block size="small">
+            <Button
+              block
+              size="small"
+              onClick={() => {
+                setOrderLots(5, 1);
+              }}
+            >
               +5
             </Button>
           </div>
           <div className="trading-card-quick-set-btn">
-            <Button block size="small">
+            <Button
+              block
+              size="small"
+              onClick={() => {
+                setOrderLots(10, 1);
+              }}
+            >
               +10
             </Button>
           </div>
           <div className="trading-card-quick-set-btn">
-            <Button block size="small">
+            <Button
+              block
+              size="small"
+              onClick={() => {
+                setOrderLots(50, 1);
+              }}
+            >
               +50
             </Button>
           </div>
           <div className="trading-card-quick-set-btn">
-            <Button block size="small">
+            <Button
+              block
+              size="small"
+              onClick={() => {
+                setOrderLots(100, 1);
+              }}
+            >
               +100
             </Button>
           </div>
@@ -153,9 +281,9 @@ const TradingCard = ({ symbols, posInfo, rates, broker }) => {
           <Col className="trading-card-value buy-lots" span={6}>
             <Button
               block
-              type={orderType === "LMT" ? "primary" : "default"}
+              type={orderType === "LIMIT" ? "primary" : "default"}
               onClick={() => {
-                setorderType("LMT");
+                setorderType("LIMIT");
               }}
             >
               LMT
@@ -165,18 +293,21 @@ const TradingCard = ({ symbols, posInfo, rates, broker }) => {
             <InputNumber
               className="lmt-price-value"
               step="0.1"
-              defaultValue={3}
+              defaultValue={0}
               onChange={(val) => {
-                console.log(val);
+                setOrderContent({
+                  ...orderContent,
+                  price: val,
+                });
               }}
             />
           </Col>
           <Col className="trading-card-value sell-lots" span={6}>
             <Button
               block
-              type={orderType === "MKT" ? "primary" : "default"}
+              type={orderType === "MARKET" ? "primary" : "default"}
               onClick={() => {
-                setorderType("MKT");
+                setorderType("MARKET");
               }}
             >
               MKT

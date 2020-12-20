@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Redirect } from "react-router-dom";
 
 import "./style.css";
-import { apiCall } from "../../utils/api";
+import { apiCall, authenticate } from "../../utils/api";
 
 const Login = () => {
   const [auth, setAuth] = useState({
@@ -33,8 +33,8 @@ const Login = () => {
   // }, []);
 
   const onFinish = (values) => {
-    apiCall("/api/login", values, "POST", (res, user, pass) => {
-      if (res === true) {
+    apiCall("/api/login", values, "POST", (res) => {
+      if (authenticate(res) === true) {
         setAuth({
           auth: localStorage.getItem("authToken"),
         });
