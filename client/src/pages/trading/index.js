@@ -287,6 +287,83 @@ const TradingPage = () => {
                 />
               }
             </Col>
+            <Col>
+              {
+                <TradingCard
+                  symbols={getSymbols(rates)}
+                  rates={rates}
+                  broker={curBroker}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
+                />
+              }
+            </Col>
+            <Col>
+              {
+                <TradingCard
+                  symbols={getSymbols(rates)}
+                  rates={rates}
+                  broker={curBroker}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
+                />
+              }
+            </Col>
+            <Col>
+              {
+                <TradingCard
+                  symbols={getSymbols(rates)}
+                  rates={rates}
+                  broker={curBroker}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
+                />
+              }
+            </Col>
+            <Col>
+              {
+                <TradingCard
+                  symbols={getSymbols(rates)}
+                  rates={rates}
+                  broker={curBroker}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
+                />
+              }
+            </Col>
+            <Col>
+              {
+                <TradingCard
+                  symbols={getSymbols(rates)}
+                  rates={rates}
+                  broker={curBroker}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
+                />
+              }
+            </Col>
+            <Col>
+              {
+                <TradingCard
+                  symbols={getSymbols(rates)}
+                  rates={rates}
+                  broker={curBroker}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
+                />
+              }
+            </Col>
+            <Col>
+              {
+                <TradingCard
+                  symbols={getSymbols(rates)}
+                  rates={rates}
+                  broker={curBroker}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
+                />
+              }
+            </Col>
           </Row>
           <div className="trading-net-info">
             <div>

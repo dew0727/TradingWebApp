@@ -63,7 +63,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       editable: true,
       render: (text, record) => {
         return (
-          <span
+          <div
             onClick={() => {
               onHandleClickBasket({
                 accname: record.name,
@@ -72,7 +72,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
             }}
           >
             {record.basket === true ? "ON" : "OFF"}
-          </span>
+          </div>
         );
       },
     },

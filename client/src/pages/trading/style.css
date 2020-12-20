@@ -101,7 +101,7 @@
     padding: 1% !important;
   }
 
-  .anticon svg {
+  .ant-notification-notice-with-icon.anticon svg {
     width: 70% !important;
   }
 

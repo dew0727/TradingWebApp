@@ -138,10 +138,10 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
         </Col>
       </Row>
       <Row gutter={[0, 10]} className="card-commands">
-        <Col className="command-header-bid command-header-int" span={6}>
+        <Col className="command-header-bid command-header-int" span={4}>
           <span>{specPrice(curSym, bid, point).first}</span>
         </Col>
-        <Col className="command-header-bid command-header-float" span={4}>
+        <Col className="command-header-bid command-header-float" span={6}>
           <span>{specPrice(curSym, bid, point).last}</span>
         </Col>
         <Col className="command-header command-header-int" span={4}>
