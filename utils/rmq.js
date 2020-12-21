@@ -99,7 +99,16 @@ const processMessage = (topic, msg) => {
   {
     case EVENTS.ON_RATE:
       var accName = msg.split('@')[0];
-      if (accName !== db.GetPriceFeed())
+      var priceFeed = db.GetPriceFeed();
+      if (priceFeed === "") {
+        var accounts = db.GetAccounts();
+        if (accounts.length > 0) {
+          priceFeed = accounts[0].name;
+          db.SetPriceFeed(priceFeed);
+        }
+      }
+
+      if (accName !== priceFeed)
         return;
       
       var rates = {};
@@ -132,7 +141,7 @@ const processMessage = (topic, msg) => {
 
       var accounts = db.GetAccounts();
       if (!accounts.some(acc => acc.name === accName))
-      return;
+        return;
       
       db.UpdateAccountStatus(accName, true);
       var items = msg.split('@')[1].split(',');
@@ -166,6 +175,10 @@ const processMessage = (topic, msg) => {
       var accName = msg.split('@')[0];
       var sContent = msg.split('@')[1];
 
+      var accounts = db.GetAccounts();
+      if (!accounts.some(acc => acc.name === accName))
+        return;
+      
       if (sContent === "") {
         var data = { account: accName, positions: [] };
         socket.emit(topic, JSON.stringify(data));
@@ -216,6 +229,11 @@ const processMessage = (topic, msg) => {
     case EVENTS.ON_ORDERLIST:
       var accName = msg.split('@')[0];
       var sContent = msg.split('@')[1];
+
+      var accounts = db.GetAccounts();
+      if (!accounts.some(acc => acc.name === accName))
+        return;
+      
       if (sContent === "") {
         var data = {
           account: accName,
@@ -259,6 +277,10 @@ const processMessage = (topic, msg) => {
     case EVENTS.ON_ORDER_RESPONSE:
       var accName = msg.split('@')[0];
       var sRsp = msg.split('@')[1];
+
+      var accounts = db.GetAccounts();
+      if (!accounts.some(acc => acc.name === accName))
+        return;
       
       if (sRsp !== "") {
         var response = {

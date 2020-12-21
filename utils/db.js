@@ -93,14 +93,13 @@ const GetAccount = (accName) => {
 };
 
 const LoadAccountsData = () => {
-  // fs.exists(DB_PATH, (bExist) => {
-  //   if (!bExist) {
-  //     accounts = [];
-  //   }
-  // });
+  if (!fs.existsSync(DB_PATH_ACCOUNT)) {
+    accounts = [];
+    return;
+  }
 
   const sData = fs.readFileSync(DB_PATH_ACCOUNT);
-  if (sData === "") return [];
+  if (sData.toString() === "") return [];
   accounts = JSON.parse(sData);
 };
 
@@ -142,8 +141,12 @@ const SetPriceFeed = (feed) => {
 };
 
 const LoadPriceFeed = () => {
+  if (!fs.existsSync(DB_PATH_PRICE_FEED)) {
+    priceFeed = "";
+    return;
+  }
   var data = fs.readFileSync(DB_PATH_PRICE_FEED);
-  if (data === "{}") return "";
+  if (data.toString() === "{}" || data.toString() == "") return "";
   data = JSON.parse(data);
   priceFeed = data.feed;
 };
