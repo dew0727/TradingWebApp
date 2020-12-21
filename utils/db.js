@@ -117,7 +117,6 @@ const SetPriceFeed = (feed) => {
 
 const LoadPriceFeed = () => {
   var data = fs.readFileSync(DB_PATH_PRICE_FEED);
-  console.log(data);
   if (data === "{}")
     return "";
   data = JSON.parse(data);  

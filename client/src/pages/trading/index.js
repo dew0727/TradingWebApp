@@ -89,15 +89,19 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_ACCOUNT:
         var account = JSON.parse(message);
-      
-        if (accounts.find(acc => acc.name === account.name))
-          setAccounts(accounts.map(acc => acc.name === account.name ? account : acc));
-        else
-          setAccounts(accounts.push(account));
+        
+        setAccounts((prevState) => {
+          console.log("account", account, prevState);
+          if (prevState.some(acc => acc.name === account.name))
+            return prevState.map(acc => acc.name === account.name ? account : acc);
+          else
+            return [...prevState, account];
+        })
+        
         break;
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
-        console.log("pos", posList);
+        
         setPosList((prevState) => ({ [accPos.account]: accPos, ...prevState}));
         break;
       case EVENTS.ON_ORDERLIST:
@@ -128,7 +132,7 @@ const TradingPage = () => {
       return posList[curAccount].positions;
     
     var positions = [];
-    Object.keys(posList).forEach((account) => {
+    Object.keys(posList).sort().forEach((account) => {
       if (posList[account].positions.length > 0)
         positions = positions.concat(posList[account].positions);
     });
@@ -163,7 +167,6 @@ const TradingPage = () => {
 
     }     
   };
-
  
   return (
     <div className="traindg-home-page">

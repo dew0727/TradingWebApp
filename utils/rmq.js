@@ -159,13 +159,14 @@ const processMessage = (topic, msg) => {
       }
 
       socket.emit(topic, JSON.stringify(accountInfo));
+      console.log(accountInfo);
       break;
     case EVENTS.ON_POSLIST:
       var accName = msg.split('@')[0];
       var sContent = msg.split('@')[1];
 
       if (sContent === "") {
-        var data = { account: accName, positions };
+        var data = { account: accName, positions: [] };
         socket.emit(topic, JSON.stringify(data));
         return;
       }
