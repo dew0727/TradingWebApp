@@ -102,7 +102,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
 
     posList.forEach((pos) => {
       lots[0] += pos.lots;
-      price[0] = pos.open_price * pos.lots;
+      price[0] += pos.open_price * pos.lots;
       profit[0] += pos.profit;
     });
 
