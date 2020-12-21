@@ -111,23 +111,30 @@ app.post("/api/delete-account", (req, res) => {
   });
 });
 
+
 app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
-  console.log("delete account: ", data);
+  console.log("request order: ", data);
   data = JSON.parse(data);
   console.log("order request data: " + data);
 
-  const accName = data.split("@")[0];
-  const msg = data.split("@")[1];
+  const accName = data.Account;
   const accounts = db.GetAccounts();
+  let orderMsg = "";
 
-  if (accName !== "Basket") {
-    rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, data);
-  } else {
+  if (accName === "Basket") {
     accounts.forEach((acc) => {
-      if (acc.basket === true)
-        rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, accName + "@" + msg);
+      if (acc.basket === true && acc.default > 0){
+        orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${data.Command},${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${data.Type}`;
+        console.log(orderMsg);
+        rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+      }
     });
+  } else {
+    const acc = accounts.find(acc => acc.name === accName);
+    orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${data.Command},${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${data.Type}`;
+    console.log(orderMsg);
+    rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
   }
 
   res.json({

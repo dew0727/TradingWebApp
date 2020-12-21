@@ -99,7 +99,10 @@ const TradingPage = () => {
   };
 
   const reqOrder = (order) => {
-    const orderMsg = `${curAccount}@${order.Mode},${order.Symbol},${order.Command},${order.Lots},${order.Price},${order.SL},${order.TP},${order.Type}`;
+    const orderMsg = {
+      ...order,
+      Account: curAccount,
+    };
     const title =
       "Request " +
       (order.Mode === "CLOSE_ALL"
@@ -354,7 +357,9 @@ const TradingPage = () => {
                 </Col>
               </>
             )}
-            {xxl && (<><Col>
+            {xxl && (
+              <>
+                <Col>
                   {
                     <TradingCard
                       symbols={getSymbols(rates)}
@@ -364,7 +369,8 @@ const TradingPage = () => {
                       reqOrder={(order) => reqOrder(order)}
                     />
                   }
-                </Col><Col>
+                </Col>
+                <Col>
                   {
                     <TradingCard
                       symbols={getSymbols(rates)}
@@ -374,7 +380,8 @@ const TradingPage = () => {
                       reqOrder={(order) => reqOrder(order)}
                     />
                   }
-                </Col><Col>
+                </Col>
+                <Col>
                   {
                     <TradingCard
                       symbols={getSymbols(rates)}
@@ -384,7 +391,9 @@ const TradingPage = () => {
                       reqOrder={(order) => reqOrder(order)}
                     />
                   }
-                </Col></>)}
+                </Col>
+              </>
+            )}
           </Row>
           <div className="trading-net-info">
             <div>

@@ -24,8 +24,8 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
   });
 
   //ORDER_OPEN,EURUSD,BUY,0.3,1.23,0,0,MARKET
-  const newSignal = (type, command, price) => {
-    if (type === undefined) {
+  const newSignal = (mode, command, price) => {
+    if (mode === undefined) {
       message.error({ content: "Invalid request parameters!" });
       return;
     }
@@ -35,7 +35,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
       return;
     }
 
-    if (type === "CLOSE_ALL") {
+    if (mode === "CLOSE_ALL") {
       reqOrder({ Mode: "CLOSE_ALL", Symbol: curSym });
       return;
     }
@@ -60,7 +60,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
     }
 
     const orderMsg = {
-      Mode: type,
+      Mode: mode,
       Symbol: curSym,
       Command: command,
       Lots: orderContent.lots,
@@ -161,7 +161,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             htmlType
             className="btn-control"
             onClick={() => {
-              newSignal("CLOSE_ALL", "", 0);
+              newSignal("ORDER_CLOSE", "", 0);
             }}
           >
             前決済
@@ -293,7 +293,13 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             <InputNumber
               className="lmt-price-value"
               step="0.1"
-              defaultValue={0}
+              value={orderContent.price}
+              onClick={(e) => {
+                setOrderContent({
+                  ...orderContent,
+                  price: bid,
+                });
+              }}
               onChange={(val) => {
                 setOrderContent({
                   ...orderContent,
@@ -316,13 +322,13 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
           <Col className="trading-card-value buy-lots" span={6}>
-            <span>{lots[0]}</span>
+            <span>{lots[0].toFixed(2)}</span>
           </Col>
           <Col className="trading-card-label trading-card-value" span={12}>
             <span>建玉</span>
           </Col>
           <Col className="trading-card-value sell-lots" span={6}>
-            <span>{lots[1]}</span>
+            <span>{lots[1].toFixed(2)}</span>
           </Col>
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
