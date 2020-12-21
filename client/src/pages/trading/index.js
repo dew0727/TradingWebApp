@@ -104,6 +104,7 @@ const TradingPage = () => {
       ...order,
       Account: curAccount,
     };
+    console.log(order);
     const title =
       "Request " +
       (order.Mode === "ORDER_CLOSE_ALL"

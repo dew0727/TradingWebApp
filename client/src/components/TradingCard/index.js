@@ -8,20 +8,20 @@ const ORDER_TYPES = {
   BUYLIMIT: "BUYLIMIT",
   BUYSTOP: "BUYSTOP",
   SELLLMIT: "SELLLIMIT",
-  SELLSTOP: "SELLSTOP"
-}
+  SELLSTOP: "SELLSTOP",
+};
 
 const COMMAND = {
   BUY: "BUY",
-  SELL: "SELL"
-}
+  SELL: "SELL",
+};
 
 const ORDER_MODE = {
   OPEN: "ORDER_OPEN",
   CLOSE: "ORDER_CLOSE",
   CLOSE_ALL: "ORDER_CLOSE_ALL",
   DELETE: "ORDER_DELETE",
-}
+};
 
 const specPrice = (symbol, price, fixsize = 5) => {
   if (price === undefined || symbol === undefined)
@@ -42,55 +42,6 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
     tp: 0,
     price: 0,
   });
-
-  //ORDER_OPEN,EURUSD,BUY,0.3,1.23,0,0,MARKET
-  const newSignal = (mode, command, price) => {
-    if (mode === undefined) {
-      message.error({ content: "Invalid request parameters!" });
-      return;
-    }
-
-    if (curSym === undefined) {
-      message.error({ content: "Please select symbol!" });
-      return;
-    }
-console.log("mode", mode);
-    if (mode === ORDER_MODE.CLOSE_ALL) {
-      reqOrder({ Mode: "ORDER_CLOSE_ALL", Symbol: curSym });
-      return;
-    }
-
-    if (orderType !== ORDER_TYPES.MARKET) {
-      price = orderContent.price;
-    }
-
-    if (price === 0) {
-      message.error({ content: "Invalid price! " + price });
-      return;
-    }
-
-    if (command === undefined) {
-      message.error({ content: "Invalid request parameters!" });
-      return;
-    }
-
-    if (orderContent.lots === 0) {
-      message.error({ content: "Invalid lots to request!" });
-      return;
-    }
-
-    const orderMsg = {
-      Mode: mode,
-      Symbol: curSym,
-      Command: command,
-      Lots: orderContent.lots,
-      Price: price,
-      SL: orderContent.sl,
-      TP: orderContent.tp,
-      Type: orderType,
-    };
-    reqOrder(orderMsg);
-  };
 
   const reset = () => {
     setOrderLots(0);
@@ -121,14 +72,80 @@ console.log("mode", mode);
     const posList = posInfo.filter((item) => item.symbol === curSym);
 
     posList.forEach((pos) => {
-      lots[0] += pos.lots;
-      price[0] += pos.open_price * pos.lots;
-      profit[0] += pos.profit;
+      if (pos.lots > 0) {
+        lots[0] += pos.lots;
+        price[0] += pos.open_price * pos.lots;
+        profit[0] += pos.profit;  
+      } else {
+        lots[1] += Math.abs(pos.lots);
+        price[1] += Math.abs(pos.open_price * pos.lots);
+        profit[1] += pos.profit;
+      }
     });
 
     price[0] = lots[0] === 0 ? 0 : price[0] / lots[0];
     price[1] = lots[1] === 0 ? 0 : price[1] / lots[1];
   }
+
+  //ORDER_OPEN,EURUSD,BUY,0.3,1.23,0,0,MARKET
+  const newSignal = (mode, command, reqPrice) => {
+    if (mode === undefined) {
+      message.error({ content: "Invalid request parameters!" });
+      return;
+    }
+
+    if (curSym === undefined) {
+      message.error({ content: "Please select symbol!" });
+      return;
+    }
+
+    if (mode === ORDER_MODE.CLOSE_ALL) {
+      reqOrder({ Mode: "ORDER_CLOSE_ALL", Symbol: curSym });
+      return;
+    }
+
+    let ordType = "";
+    if (orderType !== ORDER_TYPES.MARKET) {
+      reqPrice = orderContent.price;
+      console.log(command,  COMMAND.BUY);
+      if (command === COMMAND.BUY) {
+        console.log("orderType: ", ordType);
+        if (reqPrice < ask) ordType = "BUYLIMIT";
+        else ordType = "BUYSTOP";
+      } else {
+        if (reqPrice > bid) ordType = "SELLLMIT";
+        else ordType = "SELLSTOP";
+      }
+      console.log("orderType: ", ordType);
+    }
+
+    if (reqPrice === 0) {
+      message.error({ content: "Invalid price! " + reqPrice });
+      return;
+    }
+
+    if (command === undefined) {
+      message.error({ content: "Invalid request parameters!" });
+      return;
+    }
+
+    if (orderContent.lots === 0) {
+      message.error({ content: "Invalid lots to request!" });
+      return;
+    }
+
+    const orderMsg = {
+      Mode: mode,
+      Symbol: curSym,
+      Command: command,
+      Lots: orderContent.lots,
+      Price: reqPrice,
+      SL: orderContent.sl,
+      TP: orderContent.tp,
+      Type: orderType === ORDER_TYPES.MARKET ? orderType : ordType,
+    };
+    reqOrder(orderMsg);
+  };
 
   return (
     <div className="trading-card-container">
