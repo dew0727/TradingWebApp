@@ -80,6 +80,9 @@ const DeleteAccount = (accountName) => {
 }
 
 const GetAccounts = () => {
+  if (accounts === undefined || typeof accounts !== Array || accounts.length < 1)
+    LoadAccountsData();
+    
   return accounts;
 }
 
@@ -121,8 +124,7 @@ const UpdateAccountStatus = (name, status) => {
         time: curTime
       }    
     } else {
-      
-      if (x.time - curTime >= 30 * 1000) {
+      if (curTime - x.time >= 30 * 1000) {
         return {
           ...x,
           status: false,
@@ -143,7 +145,6 @@ const SetPriceFeed = (feed) => {
 
 const LoadPriceFeed = () => {
   var data = fs.readFileSync(DB_PATH_PRICE_FEED);
-  console.log(data);
   if (data === "{}")
     return "";
   data = JSON.parse(data);  

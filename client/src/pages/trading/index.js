@@ -59,6 +59,7 @@ const TradingPage = () => {
       render: (acc) => (
         <Button
           type="primary"
+          block
           danger
           icon={<CloseOutlined />}
           onClick={() => {
@@ -105,8 +106,8 @@ const TradingPage = () => {
     };
     const title =
       "Request " +
-      (order.Mode === "CLOSE_ALL"
-        ? "CLOSE ALL"
+      (order.Mode === "ORDER_CLOSE_ALL"
+        ? "CLOSE ALL " + order.Symbol
         : `${order.Type} ${order.Command} Order`);
     const disMsg = `Account: ${curAccount}, Symbol: ${order.Symbol}, Lots: ${order.Lots}, Price: ${order.Price}, SL: ${order.SL}, TP: ${order.TP}`;
     notification.info({
@@ -141,6 +142,7 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_ACCOUNT:
         var account = JSON.parse(message);
+
         setAccounts((prevState) => {
           if (typeof prevState !== "object")
             return [
@@ -161,18 +163,42 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
-        setPosList((prevState) => ({ [accPos.account]: accPos, ...prevState }));
+        
+        setPosList((prevState) => {
+          var newState = Object.assign({}, prevState);
+          newState[accPos.account] = accPos;
+          return newState;
+        });
+
+          
         break;
       case EVENTS.ON_ORDERLIST:
         var accOrders = JSON.parse(message);
 
-        setOrderList((prevState) => ({
-          [accOrders.account]: accOrders,
-          ...prevState,
-        }));
+        setOrderList((prevState) => {
+          var newState = Object.assign({}, prevState);
+          newState[accOrders.account] = accOrders;;
+          return newState;
+        });
+        break;
+      case EVENTS.ON_ORDER_RESPONSE:
+        var response = JSON.parse(message);
+
+        if (response.success) {
+          notification.success({
+            message: `Order Response from ${response.account}`,
+            description: response.message,
+            duration: 10,
+          });
+        }else {
+          notification.error({
+            message: `Order Response from ${response.account}`,
+            description: response.message,
+            duration: 10,
+          });
+        }
         break;
       default:
-        break;
     }
   };
 
@@ -270,6 +296,7 @@ const TradingPage = () => {
     });
   };
 
+  
   return (
     <div className="traindg-home-page">
       <Tabs onChange={updateAccountOrPriceFeed} type="card" size="small">
@@ -407,12 +434,12 @@ const TradingPage = () => {
                       duration: 10,
                     });
 
-                    requestOrderApi("Basket@CLOSE_ALL");
+                    requestOrderApi({Account: "Basket", Mode: "ORDER_CLOSE_ALL", Symbol: "ALL"});
                   }}
                 />
               </div>
               <div className="trading-table-wrapper">
-                <OrderTable orders={parseOrderList()} />
+                <OrderTable orders={parseOrderList()} reqDelOrder={(acc, ticket) => {requestOrderApi({Account: acc, Mode: "ORDER_DELETE", Symbol: ticket});}} />
               </div>
             </div>
             <div className="trading-table-wrapper">

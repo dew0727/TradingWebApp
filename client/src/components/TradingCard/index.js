@@ -3,6 +3,26 @@ import { Row, Col, Button, Input, InputNumber, message } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
 
+const ORDER_TYPES = {
+  MARKET: "MARKET",
+  BUYLIMIT: "BUYLIMIT",
+  BUYSTOP: "BUYSTOP",
+  SELLLMIT: "SELLLIMIT",
+  SELLSTOP: "SELLSTOP"
+}
+
+const COMMAND = {
+  BUY: "BUY",
+  SELL: "SELL"
+}
+
+const ORDER_MODE = {
+  OPEN: "ORDER_OPEN",
+  CLOSE: "ORDER_CLOSE",
+  CLOSE_ALL: "ORDER_CLOSE_ALL",
+  DELETE: "ORDER_DELETE",
+}
+
 const specPrice = (symbol, price, fixsize = 5) => {
   if (price === undefined || symbol === undefined)
     return { first: "", last: "" };
@@ -34,13 +54,13 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
       message.error({ content: "Please select symbol!" });
       return;
     }
-
-    if (mode === "CLOSE_ALL") {
-      reqOrder({ Mode: "CLOSE_ALL", Symbol: curSym });
+console.log("mode", mode);
+    if (mode === ORDER_MODE.CLOSE_ALL) {
+      reqOrder({ Mode: "ORDER_CLOSE_ALL", Symbol: curSym });
       return;
     }
 
-    if (orderType === "LIMIT") {
+    if (orderType !== ORDER_TYPES.MARKET) {
       price = orderContent.price;
     }
 
@@ -161,7 +181,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             htmlType
             className="btn-control"
             onClick={() => {
-              newSignal("ORDER_CLOSE", "", 0);
+              newSignal(ORDER_MODE.CLOSE_ALL, "", 0);
             }}
           >
             前決済
@@ -174,7 +194,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             block
             className="command-header-bid"
             onClick={() => {
-              newSignal("ORDER_OPEN", "SELL", bid);
+              newSignal(ORDER_MODE.OPEN, COMMAND.SELL, bid);
             }}
           >
             売
@@ -185,7 +205,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             block
             className="command-header-ask"
             onClick={() => {
-              newSignal("ORDER_OPEN", "BUY", ask);
+              newSignal(ORDER_MODE.OPEN, COMMAND.BUY, ask);
             }}
           >
             買

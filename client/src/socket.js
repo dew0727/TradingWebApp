@@ -20,6 +20,10 @@ const createSocket = (parseData) => {
   sockClient.on(EVENTS.ON_ORDERLIST, (msg) => {
     parseData(EVENTS.ON_ORDERLIST, msg);
   })
+
+  sockClient.on(EVENTS.ON_ORDER_RESPONSE, (msg) => {
+    parseData(EVENTS.ON_ORDER_RESPONSE, msg);
+  })
 };
 
 export default createSocket;

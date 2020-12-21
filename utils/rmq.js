@@ -157,17 +157,17 @@ const processMessage = (topic, msg) => {
         equity,
         basket: account.basket ? account.basket : false,
         default: account.default ? account.default : 1,
-        status,
+        time: Date.now()
       }
       
-      socket.emit(topic, JSON.stringify(accountInfo));
+      socket.emit(topic, JSON.stringify(accountInfo));      
       break;
     case EVENTS.ON_POSLIST:
       var accName = msg.split('@')[0];
       var sContent = msg.split('@')[1];
 
       if (sContent === "") {
-        var data = { account: accName, positions };
+        var data = { account: accName, positions: [] };
         socket.emit(topic, JSON.stringify(data));
         return;
       }
@@ -256,6 +256,20 @@ const processMessage = (topic, msg) => {
       }
       
       break;
+    case EVENTS.ON_ORDER_RESPONSE:
+      console.log(topic, msg);
+      var accName = msg.split('@')[0];
+      var sRsp = msg.split('@')[1];
+      
+      if (sRsp !== "") {
+        var response = {
+          account: accName,
+          success: sRsp.split(',')[0] === "True",
+          message: sRsp.split(',')[1],
+        };
+        socket.emit(topic, JSON.stringify(response));
+      }
+
     default:
       break;
   }

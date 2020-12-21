@@ -111,30 +111,67 @@ app.post("/api/delete-account", (req, res) => {
   });
 });
 
-
 app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
+
   console.log("request order: ", data);
+
   data = JSON.parse(data);
-  console.log("order request data: " + data);
 
   const accName = data.Account;
   const accounts = db.GetAccounts();
   let orderMsg = "";
 
-  if (accName === "Basket") {
-    accounts.forEach((acc) => {
-      if (acc.basket === true && acc.default > 0){
-        orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${data.Command},${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${data.Type}`;
-        console.log(orderMsg);
+  switch (data.Mode) {
+    case "ORDER_OPEN":
+      if (accName === "Basket") {
+        accounts.forEach((acc) => {
+          if (acc.basket === true && acc.default > 0) {
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+              data.Command
+            },${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${
+              data.Type
+            }`;
+
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          }
+        });
+      } else {
+        const acc = accounts.find((acc) => acc.name === accName);
+
+        if (acc === undefined) {
+          res.json({
+            success: false,
+          });
+        }
+
+        if (acc.default > 0) {
+          orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${data.Command},${
+            data.Lots * acc.default
+          },${data.Price},${data.SL},${data.TP},${data.Type}`;
+
+          rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+        }
+      }
+
+      break;
+    case "ORDER_DELETE":
+      orderMsg = `${accName}@ORDER_DELETE,${data.Symbol}`;
+      rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+      break;
+    case "ORDER_CLOSE_ALL":
+      if (data.Symbol === "ALL") {
+        accounts.forEach((acc) => {
+          orderMsg = `${acc.name}@ORDER_CLOSE_ALL,ALL`;
+          rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+        });
+      } else {
+        orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
         rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
       }
-    });
-  } else {
-    const acc = accounts.find(acc => acc.name === accName);
-    orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${data.Command},${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${data.Type}`;
-    console.log(orderMsg);
-    rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+      break;
+
+    default:
   }
 
   res.json({
