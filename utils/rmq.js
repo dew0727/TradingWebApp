@@ -257,7 +257,6 @@ const processMessage = (topic, msg) => {
       
       break;
     case EVENTS.ON_ORDER_RESPONSE:
-      console.log(topic, msg);
       var accName = msg.split('@')[0];
       var sRsp = msg.split('@')[1];
       
