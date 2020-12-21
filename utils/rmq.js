@@ -128,6 +128,7 @@ const processMessage = (topic, msg) => {
       socket.emit(topic, JSON.stringify(rates));
       break;
     case EVENTS.ON_ACCOUNT:
+      console.log(topic, msg);
       var accName = msg.split('@')[0];
 
       var accounts = db.GetAccounts();
@@ -163,6 +164,7 @@ const processMessage = (topic, msg) => {
       socket.emit(topic, JSON.stringify(accountInfo));      
       break;
     case EVENTS.ON_POSLIST:
+      console.log(topic, msg);
       var accName = msg.split('@')[0];
       var sContent = msg.split('@')[1];
 
@@ -214,6 +216,7 @@ const processMessage = (topic, msg) => {
       
       break;
     case EVENTS.ON_ORDERLIST:
+      console.log(topic, msg);
       var accName = msg.split('@')[0];
       var sContent = msg.split('@')[1];
       if (sContent === "") {

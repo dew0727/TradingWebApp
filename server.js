@@ -126,14 +126,16 @@ app.post("/api/order-request", (req, res) => {
     case "ORDER_OPEN":
       if (accName === "Basket") {
         accounts.forEach((acc) => {
-          if (acc.basket === true && acc.default > 0) {
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
-              data.Command
-            },${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${
-              data.Type
-            }`;
+          if (db.GetAccountStatus(acc.name)) {
+            if (acc.basket === true && acc.default > 0) {
+              orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+                data.Command
+              },${data.Lots * acc.default},${data.Price},${data.SL},${
+                data.TP
+              },${data.Type}`;
 
-            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            }
           }
         });
       } else {
@@ -145,7 +147,7 @@ app.post("/api/order-request", (req, res) => {
           });
         }
 
-        if (acc.default > 0) {
+        if (db.GetAccountStatus(acc.name) && acc.default > 0) {
           orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${data.Command},${
             data.Lots * acc.default
           },${data.Price},${data.SL},${data.TP},${data.Type}`;
@@ -157,16 +159,20 @@ app.post("/api/order-request", (req, res) => {
       break;
     case "ORDER_DELETE":
       orderMsg = `${accName}@ORDER_DELETE,${data.Symbol}`;
+      if (!db.GetAccountStatus(accName)) break;
       rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
       break;
     case "ORDER_CLOSE_ALL":
       if (data.Symbol === "ALL") {
         accounts.forEach((acc) => {
-          orderMsg = `${acc.name}@ORDER_CLOSE_ALL,ALL`;
-          rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          if (db.GetAccountStatus(acc.name)) {
+            orderMsg = `${acc.name}@ORDER_CLOSE_ALL,ALL`;
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          }
         });
       } else {
-        orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
+        if (!db.GetAccountStatus(accName)) break;
+        orderMsg = `${accName}@${data.Mode},${data.Symbol}`;
         rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
       }
       break;

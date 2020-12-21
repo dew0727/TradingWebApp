@@ -110,6 +110,7 @@ const SaveAccountsData = () => {
 
 
 const GetAccountStatus = (accName) => {
+  console.log("account status: ", accountStatus, accName);
   return accountStatus.find(acc => acc.name ===accName).status;
 }
 
