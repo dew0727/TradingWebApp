@@ -160,8 +160,7 @@ const processMessage = (topic, msg) => {
         status,
       }
       
-      socket.emit(topic, JSON.stringify(accountInfo));
-      console.log(accountInfo);
+      socket.emit(topic, JSON.stringify(accountInfo));      
       break;
     case EVENTS.ON_POSLIST:
       var accName = msg.split('@')[0];
@@ -257,6 +256,20 @@ const processMessage = (topic, msg) => {
       }
       
       break;
+    case EVENTS.ON_ORDER_RESPONSE:
+      var accName = msg.split('@')[0];
+      var sRsp = msg.split('@')[1];
+      console.log(EVENTS.ON_ORDER_RESPONSE, msg);
+      
+      if (sRsp !== "") {
+        var response = {
+          account: accName,
+          success: sRsp.split(',')[0] === "True",
+          message: sRsp.split(',')[1],
+        };
+        socket.emit(topic, JSON.stringify(response));
+      }
+
     default:
       break;
   }

@@ -153,17 +153,41 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
-        setPosList((prevState) => ({ [accPos.account]: accPos, ...prevState }));
+        
+        setPosList((prevState) => {
+          var newState = Object.assign({}, prevState);
+          newState[accPos.account] = accPos;
+          return newState;
+        });
 
+          
         break;
       case EVENTS.ON_ORDERLIST:
         var accOrders = JSON.parse(message);
 
-        setOrderList((prevState) => ({
-          [accOrders.account]: accOrders,
-          ...prevState,
-        }));
+        setOrderList((prevState) => {
+          var newState = Object.assign({}, prevState);
+          newState[accOrders.account] = accOrders;;
+          return newState;
+        });
         break;
+      case EVENTS.ON_ORDER_RESPONSE:
+        var response = JSON.parse(message);
+
+        if (response.success) {
+          notification.success({
+            message: `Order Response from ${response.account}`,
+            description: response.message,
+            duration: 10,
+          });
+        }else {
+          notification.error({
+            message: `Order Response from ${response.account}`,
+            description: response.message,
+            duration: 10,
+          });
+        }
+        
       default:
         break;
     }
@@ -262,6 +286,8 @@ const TradingPage = () => {
       }
     });
   };
+
+  
   return (
     <div className="traindg-home-page">
       <Tabs onChange={updateAccountOrPriceFeed} type="card" size="small">

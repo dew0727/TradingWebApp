@@ -113,7 +113,7 @@ app.post("/api/delete-account", (req, res) => {
 
 app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
-  console.log("delete account: ", data);
+  
   data = JSON.parse(data);
   console.log("order request data: " + data);
 

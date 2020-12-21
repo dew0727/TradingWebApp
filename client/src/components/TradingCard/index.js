@@ -36,7 +36,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
     }
 
     if (type === "CLOSE_ALL") {
-      reqOrder({ Mode: "CLOSE_ALL", Symbol: curSym });
+      reqOrder({ Mode: "ORDER_CLOSE_ALL", Symbol: curSym });
       return;
     }
 
