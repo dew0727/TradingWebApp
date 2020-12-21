@@ -27,11 +27,37 @@ const Init = () => {
   console.log("status", accountStatus);
 }
 
+const UpdateAccount = (account) => {
+  if (accounts.length < 1) LoadAccountsData();
+  const prev = accounts.find(x => x.name === account.name);
+
+  if (prev) {
+    prev.basket = account.basket;
+    prev.default = account.default;
+  
+    accounts = accounts.map((acc) => {
+      return acc.name === account.name ? prev : acc
+    });
+
+    SaveAccountsData();
+
+    return {
+      success: true,
+      error: "Account updated."
+    }
+  }
+
+  return {
+    success: false,
+    error: `Account doesn't exists with name ${account.name}.`
+  }
+}
+
 const AddAccount = (account) => {
 
-  var bExists = accounts.find(x => x.name === account.name ? true : false);
+  var prev = accounts.find(x => x.name === account.name ? true : false);
 
-  if (bExists) {
+  if (prev) {
     return {
       success: false,
       error: "Account with same broker and number already exists."
@@ -47,8 +73,8 @@ const AddAccount = (account) => {
   }
 }
 
-const DeleteAccount = (broker, number) => {
-  accounts = accounts.filter(acc => acc.broker !== broker && acc.number != number);
+const DeleteAccount = (accountName) => {
+  accounts = accounts.filter(acc => acc.name !== accountName);
 
   SaveAccountsData();
 }
@@ -131,6 +157,7 @@ module.exports = {
   Init,
   AddAccount,
   GetAccounts,
+  UpdateAccount,
   GetAccount,
   DeleteAccount,
   UpdateAccountStatus,  

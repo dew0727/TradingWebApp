@@ -18,7 +18,7 @@ const TradingMenu = ({ brokers, accounts, callback }) => {
       <div className="price-broker-selection">
         <label>Price: </label>
         <SymbolSelector
-          symbols={brokers}
+          symbols={brokers.filter(broker => broker !== "Basket")}
           sym={brokers[0]}
           callback={handleBrokerClick}
         />

@@ -33,11 +33,12 @@ const apiCall = (url, payload, method, callback) => {
       body: JSON.stringify(payload),
     })
     .then((res) => {
-      callback(authenticate(res.data));
+      console.log("response: ", res.data);
+      callback(res.data);
     })
     .catch((err) => {
       console.log("API failed " + err);
     });
 };
 
-export { apiCall, saveAuth };
+export { apiCall, saveAuth, authenticate };

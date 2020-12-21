@@ -48,8 +48,8 @@ app.post("/api/login", (req, res) => {
     db.Init();
   }
 
-  console.log('pricefeed', db.GetPriceFeed());
-  
+  console.log("pricefeed", db.GetPriceFeed());
+
   res.json({
     auth: result,
     token: "true",
@@ -58,53 +58,82 @@ app.post("/api/login", (req, res) => {
   });
 });
 
-
 app.post("/api/add-account", (req, res) => {
   var data = req.body.body;
-  console.log("add account data: ") + data;
 
+  console.log("add account data: ", data);
   data = JSON.parse(data);
   var account = {
     name: data.broker + data.number,
     basket: data.basket == undefined ? false : data.basket,
     default: data.default == undefined ? 1 : data.default,
-    ...data
-  }
+    ...data,
+  };
 
-  const {success, error} = db.AddAccount(account);
+  const { success, error } = db.AddAccount(account);
 
   res.json({
     success,
-    error
-  })
+    error,
+  });
+});
+
+app.post("/api/update-account", (req, res) => {
+  var data = req.body.body;
+  data = JSON.parse(data);
+  console.log("update account data: ", data);
+  const account = {
+    name: data.broker + data.number,
+    basket: data.basket ? data.basket : false,
+    default: data.default ? data.default : 1,
+    ...data,
+  };
+
+  const { success, error } = db.UpdateAccount(account);
+
+  res.json({
+    success,
+    error,
+  });
 });
 
 app.post("/api/delete-account", (req, res) => {
   var data = req.body.body;
-  console.log("add account data: ") + data;
+  console.log("delete account data: ", data);
 
   data = JSON.parse(data);
-  
-  db.DeleteAccount(data.broker, data.number);
+
+  db.DeleteAccount(data);
 
   res.json({
     success: true,
-    error: ""
-  })
+    error: "",
+  });
 });
 
 app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
+  console.log("delete account: ", data);
   data = JSON.parse(data);
   console.log("order request data: " + data);
 
-  var sReq = "GPM2192267@ORDER_OPEN,EURUSD,BUY,0.3,1.23,0,0,MARKET";
-  publishMessage(config.EVENTS.ON_ORDER_REQUEST, sReq);
+  const accName = data.split("@")[0];
+  const msg = data.split("@")[1];
+  const accounts = db.GetAccounts();
+
+  if (accName !== "Basket") {
+    rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, data);
+  } else {
+    accounts.forEach((acc) => {
+      if (acc.basket === true)
+        rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, accName + "@" + msg);
+    });
+  }
 
   res.json({
-    success: true
-  })
-})
+    success: true,
+  });
+});
 
 app.post("/api/price-feed", (req, res) => {
   var data = req.body.body;
@@ -115,11 +144,9 @@ app.post("/api/price-feed", (req, res) => {
   db.SetPriceFeed(feed);
   console.log("Price-feed: ", db.GetPriceFeed());
   res.json({
-    success: true
-  })
-})
-
-
+    success: true,
+  });
+});
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
