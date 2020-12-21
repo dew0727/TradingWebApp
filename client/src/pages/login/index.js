@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col } from "antd";
+import { Form, Input, Button, Row, Col, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Redirect } from "react-router-dom";
 
@@ -38,6 +38,8 @@ const Login = () => {
         setAuth({
           auth: localStorage.getItem("authToken"),
         });
+      } else {
+        message.error("Incorrect username or password!");
       }
     });
   };
