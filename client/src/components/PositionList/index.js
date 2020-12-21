@@ -1,10 +1,13 @@
 import React from "react";
-import { Button, Table } from "antd";
+import { Button, Table, Grid } from "antd";
 import "./style.css";
+
+const PositionTable = ({ positions, onClickCloseAll }) => {
+  const isDesktop = Grid.useBreakpoint()?.sm;
 
 const columns = [
   {
-    title: "Symbol",
+    title: isDesktop ? "Symbol": "Sym",
     dataIndex: "symbol",
     align: "center",
     key: "symbol",
@@ -19,14 +22,14 @@ const columns = [
     key: "lots",
   },
   {
-    title: "Open Price",
+    title: isDesktop ? "Open Price" : "Open",
     className: "column-open-price",
     dataIndex: "open_price",
     align: "center",
     key: "open_price",
   },
   {
-    title: "Current Price",
+    title: isDesktop ? "Current Price" : "Current",
     className: "column-current-price",
     dataIndex: "current_price",
     align: "center",
@@ -47,7 +50,7 @@ const columns = [
     key: "swap",
   },
   {
-    title: "Total Profit",
+    title: isDesktop ? "Total Profit" : "Total",
     className: "column-total-profit",
     dataIndex: "total_profit",
     align: "center",
@@ -55,7 +58,6 @@ const columns = [
   },
 ];
 
-const PositionTable = ({ positions, onClickCloseAll }) => {
   return (
     <div className="position-list-table">
       <Table

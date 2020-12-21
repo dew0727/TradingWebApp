@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
+  Grid,
   Tabs,
   Form,
   Input,
@@ -28,6 +29,11 @@ const brokers = ["GP", "YJFX", "Saxo"];
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
+  const lg = Grid.useBreakpoint()?.lg;
+  const md = Grid.useBreakpoint()?.md;
+  const sm = Grid.useBreakpoint()?.sm;
+  const xl = Grid.useBreakpoint()?.xl;
+  const xxl = Grid.useBreakpoint()?.xxl;
 
   const [accounts, setAccounts] = useState([
     {
@@ -184,7 +190,7 @@ const TradingPage = () => {
 
     var positions = [];
     Object.keys(posList).forEach((account) => {
-      if (posList[account].positions.length > 0)
+      if (posList[account].positions?.length > 0)
         positions = positions.concat(posList[account].positions);
     });
     return positions;
@@ -287,83 +293,98 @@ const TradingPage = () => {
                 />
               }
             </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
+
+            {sm && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
+            {md && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
+            {lg && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
+            {xl && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
+            {xxl && (<><Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col><Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col><Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col></>)}
           </Row>
           <div className="trading-net-info">
             <div>

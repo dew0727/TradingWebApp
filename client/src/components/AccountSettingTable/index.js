@@ -1,8 +1,9 @@
 import React from "react";
-import { Table, InputNumber } from "antd";
+import { Table, InputNumber, Grid } from "antd";
 import "./style.css";
 
 const AccountSettingTable = ({ accounts, callback }) => {
+  const isDesktop = Grid.useBreakpoint()?.sm;
   const columns = [
     {
       title: "口座",
@@ -23,7 +24,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       },
     },
     {
-      title: "マージン",
+      title: isDesktop ? "マージン" : "マー..",
       className: "column-margin",
       dataIndex: "margin",
       align: "right",
@@ -34,7 +35,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       },
     },
     {
-      title: "未確定損益",
+      title: isDesktop ? "未確定損益" : "未確..",
       className: "column-profit",
       dataIndex: "profit",
       align: "right",
