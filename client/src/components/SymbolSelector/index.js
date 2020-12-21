@@ -13,6 +13,10 @@ const SymbolSelector = ({ symbols, callback }) => {
   const menu = (
     <Menu onClick={handleMenuClick}>
       {symbols.map((item, index) => {
+        if (symbol === "Select") {
+          setSym(item);
+          callback(item);
+        }
         return (
           <Menu.Item key={item} danger={item === "Basket"}>
             {item}
