@@ -127,7 +127,7 @@ app.post("/api/order-request", (req, res) => {
       if (accName === "Basket") {
         accounts.forEach((acc) => {
           if (db.GetAccountStatus(acc.name)) {
-            if (acc.basket === true && acc.default > 0) {
+            if (acc.basket && acc.default > 0) {
               orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
                 data.Command
               },${data.Lots * acc.default},${data.Price},${data.SL},${
@@ -173,15 +173,16 @@ app.post("/api/order-request", (req, res) => {
       } else {
         if (accName === "Basket"){
           accounts.forEach(acc => {
-            if (db.GetAccountStatus(acc.name)) {
+            if (db.GetAccountStatus(acc.name) && acc.basket) {
               orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
               rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);                  
             }
           });
         } else {
-          if (!db.GetAccountStatus(accName)) break;
-          orderMsg = `${accName}@${data.Mode},${data.Symbol}`;
-          rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);  
+          if (db.GetAccountStatus(accName)) {
+            orderMsg = `${accName}@${data.Mode},${data.Symbol}`;
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);    
+          }
         }
       }
       break;

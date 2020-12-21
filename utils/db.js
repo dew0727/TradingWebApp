@@ -108,7 +108,8 @@ const SaveAccountsData = () => {
 };
 
 const GetAccountStatus = (accName) => {
-  return accountStatus.find((acc) => acc.name === accName).status;
+  const accStatus = accountStatus.find((acc) => acc.name === accName);
+    return accStatus ? accStatus.status : false;
 };
 
 const UpdateAccountStatus = (name, status) => {

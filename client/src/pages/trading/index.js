@@ -215,7 +215,9 @@ const TradingPage = () => {
   };
 
   const parsePosList = () => {
-    if (curAccount !== "Basket") return posList[curAccount].positions;
+    if (curAccount !== "Basket") {
+      return posList[curAccount] ? posList[curAccount].positions : [];
+    }
 
     var positions = [];
     Object.keys(posList).forEach((account) => {
