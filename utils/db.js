@@ -121,8 +121,7 @@ const UpdateAccountStatus = (name, status) => {
         time: curTime
       }    
     } else {
-      
-      if (x.time - curTime >= 30 * 1000) {
+      if (curTime - x.time >= 30 * 1000) {
         return {
           ...x,
           status: false,
