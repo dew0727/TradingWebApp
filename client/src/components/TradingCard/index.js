@@ -338,13 +338,13 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
           <Col className="trading-card-value" span={6}>
-            <span>{profit[0]}</span>
+            <span>{profit[0].toFixed(0)}</span>
           </Col>
           <Col className="trading-card-label trading-card-value" span={12}>
             <span>損益（円）</span>
           </Col>
           <Col className="trading-card-value" span={6}>
-            <span>{profit[1]}</span>
+            <span>{profit[1].toFixed(0)}</span>
           </Col>
         </Row>
       </div>
