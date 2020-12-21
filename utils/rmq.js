@@ -157,7 +157,7 @@ const processMessage = (topic, msg) => {
         equity,
         basket: account.basket ? account.basket : false,
         default: account.default ? account.default : 1,
-        status,
+        time: Date.now()
       }
       
       socket.emit(topic, JSON.stringify(accountInfo));      
@@ -257,9 +257,9 @@ const processMessage = (topic, msg) => {
       
       break;
     case EVENTS.ON_ORDER_RESPONSE:
+      console.log(topic, msg);
       var accName = msg.split('@')[0];
       var sRsp = msg.split('@')[1];
-      console.log(EVENTS.ON_ORDER_RESPONSE, msg);
       
       if (sRsp !== "") {
         var response = {

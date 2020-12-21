@@ -1,8 +1,9 @@
 import React from "react";
-import { Table, InputNumber } from "antd";
+import { Table, InputNumber, Grid } from "antd";
 import "./style.css";
 
 const AccountSettingTable = ({ accounts, callback }) => {
+  const isDesktop = Grid.useBreakpoint()?.sm;
   const columns = [
     {
       title: "口座",
@@ -23,7 +24,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       },
     },
     {
-      title: "マージン",
+      title: isDesktop ? "マージン" : "マー..",
       className: "column-margin",
       dataIndex: "margin",
       align: "right",
@@ -34,7 +35,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       },
     },
     {
-      title: "未確定損益",
+      title: isDesktop ? "未確定損益" : "未確..",
       className: "column-profit",
       dataIndex: "profit",
       align: "right",
@@ -85,7 +86,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
         return (
           <InputNumber
             className="account-settings-default-lots-input"
-            default={record.default}
+            defaultValue={record.default}
             step={1}
             min={1}
             onChange={(val) => {
@@ -100,10 +101,16 @@ const AccountSettingTable = ({ accounts, callback }) => {
     {
       title: "Status",
       className: "column-default-status",
-      dataIndex: "status",
+      dataIndex: "time",
       align: "right",
       editable: false,
-      render: (status) => (status ? "live" : "dead"),
+      render: (time) => {
+        var curTime = Date.now();
+        if (curTime - time >= 30 * 1000)
+          return "Dead";
+        else
+          return "Live";
+      },
     },
   ];
 

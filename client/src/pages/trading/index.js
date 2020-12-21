@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
+  Grid,
   Tabs,
   Form,
   Input,
@@ -28,6 +29,11 @@ const brokers = ["GP", "YJFX", "Saxo"];
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
+  const lg = Grid.useBreakpoint()?.lg;
+  const md = Grid.useBreakpoint()?.md;
+  const sm = Grid.useBreakpoint()?.sm;
+  const xl = Grid.useBreakpoint()?.xl;
+  const xxl = Grid.useBreakpoint()?.xxl;
 
   const [accounts, setAccounts] = useState([
     {
@@ -53,6 +59,7 @@ const TradingPage = () => {
       render: (acc) => (
         <Button
           type="primary"
+          block
           danger
           icon={<CloseOutlined />}
           onClick={() => {
@@ -93,11 +100,14 @@ const TradingPage = () => {
   };
 
   const reqOrder = (order) => {
-    const orderMsg = `${curAccount}@${order.Mode},${order.Symbol},${order.Command},${order.Lots},${order.Price},${order.SL},${order.TP},${order.Type}`;
+    const orderMsg = {
+      ...order,
+      Account: curAccount,
+    };
     const title =
       "Request " +
-      (order.Mode === "CLOSE_ALL"
-        ? "CLOSE ALL"
+      (order.Mode === "ORDER_CLOSE_ALL"
+        ? "CLOSE ALL " + order.Symbol
         : `${order.Type} ${order.Command} Order`);
     const disMsg = `Account: ${curAccount}, Symbol: ${order.Symbol}, Lots: ${order.Lots}, Price: ${order.Price}, SL: ${order.SL}, TP: ${order.TP}`;
     notification.info({
@@ -187,9 +197,8 @@ const TradingPage = () => {
             duration: 10,
           });
         }
-        
-      default:
         break;
+      default:
     }
   };
 
@@ -209,8 +218,8 @@ const TradingPage = () => {
     if (curAccount !== "Basket") return posList[curAccount].positions;
 
     var positions = [];
-    Object.keys(posList).sort().forEach((account) => {
-      if (posList[account].positions.length > 0)
+    Object.keys(posList).forEach((account) => {
+      if (posList[account].positions?.length > 0)
         positions = positions.concat(posList[account].positions);
     });
     return positions;
@@ -314,83 +323,104 @@ const TradingPage = () => {
                 />
               }
             </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                />
-              }
-            </Col>
+
+            {sm && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
+            {md && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
+            {lg && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
+            {xl && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
+            {xxl && (
+              <>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+                <Col>
+                  {
+                    <TradingCard
+                      symbols={getSymbols(rates)}
+                      rates={rates}
+                      broker={curBroker}
+                      posInfo={parsePosList()}
+                      reqOrder={(order) => reqOrder(order)}
+                    />
+                  }
+                </Col>
+              </>
+            )}
           </Row>
           <div className="trading-net-info">
             <div>
@@ -404,12 +434,12 @@ const TradingPage = () => {
                       duration: 10,
                     });
 
-                    requestOrderApi("Basket@CLOSE_ALL");
+                    requestOrderApi({Account: "Basket", Mode: "ORDER_CLOSE_ALL", Symbol: "ALL"});
                   }}
                 />
               </div>
               <div className="trading-table-wrapper">
-                <OrderTable orders={parseOrderList()} />
+                <OrderTable orders={parseOrderList()} reqDelOrder={(acc, ticket) => {requestOrderApi({Account: acc, Mode: "ORDER_DELETE", Symbol: ticket});}} />
               </div>
             </div>
             <div className="trading-table-wrapper">

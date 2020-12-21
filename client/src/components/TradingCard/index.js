@@ -3,6 +3,26 @@ import { Row, Col, Button, Input, InputNumber, message } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
 
+const ORDER_TYPES = {
+  MARKET: "MARKET",
+  BUYLIMIT: "BUYLIMIT",
+  BUYSTOP: "BUYSTOP",
+  SELLLMIT: "SELLLIMIT",
+  SELLSTOP: "SELLSTOP"
+}
+
+const COMMAND = {
+  BUY: "BUY",
+  SELL: "SELL"
+}
+
+const ORDER_MODE = {
+  OPEN: "ORDER_OPEN",
+  CLOSE: "ORDER_CLOSE",
+  CLOSE_ALL: "ORDER_CLOSE_ALL",
+  DELETE: "ORDER_DELETE",
+}
+
 const specPrice = (symbol, price, fixsize = 5) => {
   if (price === undefined || symbol === undefined)
     return { first: "", last: "" };
@@ -24,8 +44,8 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
   });
 
   //ORDER_OPEN,EURUSD,BUY,0.3,1.23,0,0,MARKET
-  const newSignal = (type, command, price) => {
-    if (type === undefined) {
+  const newSignal = (mode, command, price) => {
+    if (mode === undefined) {
       message.error({ content: "Invalid request parameters!" });
       return;
     }
@@ -34,13 +54,13 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
       message.error({ content: "Please select symbol!" });
       return;
     }
-
-    if (type === "CLOSE_ALL") {
+console.log("mode", mode);
+    if (mode === ORDER_MODE.CLOSE_ALL) {
       reqOrder({ Mode: "ORDER_CLOSE_ALL", Symbol: curSym });
       return;
     }
 
-    if (orderType === "LIMIT") {
+    if (orderType !== ORDER_TYPES.MARKET) {
       price = orderContent.price;
     }
 
@@ -60,7 +80,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
     }
 
     const orderMsg = {
-      Mode: type,
+      Mode: mode,
       Symbol: curSym,
       Command: command,
       Lots: orderContent.lots,
@@ -102,7 +122,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
 
     posList.forEach((pos) => {
       lots[0] += pos.lots;
-      price[0] = pos.open_price * pos.lots;
+      price[0] += pos.open_price * pos.lots;
       profit[0] += pos.profit;
     });
 
@@ -161,7 +181,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             htmlType
             className="btn-control"
             onClick={() => {
-              newSignal("CLOSE_ALL", "", 0);
+              newSignal(ORDER_MODE.CLOSE_ALL, "", 0);
             }}
           >
             前決済
@@ -174,7 +194,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             block
             className="command-header-bid"
             onClick={() => {
-              newSignal("ORDER_OPEN", "SELL", bid);
+              newSignal(ORDER_MODE.OPEN, COMMAND.SELL, bid);
             }}
           >
             売
@@ -185,7 +205,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             block
             className="command-header-ask"
             onClick={() => {
-              newSignal("ORDER_OPEN", "BUY", ask);
+              newSignal(ORDER_MODE.OPEN, COMMAND.BUY, ask);
             }}
           >
             買
@@ -293,7 +313,13 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
             <InputNumber
               className="lmt-price-value"
               step="0.1"
-              defaultValue={0}
+              value={orderContent.price}
+              onClick={(e) => {
+                setOrderContent({
+                  ...orderContent,
+                  price: bid,
+                });
+              }}
               onChange={(val) => {
                 setOrderContent({
                   ...orderContent,
@@ -316,13 +342,13 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
           <Col className="trading-card-value buy-lots" span={6}>
-            <span>{lots[0]}</span>
+            <span>{lots[0].toFixed(2)}</span>
           </Col>
           <Col className="trading-card-label trading-card-value" span={12}>
             <span>建玉</span>
           </Col>
           <Col className="trading-card-value sell-lots" span={6}>
-            <span>{lots[1]}</span>
+            <span>{lots[1].toFixed(2)}</span>
           </Col>
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
