@@ -66,7 +66,7 @@ const PositionTable = ({ positions, onClickCloseAll }) => {
           <div className="position-table-title-control">
             <span>Positions List</span>
             <Button size="small" type="primary" onClick={() => {onClickCloseAll()}}>
-              Close All
+            一括決済
             </Button>
           </div>
         )}
