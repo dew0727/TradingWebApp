@@ -1,22 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Menu, Dropdown, Button } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 
-const SymbolSelector = ({ symbols, callback }) => {
+const SymbolSelector = ({ symbols, callback, defaultIndex }) => {
   const [symbol, setSym] = useState("Select");
 
-  const handleMenuClick = (e) => {
-    setSym(e.key);
-    if (callback !== undefined) callback(e.key);
-  };
+  const updateSymbol = useCallback((sym) => {
+    setSym(sym);
+    if (callback !== undefined) callback(sym);
+  }, []);
+
+  useEffect(() => {
+    if (symbols && symbols.length > defaultIndex && symbol === "Select") {
+      updateSymbol(symbols[defaultIndex]);
+    }
+  }, [symbols, defaultIndex, symbol, updateSymbol]);
 
   const menu = (
-    <Menu onClick={handleMenuClick}>
+    <Menu onClick={(e) => {updateSymbol(e.key)}}>
       {symbols.map((item, index) => {
-        if (symbol === "Select") {
-          setSym(item);
-          callback(item);
-        }
         return (
           <Menu.Item key={item} danger={item === "Basket"}>
             {item}

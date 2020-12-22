@@ -321,6 +321,7 @@ const TradingPage = () => {
                   broker={curBroker}
                   posInfo={parsePosList()}
                   reqOrder={(order) => reqOrder(order)}
+                  index={0}
                 />
               }
             </Col>
@@ -335,6 +336,7 @@ const TradingPage = () => {
                       broker={curBroker}
                       posInfo={parsePosList()}
                       reqOrder={(order) => reqOrder(order)}
+                      index={1}
                     />
                   }
                 </Col>
@@ -350,6 +352,7 @@ const TradingPage = () => {
                       broker={curBroker}
                       posInfo={parsePosList()}
                       reqOrder={(order) => reqOrder(order)}
+                      index={2}
                     />
                   }
                 </Col>
@@ -365,6 +368,7 @@ const TradingPage = () => {
                       broker={curBroker}
                       posInfo={parsePosList()}
                       reqOrder={(order) => reqOrder(order)}
+                      index={3}
                     />
                   }
                 </Col>
@@ -380,6 +384,7 @@ const TradingPage = () => {
                       broker={curBroker}
                       posInfo={parsePosList()}
                       reqOrder={(order) => reqOrder(order)}
+                      index={4}
                     />
                   }
                 </Col>
@@ -395,6 +400,7 @@ const TradingPage = () => {
                       broker={curBroker}
                       posInfo={parsePosList()}
                       reqOrder={(order) => reqOrder(order)}
+                      index={5}
                     />
                   }
                 </Col>
@@ -406,6 +412,7 @@ const TradingPage = () => {
                       broker={curBroker}
                       posInfo={parsePosList()}
                       reqOrder={(order) => reqOrder(order)}
+                      index={6}
                     />
                   }
                 </Col>
@@ -417,6 +424,7 @@ const TradingPage = () => {
                       broker={curBroker}
                       posInfo={parsePosList()}
                       reqOrder={(order) => reqOrder(order)}
+                      index={7}
                     />
                   }
                 </Col>

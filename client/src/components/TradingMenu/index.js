@@ -19,7 +19,7 @@ const TradingMenu = ({ brokers, accounts, callback }) => {
         <label>Price: </label>
         <SymbolSelector
           symbols={brokers.filter(broker => broker !== "Basket")}
-          sym={brokers[0]}
+          defaultIndex = {0}
           callback={handleBrokerClick}
         />
       </div>
@@ -27,7 +27,7 @@ const TradingMenu = ({ brokers, accounts, callback }) => {
         <label>Account: </label>
         <SymbolSelector
           symbols={accounts}
-          sym={accounts[0]}
+          defaultIndex = {0}
           callback={handleAccountClick}
         />
       </div>

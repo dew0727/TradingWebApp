@@ -33,7 +33,8 @@ const specPrice = (symbol, price, fixsize = 5) => {
   return { first: first, last: last };
 };
 
-const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
+const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
+
   const [curSym, setcurSym] = useState();
   const [orderType, setorderType] = useState("MARKET");
   const [orderContent, setOrderContent] = useState({
@@ -42,6 +43,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
     tp: 0,
     price: 0,
   });
+  const [curIndex, setIndex] = useState(index);
 
   const reset = () => {
     setOrderLots(0);
@@ -155,6 +157,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
           callback={(key) => {
             setcurSym(key);
           }}
+          defaultIndex = {curIndex}
         />
       </div>
       <Row className="card-commands">
