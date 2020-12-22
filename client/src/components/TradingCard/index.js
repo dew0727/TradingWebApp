@@ -329,7 +329,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder }) => {
           <Col className="trading-card-label trading-card-value" span={12}>
             <InputNumber
               className="lmt-price-value"
-              step="0.1"
+              step={"0." + "0".repeat(point - 1) + "1"}
               value={orderContent.price}
               onClick={(e) => {
                 setOrderContent({
