@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Input, InputNumber, message } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
+import ColumnGroup from "antd/lib/table/ColumnGroup";
 
 const ORDER_TYPES = {
   MARKET: "MARKET",
@@ -37,10 +38,10 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
   const [curSym, setcurSym] = useState();
   const [orderType, setorderType] = useState("MARKET");
   const [orderContent, setOrderContent] = useState({
-    lots: 0,
-    sl: 0,
-    tp: 0,
-    price: 0,
+    lots: 0.0,
+    sl: 0.0,
+    tp: 0.0,
+    price: 0.0,
   });
   const [curIndex, setIndex] = useState(index);
 
@@ -49,9 +50,10 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
   };
 
   const setOrderLots = (size, isPlus) => {
+    const curLots = Number.parseFloat(orderContent.lots);
     setOrderContent({
       ...orderContent,
-      lots: isPlus ? orderContent.lots + size : size,
+      lots: isPlus ? (Number.isNaN(curLots) ? size : curLots + size) : size,
     });
   };
 
@@ -152,14 +154,16 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
         price: rates[sym].bid,
       });
     }
-  }
+  };
 
   return (
     <div className="trading-card-container">
       <div className="card-symbol-name">
         <SymbolSelector
           symbols={symbols}
-          callback={(key) => { updateCurrentSym(key); }}
+          callback={(key) => {
+            updateCurrentSym(key);
+          }}
           defaultIndex={curIndex}
         />
       </div>
@@ -245,8 +249,9 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               defaultValue={0}
               value={orderContent.lots}
               onChange={(e) => {
-                const val = parseFloat(e.target.value);
-                setOrderLots(Number.isNaN(val) ? 0 : val);
+                const val = e.target.value.replace(/[^0-9.]/g, "");
+                console.log(val, e.target.value);
+                setOrderLots(val);
               }}
             />
           </Col>

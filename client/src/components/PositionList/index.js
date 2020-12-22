@@ -7,6 +7,14 @@ const PositionTable = ({ positions, onClickCloseAll }) => {
 
 const columns = [
   {
+    title: isDesktop ? "Account": "Acc",
+    dataIndex: "account",
+    align: "center",
+    key: "account",
+    defaultSortOrder: "ascend",
+    sorter: (a, b) => a.account.localeCompare(b.account),
+  },
+  {
     title: isDesktop ? "Symbol": "Sym",
     dataIndex: "symbol",
     align: "center",

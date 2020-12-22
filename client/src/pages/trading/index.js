@@ -41,6 +41,11 @@ const TradingPage = () => {
       status: false,
       time: Date.now(),
     },
+    {
+      name: "All",
+      status: false,
+      time: Date.now(),
+    },
   ]);
   const [posList, setPosList] = useState({});
   const [orderList, setOrderList] = useState({});
@@ -126,7 +131,12 @@ const TradingPage = () => {
 
   const getAccounts = () => {
     if (typeof accounts !== "object") return [];
-    return accounts.filter((acc) => acc.name !== "Basket");
+    return accounts.filter((acc) => acc.name !== "Basket" &&  acc.name !== "All");
+  };
+
+  const getAccountByName = (acc_name) => {
+    if (typeof accounts !== "object") return [];
+    return accounts.find((acc) => acc.name === acc_name);
   };
 
   const getAccountNames = () => {
@@ -149,6 +159,11 @@ const TradingPage = () => {
             return [
               {
                 name: "Basket",
+                status: false,
+                time: Date.now(),
+              },
+              {
+                name: "All",
                 status: false,
                 time: Date.now(),
               },
@@ -203,7 +218,7 @@ const TradingPage = () => {
   };
 
   const parseOrderList = () => {
-    if (curAccount !== "Basket") return orderList[curAccount].orders;
+    if (curAccount !== "Basket" && curAccount !== "All") return orderList[curAccount].orders;
 
     var orders = [];
 
@@ -215,13 +230,16 @@ const TradingPage = () => {
   };
 
   const parsePosList = () => {
-    if (curAccount !== "Basket") {
+    if (curAccount !== "Basket" && curAccount !== "All") {
       return posList[curAccount] ? posList[curAccount].positions : [];
     }
 
     var positions = [];
     Object.keys(posList).forEach((account) => {
-      if (posList[account].positions?.length > 0)
+      if (
+        posList[account].positions?.length > 0 &&
+        (getAccountByName(account)?.basket || curAccount === "All")
+      )
         positions = positions.concat(posList[account].positions);
     });
     return positions;
@@ -274,8 +292,9 @@ const TradingPage = () => {
 
   const onHandleAccSetting = (accname, basket, defaultLots) => {
     if (accname === undefined) return;
-    const account = getAccounts().find((acc) => acc.name === accname);
-    if (account === undefined || account.name === "Basket") return;
+    const account = getAccountByName(accname);
+    
+    if (account === undefined || account.name === "Basket" || account.name === "All") return;
     let sMsg = `${account.name} `;
     if (basket !== undefined) {
       account.basket = basket;
@@ -460,7 +479,7 @@ const TradingPage = () => {
                     });
 
                     requestOrderApi({
-                      Account: "Basket",
+                      Account: curAccount === "All" ? "All" : "Basket",
                       Mode: "ORDER_CLOSE_ALL",
                       Symbol: "ALL",
                     });
