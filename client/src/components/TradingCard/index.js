@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Input, InputNumber, message } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
@@ -34,7 +34,6 @@ const specPrice = (symbol, price, fixsize = 5) => {
 };
 
 const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
-
   const [curSym, setcurSym] = useState();
   const [orderType, setorderType] = useState("MARKET");
   const [orderContent, setOrderContent] = useState({
@@ -50,7 +49,6 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
   };
 
   const setOrderLots = (size, isPlus) => {
-    console.log(orderContent.lots);
     setOrderContent({
       ...orderContent,
       lots: isPlus ? orderContent.lots + size : size,
@@ -77,7 +75,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
       if (pos.lots > 0) {
         lots[0] += pos.lots;
         price[0] += pos.open_price * pos.lots;
-        profit[0] += pos.profit;  
+        profit[0] += pos.profit;
       } else {
         lots[1] += Math.abs(pos.lots);
         price[1] += Math.abs(pos.open_price * pos.lots);
@@ -109,7 +107,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
     let ordType = "";
     if (orderType !== ORDER_TYPES.MARKET) {
       reqPrice = orderContent.price;
-      console.log(command,  COMMAND.BUY);
+      console.log(command, COMMAND.BUY);
       if (command === COMMAND.BUY) {
         console.log("orderType: ", ordType);
         if (reqPrice < ask) ordType = "BUYLIMIT";
@@ -149,15 +147,23 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
     reqOrder(orderMsg);
   };
 
+  const updateCurrentSym = (sym) => {
+    setcurSym(sym);
+    if (orderType !== "MARKET") {
+      setOrderContent({
+        ...orderContent,
+        price: rates[sym].bid,
+      });
+    }
+  }
+
   return (
     <div className="trading-card-container">
       <div className="card-symbol-name">
         <SymbolSelector
           symbols={symbols}
-          callback={(key) => {
-            setcurSym(key);
-          }}
-          defaultIndex = {curIndex}
+          callback={(key) => { updateCurrentSym(key); }}
+          defaultIndex={curIndex}
         />
       </div>
       <Row className="card-commands">
@@ -324,6 +330,10 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               type={orderType === "LIMIT" ? "primary" : "default"}
               onClick={() => {
                 setorderType("LIMIT");
+                setOrderContent({
+                  ...orderContent,
+                  price: bid,
+                });
               }}
             >
               LMT
