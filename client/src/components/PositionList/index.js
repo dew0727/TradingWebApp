@@ -7,15 +7,7 @@ const PositionTable = ({ positions, onClickCloseAll }) => {
 
 const columns = [
   {
-    title: isDesktop ? "Account": "Acc",
-    dataIndex: "account",
-    align: "center",
-    key: "account",
-    defaultSortOrder: "ascend",
-    sorter: (a, b) => a.account.localeCompare(b.account),
-  },
-  {
-    title: isDesktop ? "Symbol": "Sym",
+    title: isDesktop ? "通貨": "通..",
     dataIndex: "symbol",
     align: "center",
     key: "symbol",
@@ -23,46 +15,53 @@ const columns = [
     sorter: (a, b) => a.symbol.localeCompare(b.symbol),
   },
   {
-    title: "Lots",
+    title: "建玉",
     className: "column-lots",
     dataIndex: "lots",
     align: "center",
     key: "lots",
   },
   {
-    title: isDesktop ? "Open Price" : "Open",
+    title: isDesktop ? "平均レート" : "平均..",
     className: "column-open-price",
     dataIndex: "open_price",
     align: "center",
     key: "open_price",
   },
   {
-    title: isDesktop ? "Current Price" : "Current",
+    title: isDesktop ? "評価レート" : "評価",
     className: "column-current-price",
     dataIndex: "current_price",
     align: "center",
     key: "current_price",
   },
   {
-    title: "Profit",
+    title: "損益",
     className: "column-profit",
     dataIndex: "profit",
     align: "center",
     key: "profit",
   },
   {
-    title: "Swap",
+    title: isDesktop ? "スワップ" : "スワ..",
     className: "columnswap",
     dataIndex: "swap",
     align: "center",
     key: "swap",
   },
   {
-    title: isDesktop ? "Total Profit" : "Total",
+    title: isDesktop ? "損益合計" : "損益..",
     className: "column-total-profit",
     dataIndex: "total_profit",
     align: "center",
     key: "total_profit",
+  },
+  {
+    title: isDesktop ? "口座": "口座",
+    dataIndex: "account",
+    align: "center",
+    key: "account",
+    defaultSortOrder: "ascend",
   },
 ];
 

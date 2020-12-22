@@ -181,22 +181,11 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
-
-        setPosList((prevState) => {
-          var newState = Object.assign({}, prevState);
-          newState[accPos.account] = accPos;
-          return newState;
-        });
-
+        setPosList(Object.assign(posList, {[accPos.account]: accPos}));
         break;
       case EVENTS.ON_ORDERLIST:
         var accOrders = JSON.parse(message);
-
-        setOrderList((prevState) => {
-          var newState = Object.assign({}, prevState);
-          newState[accOrders.account] = accOrders;
-          return newState;
-        });
+        setOrderList(Object.assign(orderList, {[accOrders.account]: accOrders}));
         break;
       case EVENTS.ON_ORDER_RESPONSE:
         var response = JSON.parse(message);

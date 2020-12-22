@@ -26,7 +26,6 @@ const OrderTable = ({ orders, reqDelOrder }) => {
       className: "column-lots",
       dataIndex: "lots",
       align: "center",
-
       key: "lots",
       defaultSortOrder: "ascend",
     },
@@ -35,7 +34,6 @@ const OrderTable = ({ orders, reqDelOrder }) => {
       className: "column-avg-price",
       dataIndex: "open_price",
       align: "center",
-
       key: "open_price",
     },
     {
