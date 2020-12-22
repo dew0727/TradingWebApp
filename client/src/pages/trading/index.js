@@ -313,121 +313,137 @@ const TradingPage = () => {
             className="site-card-wrapper trading-cards-wrapper"
             gutter={[16, 16]}
           >
-            <Col>
-              {
-                <TradingCard
-                  symbols={getSymbols(rates)}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                  index={0}
-                />
-              }
-            </Col>
+            {getSymbols().length > 0 && (
+              <Col>
+                {
+                  <TradingCard
+                    symbols={getSymbols(rates)}
+                    rates={rates}
+                    broker={curBroker}
+                    posInfo={parsePosList()}
+                    reqOrder={(order) => reqOrder(order)}
+                    index={0}
+                  />
+                }
+              </Col>
+            )}
 
             {sm && (
               <>
-                <Col>
-                  {
-                    <TradingCard
-                      symbols={getSymbols(rates)}
-                      rates={rates}
-                      broker={curBroker}
-                      posInfo={parsePosList()}
-                      reqOrder={(order) => reqOrder(order)}
-                      index={1}
-                    />
-                  }
-                </Col>
+                {getSymbols().length > 1 && (
+                  <Col>
+                    {
+                      <TradingCard
+                        symbols={getSymbols(rates)}
+                        rates={rates}
+                        broker={curBroker}
+                        posInfo={parsePosList()}
+                        reqOrder={(order) => reqOrder(order)}
+                        index={1}
+                      />
+                    }
+                  </Col>
+                )}
               </>
             )}
             {md && (
               <>
-                <Col>
-                  {
-                    <TradingCard
-                      symbols={getSymbols(rates)}
-                      rates={rates}
-                      broker={curBroker}
-                      posInfo={parsePosList()}
-                      reqOrder={(order) => reqOrder(order)}
-                      index={2}
-                    />
-                  }
-                </Col>
+                {getSymbols().length > 2 && (
+                  <Col>
+                    {
+                      <TradingCard
+                        symbols={getSymbols(rates)}
+                        rates={rates}
+                        broker={curBroker}
+                        posInfo={parsePosList()}
+                        reqOrder={(order) => reqOrder(order)}
+                        index={2}
+                      />
+                    }
+                  </Col>
+                )}
               </>
             )}
             {lg && (
               <>
-                <Col>
-                  {
-                    <TradingCard
-                      symbols={getSymbols(rates)}
-                      rates={rates}
-                      broker={curBroker}
-                      posInfo={parsePosList()}
-                      reqOrder={(order) => reqOrder(order)}
-                      index={3}
-                    />
-                  }
-                </Col>
+                {getSymbols().length > 3 && (
+                  <Col>
+                    {
+                      <TradingCard
+                        symbols={getSymbols(rates)}
+                        rates={rates}
+                        broker={curBroker}
+                        posInfo={parsePosList()}
+                        reqOrder={(order) => reqOrder(order)}
+                        index={3}
+                      />
+                    }
+                  </Col>
+                )}
               </>
             )}
             {xl && (
               <>
-                <Col>
-                  {
-                    <TradingCard
-                      symbols={getSymbols(rates)}
-                      rates={rates}
-                      broker={curBroker}
-                      posInfo={parsePosList()}
-                      reqOrder={(order) => reqOrder(order)}
-                      index={4}
-                    />
-                  }
-                </Col>
+                {getSymbols().length > 4 && (
+                  <Col>
+                    {
+                      <TradingCard
+                        symbols={getSymbols(rates)}
+                        rates={rates}
+                        broker={curBroker}
+                        posInfo={parsePosList()}
+                        reqOrder={(order) => reqOrder(order)}
+                        index={4}
+                      />
+                    }
+                  </Col>
+                )}
               </>
             )}
             {xxl && (
               <>
-                <Col>
-                  {
-                    <TradingCard
-                      symbols={getSymbols(rates)}
-                      rates={rates}
-                      broker={curBroker}
-                      posInfo={parsePosList()}
-                      reqOrder={(order) => reqOrder(order)}
-                      index={5}
-                    />
-                  }
-                </Col>
-                <Col>
-                  {
-                    <TradingCard
-                      symbols={getSymbols(rates)}
-                      rates={rates}
-                      broker={curBroker}
-                      posInfo={parsePosList()}
-                      reqOrder={(order) => reqOrder(order)}
-                      index={6}
-                    />
-                  }
-                </Col>
-                <Col>
-                  {
-                    <TradingCard
-                      symbols={getSymbols(rates)}
-                      rates={rates}
-                      broker={curBroker}
-                      posInfo={parsePosList()}
-                      reqOrder={(order) => reqOrder(order)}
-                      index={7}
-                    />
-                  }
-                </Col>
+                {getSymbols().length > 5 && (
+                  <Col>
+                    {
+                      <TradingCard
+                        symbols={getSymbols(rates)}
+                        rates={rates}
+                        broker={curBroker}
+                        posInfo={parsePosList()}
+                        reqOrder={(order) => reqOrder(order)}
+                        index={5}
+                      />
+                    }
+                  </Col>
+                )}
+                {getSymbols().length > 6 && (
+                  <Col>
+                    {
+                      <TradingCard
+                        symbols={getSymbols(rates)}
+                        rates={rates}
+                        broker={curBroker}
+                        posInfo={parsePosList()}
+                        reqOrder={(order) => reqOrder(order)}
+                        index={6}
+                      />
+                    }
+                  </Col>
+                )}
+                {getSymbols().length > 7 && (
+                  <Col>
+                    {
+                      <TradingCard
+                        symbols={getSymbols(rates)}
+                        rates={rates}
+                        broker={curBroker}
+                        posInfo={parsePosList()}
+                        reqOrder={(order) => reqOrder(order)}
+                        index={7}
+                      />
+                    }
+                  </Col>
+                )}
               </>
             )}
           </Row>
