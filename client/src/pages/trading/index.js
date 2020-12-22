@@ -20,7 +20,7 @@ import PositionTable from "../../components/PositionList";
 import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
 import { EVENTS } from "../../config-client";
-import { apiCall } from "../../utils/api";
+import { apiCall, Logout } from "../../utils/api";
 
 const { TabPane } = Tabs;
 
@@ -131,7 +131,9 @@ const TradingPage = () => {
 
   const getAccounts = () => {
     if (typeof accounts !== "object") return [];
-    return accounts.filter((acc) => acc.name !== "Basket" &&  acc.name !== "All");
+    return accounts.filter(
+      (acc) => acc.name !== "Basket" && acc.name !== "All"
+    );
   };
 
   const getAccountByName = (acc_name) => {
@@ -218,12 +220,16 @@ const TradingPage = () => {
   };
 
   const parseOrderList = () => {
-    if (curAccount !== "Basket" && curAccount !== "All") return orderList[curAccount].orders;
+    if (curAccount !== "Basket" && curAccount !== "All")
+      return orderList[curAccount].orders;
 
     var orders = [];
 
     Object.keys(orderList).forEach((account) => {
-      if (orderList[account].orders.length > 0)
+      if (
+        orderList[account].orders.length > 0 &&
+        (getAccountByName(account)?.basket || curAccount === "All")
+      )
         orders = orders.concat(orderList[account].orders);
     });
     return orders;
@@ -293,8 +299,13 @@ const TradingPage = () => {
   const onHandleAccSetting = (accname, basket, defaultLots) => {
     if (accname === undefined) return;
     const account = getAccountByName(accname);
-    
-    if (account === undefined || account.name === "Basket" || account.name === "All") return;
+
+    if (
+      account === undefined ||
+      account.name === "Basket" ||
+      account.name === "All"
+    )
+      return;
     let sMsg = `${account.name} `;
     if (basket !== undefined) {
       account.basket = basket;
@@ -317,9 +328,27 @@ const TradingPage = () => {
     });
   };
 
+  const extraAction = (
+    <Button
+      size={"default"}
+      danger
+      type="text"
+      onClick={() => {
+        Logout();
+      }}
+    >
+      Log out
+    </Button>
+  );
+
   return (
     <div className="traindg-home-page">
-      <Tabs onChange={updateAccountOrPriceFeed} type="card" size="small">
+      <Tabs
+        onChange={updateAccountOrPriceFeed}
+        type="card"
+        size="small"
+        tabBarExtraContent={extraAction}
+      >
         <TabPane tab="Home" key="home">
           <div className="broker-selection-menu">
             <TradingMenu

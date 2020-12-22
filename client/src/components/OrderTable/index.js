@@ -11,7 +11,7 @@ const OrderTable = ({ orders, reqDelOrder }) => {
       align: "center",
       key: "symbol",
       defaultSortOrder: "ascend",
-      sorter: (a, b) => a.symbol.localeCompare(b.symbol),
+      sorter: (a, b) => a.ticket.localeCompare(b.ticket),
     },
     {
       title: "買売",

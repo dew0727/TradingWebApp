@@ -41,4 +41,18 @@ const apiCall = (url, payload, method, callback) => {
     });
 };
 
-export { apiCall, saveAuth, authenticate };
+const Logout = () => {
+  const user = localStorage.getItem("username");
+  const pass = localStorage.getItem("password");
+
+  apiCall("/api/logout", { username: user, password: pass }, "POST", (res) => {
+    if (res.success === true) {
+      console.log(res);
+    }
+  });
+
+  removeAuth();
+  window.location.href = "/";
+};
+
+export { apiCall, saveAuth, authenticate, Logout };

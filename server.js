@@ -58,6 +58,19 @@ app.post("/api/login", (req, res) => {
   });
 });
 
+app.post("/api/logout", (req, res) => {
+  var data = req.body.body;
+  data = JSON.parse(data);
+  console.log("user logout request " + data);
+
+  unsubscribeForUser(data.username);
+
+  res.json({
+    success: true,
+    token: "false",
+  });
+});
+
 app.post("/api/add-account", (req, res) => {
   var data = req.body.body;
 
@@ -217,4 +230,14 @@ const subscribeForUser = (user) => {
   rmq.subscribeChannel(EVENTS.ON_ORDERLIST, user);
   rmq.subscribeChannel(EVENTS.ON_ORDER_RESPONSE, user);
   rmq.subscribeChannel(EVENTS.ON_RATE, user);
+};
+
+const unsubscribeForUser = (user) => {
+  console.log("unsbscribing user: ", user);
+  rmq.unsubscribeQueue(EVENTS.ON_PRICE_TICK, user);
+  rmq.unsubscribeQueue(EVENTS.ON_ACCOUNT, user);
+  rmq.unsubscribeQueue(EVENTS.ON_POSLIST, user);
+  rmq.unsubscribeQueue(EVENTS.ON_ORDERLIST, user);
+  rmq.unsubscribeQueue(EVENTS.ON_ORDER_RESPONSE, user);
+  rmq.unsubscribeQueue(EVENTS.ON_RATE, user);
 };
