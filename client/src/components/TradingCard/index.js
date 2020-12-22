@@ -115,7 +115,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
         if (reqPrice < ask) ordType = "BUYLIMIT";
         else ordType = "BUYSTOP";
       } else {
-        if (reqPrice > bid) ordType = "SELLLMIT";
+        if (reqPrice > bid) ordType = "SELLLIMIT";
         else ordType = "SELLSTOP";
       }
       console.log("orderType: ", ordType);
