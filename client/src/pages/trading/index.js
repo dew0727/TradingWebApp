@@ -505,8 +505,8 @@ const TradingPage = () => {
                   positions={parsePosList()}
                   onClickCloseAll={() => {
                     if (
-                      parseOrderList() === undefined ||
-                      parseOrderList().length < 1
+                      parsePosList() === undefined ||
+                      parsePosList().length < 1
                     ) {
                       message.error("対象の建玉はございません");
                       return;
