@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Input, InputNumber, message } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
-import ColumnGroup from "antd/lib/table/ColumnGroup";
 
 const ORDER_TYPES = {
   MARKET: "MARKET",
@@ -129,7 +128,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
     }
 
     if (orderContent.lots === 0) {
-      message.error({ content: "Invalid lots to request!" });
+      message.error({ content: "取引数量が0です。" });
       return;
     }
 

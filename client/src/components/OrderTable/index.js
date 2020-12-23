@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Button} from "antd";
+import { Table, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import "./style.css";
 
@@ -44,7 +44,7 @@ const OrderTable = ({ orders, reqDelOrder }) => {
       key: "account",
     },
     {
-      title: "Delete",
+      title: "削除",
       className: "limit-order-delete",
       align: "center",
       render: (order) => (
@@ -61,6 +61,12 @@ const OrderTable = ({ orders, reqDelOrder }) => {
       ),
     },
   ];
+
+  let locale = {
+    emptyText: (
+      <span className="table-empty-message">有効な注文はございません</span>
+    ),
+  };
   return (
     <>
       <Table
@@ -69,6 +75,7 @@ const OrderTable = ({ orders, reqDelOrder }) => {
         bordered
         title={() => "有効注文"}
         pagination={false}
+        locale={locale}
       />
     </>
   );

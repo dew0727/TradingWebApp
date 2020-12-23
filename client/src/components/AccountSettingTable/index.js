@@ -18,9 +18,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
       dataIndex: "balance",
       align: "right",
       render: (text, record) => {
-        return record.balance ? record.balance
-          .toString()
-          .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : 0
+        return record.balance
+          ? record.balance.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          : 0;
       },
     },
     {
@@ -29,9 +29,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
       dataIndex: "margin",
       align: "right",
       render: (text, record) => {
-        return record.margin ? record.margin
-          .toString()
-          .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : 0;
+        return record.margin
+          ? record.margin.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          : 0;
       },
     },
     {
@@ -40,9 +40,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
       dataIndex: "profit",
       align: "right",
       render: (text, record) => {
-        return record.profit ? record.profit
-          .toString()
-          .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : 0
+        return record.profit
+          ? record.profit.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          : 0;
       },
     },
     {
@@ -51,9 +51,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
       dataIndex: "equity",
       align: "right",
       render: (text, record) => {
-        return record.equity ? record.equity
-          .toString()
-          .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") : 0
+        return record.equity
+          ? record.equity.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          : 0;
       },
     },
     {
@@ -91,7 +91,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
             min={1}
             onChange={(val) => {
               if (val !== null && val !== "" && val >= 0)
-              onHandleClickBasket({ accname: record.name, defaultLots: val });
+                onHandleClickBasket({ accname: record.name, defaultLots: val });
             }}
             size={"small"}
           />
@@ -106,10 +106,8 @@ const AccountSettingTable = ({ accounts, callback }) => {
       editable: false,
       render: (time) => {
         var curTime = Date.now();
-        if (curTime - time >= 30 * 1000)
-          return "Dead";
-        else
-          return "Live";
+        if (curTime - time >= 30 * 1000) return "Dead";
+        else return "Live";
       },
     },
   ];
@@ -120,15 +118,20 @@ const AccountSettingTable = ({ accounts, callback }) => {
     callback({ accname, basket, defaultLots });
   };
 
+  let locale = {
+    emptyText: <span className="table-empty-message">ございません</span>,
+  };
+
   return (
     <>
       <Table
-      className="account-setting-control-panel"
+        className="account-setting-control-panel"
         columns={columns}
         dataSource={typeof accounts !== "object" ? [] : accounts}
         bordered
         title={() => "口座情報"}
         pagination={false}
+        locale={locale}
       />
     </>
   );

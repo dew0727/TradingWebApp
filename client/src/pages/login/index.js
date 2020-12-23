@@ -81,7 +81,7 @@ const Login = () => {
               htmlType="submit"
               className="login-form-button"
             >
-              Log in
+              ログインする
             </Button>
           </Form.Item>
         </Form>

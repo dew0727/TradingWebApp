@@ -88,6 +88,11 @@
   padding: 10px;
 }
 
+.table-empty-message, .ant-table-placeholder{
+  background-color: ghostwhite !important;
+  color: black;
+}
+
 @media screen and (min-width: 650px) {
   .trading-table-wrapper {
     width: 630px;

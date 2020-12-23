@@ -10,6 +10,7 @@ import {
   Select,
   Table,
   notification,
+  message,
 } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
@@ -53,12 +54,12 @@ const TradingPage = () => {
 
   const acc_columns = [
     {
-      title: "Account Name",
+      title: "口座",
       dataIndex: "name",
       align: "left",
     },
     {
-      title: "Delete",
+      title: "削除",
       className: "account_delete",
       align: "center",
       render: (acc) => (
@@ -110,6 +111,15 @@ const TradingPage = () => {
       Account: curAccount,
     };
     console.log(order);
+
+    if (order.Mode === "ORDER_CLOSE_ALL") {
+      console.log(posList);
+      if (parseOrderList() === undefined || parseOrderList().length < 1) {
+        message.error("対象の建玉はございません");
+        return;
+      }
+    }
+
     const title =
       "Request " +
       (order.Mode === "ORDER_CLOSE_ALL"
@@ -181,11 +191,13 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
-        setPosList(Object.assign(posList, {[accPos.account]: accPos}));
+        setPosList(Object.assign(posList, { [accPos.account]: accPos }));
         break;
       case EVENTS.ON_ORDERLIST:
         var accOrders = JSON.parse(message);
-        setOrderList(Object.assign(orderList, {[accOrders.account]: accOrders}));
+        setOrderList(
+          Object.assign(orderList, { [accOrders.account]: accOrders })
+        );
         break;
       case EVENTS.ON_ORDER_RESPONSE:
         var response = JSON.parse(message);
@@ -326,9 +338,13 @@ const TradingPage = () => {
         Logout();
       }}
     >
-      Log out
+      ログアウト
     </Button>
   );
+
+  let locale = {
+    emptyText: <span className="table-empty-message">ございません</span>,
+  };
 
   return (
     <div className="traindg-home-page">
@@ -338,7 +354,7 @@ const TradingPage = () => {
         size="small"
         tabBarExtraContent={extraAction}
       >
-        <TabPane tab="Home" key="home">
+        <TabPane tab="トレード" key="home">
           <div className="broker-selection-menu">
             <TradingMenu
               brokers={getAccountNames()}
@@ -490,12 +506,18 @@ const TradingPage = () => {
                 <PositionTable
                   positions={parsePosList()}
                   onClickCloseAll={() => {
+                    if (
+                      parseOrderList() === undefined ||
+                      parseOrderList().length < 1
+                    ) {
+                      message.error("対象の建玉はございません");
+                      return;
+                    }
                     notification.info({
                       message: "Request Close All",
                       description: "Close all positions of system",
                       duration: 10,
                     });
-
                     requestOrderApi({
                       Account: curAccount === "All" ? "All" : "Basket",
                       Mode: "ORDER_CLOSE_ALL",
@@ -527,7 +549,7 @@ const TradingPage = () => {
             </div>
           </div>
         </TabPane>
-        <TabPane tab="Setting" key="setting">
+        <TabPane tab="設定" key="setting">
           <div className="settings-wrapper">
             <div className="settings-form-wrapper">
               <Form
@@ -595,7 +617,7 @@ const TradingPage = () => {
                 </Form.Item>
                 <Form.Item label=" " colon={false}>
                   <Button type="primary" size="default" htmlType="submit">
-                    Add Account
+                    アカウント口座
                   </Button>
                 </Form.Item>
               </Form>
@@ -603,10 +625,11 @@ const TradingPage = () => {
             <div className="account-list-wrapper">
               <Table
                 bordered
-                title={() => "Account List"}
+                title={() => "口座リスト"}
                 pagination={false}
                 dataSource={getAccounts()}
                 columns={acc_columns}
+                locale={locale}
               />
             </div>
           </div>
