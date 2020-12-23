@@ -80,10 +80,10 @@ const DeleteAccount = (accountName) => {
 const GetAccounts = () => {
   if (
     accounts === undefined ||
-    typeof accounts !== Array ||
     accounts.length < 1
-  )
+  ) {
     LoadAccountsData();
+  }
 
   return accounts;
 };
@@ -97,7 +97,6 @@ const LoadAccountsData = () => {
     accounts = [];
     return;
   }
-
   const sData = fs.readFileSync(DB_PATH_ACCOUNT);
   if (sData.toString() === "") return [];
   accounts = JSON.parse(sData);

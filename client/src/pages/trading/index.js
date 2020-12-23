@@ -110,11 +110,9 @@ const TradingPage = () => {
       ...order,
       Account: curAccount,
     };
-    console.log(order);
 
     if (order.Mode === "ORDER_CLOSE_ALL") {
-      console.log(posList);
-      if (parseOrderList() === undefined || parseOrderList().length < 1) {
+      if (parsePosList() === undefined || parsePosList().length < 1) {
         message.error("対象の建玉はございません");
         return;
       }
@@ -201,7 +199,7 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_ORDER_RESPONSE:
         var response = JSON.parse(message);
-
+        
         if (response.success) {
           notification.success({
             message: `Order Response from ${response.account}`,

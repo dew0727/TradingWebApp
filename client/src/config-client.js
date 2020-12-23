@@ -1,4 +1,4 @@
-const SOCKET_ENDPOINT = "http://192.168.1.243:4001";
+const SOCKET_ENDPOINT = "http://167.179.68.107:4001";
 const EVENTS = {
     ON_CONNECTION: 'connection',
     ON_DISCONNECT: 'disconnect',
