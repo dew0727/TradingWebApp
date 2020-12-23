@@ -1,0 +1,110 @@
+.trading-card-container {
+  width: 215px;
+  background-color: #e5e5e5;
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
+}
+
+.trading-card-container .ant-card-head {
+  display: flex;
+  align-items: center;
+  padding-left: 0px;
+  height: 48px;
+}
+
+.trading-card-container .ant-card-body {
+  padding: 0;
+}
+
+.command-header-bid {
+  background-color: rgb(25, 97, 170);
+  color: white;
+  text-align: center;
+}
+
+.command-header {
+  background-color: black;
+  color: white;
+  text-align: center;
+}
+
+.command-header-ask {
+  background-color: rgb(224, 52, 52);
+  color: white;
+  text-align: center;
+}
+
+.command-header-int {
+  font-size: 16px;
+}
+
+.command-header-float {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.btn-control {
+  background-color: forestgreen;
+  color: white;
+  font-weight: bold;
+}
+
+.card-net-pos-info {
+  background-color: white;
+}
+
+.card-net-pos-info .trading-card-value {
+  border-color: grey;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.trading-card-posinfo {
+  text-align: center;
+}
+
+.trading-card-set-lots {
+  background-color: black;
+  height: 100px;
+
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+
+.trading-card-quick-set-lots{
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.trading-card-quick-set-btn {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.trading-card-input-lots{
+  display: flex;
+  flex-flow: row;
+  place-items: center;
+}
+
+.trading-card-input-lots input {
+  border: 0px !important;
+  border-radius: 0px !important;
+  padding: 2px !important;
+}
+
+.trading-card-input-lots-wrapper {
+  display: flex;
+  justify-content: center;
+  place-items: center;
+}
+
+.lmt-price-value {
+  width: 100% !important;
+}
+
+.lmt-price-value input {
+  text-align-last: center !important;
+}
