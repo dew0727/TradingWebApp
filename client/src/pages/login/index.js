@@ -39,7 +39,7 @@ const Login = () => {
           auth: localStorage.getItem("authToken"),
         });
       } else {
-        message.error("Incorrect username or password!");
+        message.error("認証に失敗しました。ユーザーID(またはログイン名)とパスワードを正しく入力してください。");
       }
     });
   };

@@ -73,7 +73,7 @@ const columns = [
         bordered
         title={() => (
           <div className="position-table-title-control">
-            <span>Positions List</span>
+            <span>建玉</span>
             <Button size="small" type="primary" onClick={() => {onClickCloseAll()}}>
             一括決済
             </Button>

@@ -67,7 +67,7 @@ const OrderTable = ({ orders, reqDelOrder }) => {
         columns={columns}
         dataSource={orders}
         bordered
-        title={() => "Orders"}
+        title={() => "有効注文"}
         pagination={false}
       />
     </>
