@@ -11,6 +11,8 @@ import {
   Table,
   notification,
   message,
+  List,
+  Divider,
 } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
@@ -22,6 +24,7 @@ import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
 import { EVENTS } from "../../config-client";
 import { apiCall, Logout } from "../../utils/api";
+const dateFormat = require("dateformat");
 
 const { TabPane } = Tabs;
 
@@ -51,6 +54,8 @@ const TradingPage = () => {
   const [posList, setPosList] = useState({});
   const [orderList, setOrderList] = useState({});
   const [rates, setRates] = useState({});
+
+  const [logHistory, setlogHistory] = useState([]);
 
   const acc_columns = [
     {
@@ -199,19 +204,19 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_ORDER_RESPONSE:
         var response = JSON.parse(message);
-        
+
         if (response.success) {
-          notification.success({
-            message: `Order Response from ${response.account}`,
-            description: response.message,
-            duration: 10,
-          });
+          openNotification(
+            "success",
+            `Order Response from ${response.account}`,
+            response.message
+          );
         } else {
-          notification.error({
-            message: `Order Response from ${response.account}`,
-            description: response.message,
-            duration: 10,
-          });
+          openNotification(
+            "error",
+            `Order Response from ${response.account}`,
+            response.message
+          );
         }
         break;
       default:
@@ -342,6 +347,51 @@ const TradingPage = () => {
 
   let locale = {
     emptyText: <span className="table-empty-message">ございません</span>,
+  };
+
+  const openNotification = (type, title, content) => {
+    switch (type) {
+      case "success":
+        notification.success({
+          message: title,
+          description: content,
+          duration: 10,
+        });
+        break;
+
+      case "info":
+        notification.info({
+          message: title,
+          description: content,
+          duration: 10,
+        });
+        break;
+
+      case "error":
+        notification.error({
+          message: title,
+          description: content,
+          duration: 10,
+        });
+        break;
+
+      default:
+    }
+
+    var now = new Date();
+    addLog(
+      dateFormat(now, "hh:MM:ss") +
+        " > " +
+        title.replace("Order Response from", "") +
+        " " +
+        content
+    );
+  };
+
+  const addLog = (content) => {
+    setlogHistory((prevState) => {
+      return [...prevState, content];
+    });
   };
 
   return (
@@ -537,13 +587,22 @@ const TradingPage = () => {
                 />
               </div>
             </div>
-            <div className="trading-table-wrapper">
+            <div className="trading-table-wrapper account-setting-table-log-history">
               <AccountSettingTable
                 accounts={getAccounts()}
                 callback={({ accname, basket, defaultLots }) =>
                   onHandleAccSetting(accname, basket, defaultLots)
                 }
               />
+              <Divider orientation="left">約定・失効通知</Divider>
+              <div className="log-history-time-line scrollable-container">
+                <List
+                  bordered
+                  size="small"
+                  dataSource={logHistory}
+                  renderItem={(item) => <List.Item>{item}</List.Item>}
+                ></List>
+              </div>
             </div>
           </div>
         </TabPane>

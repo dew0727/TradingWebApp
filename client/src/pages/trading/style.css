@@ -93,6 +93,16 @@
   color: black;
 }
 
+.account-setting-table-log-history {
+  display: flex;
+  flex-direction: column;
+}
+
+.log-history-time-line {
+  max-height: 30vh;
+  overflow: auto;
+}
+
 @media screen and (min-width: 650px) {
   .trading-table-wrapper {
     width: 630px;
