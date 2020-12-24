@@ -30,6 +30,8 @@ const { TabPane } = Tabs;
 
 const brokers = ["GP", "YJFX", "Saxo"];
 
+const waiting_time = 5;
+
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
@@ -98,13 +100,13 @@ const TradingPage = () => {
         notification.success({
           message: "Success",
           description: "Server accepted request!",
-          duration: 10,
+          duration:  waiting_time,
         });
       } else {
         notification.error({
           message: "Rejected",
           description: "Server rejected request!",
-          duration: 10,
+          duration:  waiting_time,
         });
       }
     });
@@ -132,7 +134,7 @@ const TradingPage = () => {
     notification.info({
       message: title,
       description: disMsg,
-      duration: 10,
+      duration:  waiting_time,
     });
 
     requestOrderApi(orderMsg);
@@ -271,12 +273,13 @@ const TradingPage = () => {
         };
         console.log(account);
         setAccounts([...accounts, account]);
-        notification.success({ message: "Created new account." });
+        notification.success({ message: "Created new account.", duration: waiting_time });
         return;
       } else {
         notification.error({
           message: "Failed to create new account.",
           description: res.error,
+          duration: waiting_time
         });
       }
     });
@@ -327,7 +330,7 @@ const TradingPage = () => {
             acc.name === account.name ? account : acc
           );
         });
-        notification.success({ message: sMsg });
+        notification.success({ message: sMsg, duration: waiting_time });
       }
     });
   };
@@ -355,7 +358,7 @@ const TradingPage = () => {
         notification.success({
           message: title,
           description: content,
-          duration: 10,
+          duration: waiting_time,
         });
         break;
 
@@ -363,7 +366,7 @@ const TradingPage = () => {
         notification.info({
           message: title,
           description: content,
-          duration: 10,
+          duration: waiting_time,
         });
         break;
 
@@ -371,7 +374,7 @@ const TradingPage = () => {
         notification.error({
           message: title,
           description: content,
-          duration: 10,
+          duration: waiting_time,
         });
         break;
 
@@ -390,7 +393,7 @@ const TradingPage = () => {
 
   const addLog = (content) => {
     setlogHistory((prevState) => {
-      return [...prevState, content];
+      return [content, ...prevState];
     });
   };
 
@@ -564,7 +567,7 @@ const TradingPage = () => {
                     notification.info({
                       message: "Request Close All",
                       description: "Close all positions of system",
-                      duration: 10,
+                      duration:  waiting_time,
                     });
                     requestOrderApi({
                       Account: curAccount === "All" ? "All" : "Basket",
