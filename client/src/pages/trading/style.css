@@ -37,6 +37,8 @@
 .ant-table {
   border: solid;
   border-width: 1px;
+  overflow: auto;
+  max-height: 30vh;
 }
 
 .ant-table-column-sorters {
