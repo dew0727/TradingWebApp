@@ -13,6 +13,7 @@ import {
   message,
   List,
   Divider,
+  Popconfirm,
 } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
@@ -70,24 +71,26 @@ const TradingPage = () => {
       className: "account_delete",
       align: "center",
       render: (acc) => (
-        <Button
-          type="primary"
-          block
-          danger
-          icon={<CloseOutlined />}
-          onClick={() => {
-            onHandleRemoveAccount(acc);
-          }}
-        />
+        <Popconfirm 
+        title="この口座を削除しますか？"
+        onConfirm={() => onHandleRemoveAccount(acc)}
+        okText="はい"
+        cancelText="番号"
+        >
+          <Button
+            type="primary"
+            block
+            danger
+            icon={<CloseOutlined />}
+          />
+        </Popconfirm>
       ),
     },
   ];
 
   const onHandleRemoveAccount = (account) => {
-    console.log(account);
     apiCall("/api/delete-account", account.name, "POST", (res, user, pass) => {
       if (res.success === true) {
-        console.log("account deleted");
         setAccounts(getAccounts().filter((acc) => acc.name !== account.name));
       }
     });
@@ -100,13 +103,13 @@ const TradingPage = () => {
         notification.success({
           message: "Success",
           description: "Server accepted request!",
-          duration:  waiting_time,
+          duration: waiting_time,
         });
       } else {
         notification.error({
           message: "Rejected",
           description: "Server rejected request!",
-          duration:  waiting_time,
+          duration: waiting_time,
         });
       }
     });
@@ -134,7 +137,7 @@ const TradingPage = () => {
     notification.info({
       message: title,
       description: disMsg,
-      duration:  waiting_time,
+      duration: waiting_time,
     });
 
     requestOrderApi(orderMsg);
@@ -273,13 +276,16 @@ const TradingPage = () => {
         };
         console.log(account);
         setAccounts([...accounts, account]);
-        notification.success({ message: "Created new account.", duration: waiting_time });
+        notification.success({
+          message: "Created new account.",
+          duration: waiting_time,
+        });
         return;
       } else {
         notification.error({
           message: "Failed to create new account.",
           description: res.error,
-          duration: waiting_time
+          duration: waiting_time,
         });
       }
     });
@@ -567,7 +573,7 @@ const TradingPage = () => {
                     notification.info({
                       message: "Request Close All",
                       description: "Close all positions of system",
-                      duration:  waiting_time,
+                      duration: waiting_time,
                     });
                     requestOrderApi({
                       Account: curAccount === "All" ? "All" : "Basket",
@@ -677,7 +683,7 @@ const TradingPage = () => {
                 </Form.Item>
                 <Form.Item label=" " colon={false}>
                   <Button type="primary" size="default" htmlType="submit">
-                    アカウント口座
+                    口座追加
                   </Button>
                 </Form.Item>
               </Form>
