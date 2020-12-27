@@ -90,7 +90,8 @@
   padding: 10px;
 }
 
-.table-empty-message, .ant-table-placeholder{
+.table-empty-message,
+.ant-table-placeholder {
   background-color: ghostwhite !important;
   color: black;
 }
@@ -187,4 +188,11 @@
   .ant-form-item-label {
     padding: 0px !important;
   }
+}
+
+.delete-log-history-button {
+  display: flex;
+  justify-content: center;
+  flex-flow: column;
+  padding: 1vw;
 }

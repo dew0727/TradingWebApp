@@ -71,18 +71,13 @@ const TradingPage = () => {
       className: "account_delete",
       align: "center",
       render: (acc) => (
-        <Popconfirm 
-        title="この口座を削除しますか？"
-        onConfirm={() => onHandleRemoveAccount(acc)}
-        okText="はい"
-        cancelText="番号"
+        <Popconfirm
+          title="この口座を削除しますか？"
+          onConfirm={() => onHandleRemoveAccount(acc)}
+          okText="はい"
+          cancelText="番号"
         >
-          <Button
-            type="primary"
-            block
-            danger
-            icon={<CloseOutlined />}
-          />
+          <Button type="primary" block danger icon={<CloseOutlined />} />
         </Popconfirm>
       ),
     },
@@ -603,7 +598,21 @@ const TradingPage = () => {
                   onHandleAccSetting(accname, basket, defaultLots)
                 }
               />
-              <Divider orientation="left">約定・失効通知</Divider>
+              <Row>
+                <Col span={20}>
+                  <Divider orientation="left">約定・失効通知</Divider>
+                </Col>
+                <Col span={4} className="delete-log-history-button">
+                  <Popconfirm
+                  title="ログをクリアしてもよろしいですか"
+                  onConfirm={() => {setlogHistory([])}}
+                  okText="はい"
+                  cancelText="番号"
+                  >
+                  <Button danger type="text">ログ削除</Button>
+                  </Popconfirm>
+                </Col>
+              </Row>
               <div className="log-history-time-line scrollable-container">
                 <List
                   bordered
