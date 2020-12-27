@@ -12,6 +12,7 @@ import {
   notification,
   message,
   List,
+  Typography,
   Divider,
   Popconfirm,
 } from "antd";
@@ -29,7 +30,8 @@ const dateFormat = require("dateformat");
 
 const { TabPane } = Tabs;
 
-const brokers = ["GP", "YJFX", "Saxo"];
+const brokers = ["GP", "YJFX", "SAXO"];
+const SymbolDictionary = ["EURUSD", "USDJPY", "GBPUSD", "GBPJPY", "EURJPY", "AUDJPY", "AUDUSD", "CADJPY"];
 
 const waiting_time = 5;
 
@@ -87,25 +89,21 @@ const TradingPage = () => {
     apiCall("/api/delete-account", account.name, "POST", (res, user, pass) => {
       if (res.success === true) {
         setAccounts(getAccounts().filter((acc) => acc.name !== account.name));
+        openNotification("Notice", "", "Removed Account " + account.name);
       }
     });
   };
 
   const requestOrderApi = (reqMsg) => {
-    console.log("request order: ", reqMsg);
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
       if (res.success === true) {
-        notification.success({
-          message: "Success",
-          description: "Server accepted request!",
-          duration: waiting_time,
-        });
+        openNotification("Notice", "", "Server accepted request");
       } else {
-        notification.error({
-          message: "Rejected",
-          description: "Server rejected request!",
-          duration: waiting_time,
-        });
+        openNotification(
+          "Error",
+          "Rejected order",
+          "Server rejected request order."
+        );
       }
     });
   };
@@ -124,22 +122,24 @@ const TradingPage = () => {
     }
 
     const title =
-      "Request " +
-      (order.Mode === "ORDER_CLOSE_ALL"
+      order.Mode === "ORDER_CLOSE_ALL"
         ? "CLOSE ALL " + order.Symbol
-        : `${order.Type} ${order.Command} Order`);
+        : `${order.Type} ${order.Command} Order`;
     const disMsg = `Account: ${curAccount}, Symbol: ${order.Symbol}, Lots: ${order.Lots}, Price: ${order.Price}, SL: ${order.SL}, TP: ${order.TP}`;
-    notification.info({
-      message: title,
-      description: disMsg,
-      duration: waiting_time,
-    });
 
+    openNotification("Request", title, disMsg);
     requestOrderApi(orderMsg);
   };
 
   const getSymbols = () => {
-    return Object.keys(rates);
+    const sorted = Object.keys(rates).sort((a, b) => {
+      const id1 = SymbolDictionary.indexOf(a);
+      const id2 = SymbolDictionary.indexOf(b);
+      
+      return (1 / id1) < (1 / id2) ? 1 : -1;
+    });
+
+    return sorted;
   };
 
   const getAccounts = () => {
@@ -207,13 +207,13 @@ const TradingPage = () => {
 
         if (response.success) {
           openNotification(
-            "success",
+            "Order",
             `Order Response from ${response.account}`,
             response.message
           );
         } else {
           openNotification(
-            "error",
+            "Error",
             `Order Response from ${response.account}`,
             response.message
           );
@@ -262,26 +262,17 @@ const TradingPage = () => {
   const onFinish = (values) => {
     apiCall("/api/add-account", { ...values }, "POST", (res, user, pass) => {
       if (res.success === true) {
-        console.log("account added");
         var account = {
           name: values.broker + values.number,
           basket: values.basket === undefined ? false : values.basket,
           default: values.default === undefined ? 1 : values.default,
           ...values,
         };
-        console.log(account);
         setAccounts([...accounts, account]);
-        notification.success({
-          message: "Created new account.",
-          duration: waiting_time,
-        });
+        openNotification("Notice", "Created new account");
         return;
       } else {
-        notification.error({
-          message: "Failed to create new account.",
-          description: res.error,
-          duration: waiting_time,
-        });
+        openNotification("Error", "Failed to create new account.", res.error);
       }
     });
   };
@@ -331,7 +322,7 @@ const TradingPage = () => {
             acc.name === account.name ? account : acc
           );
         });
-        notification.success({ message: sMsg, duration: waiting_time });
+        openNotification("Notice", sMsg);
       }
     });
   };
@@ -354,47 +345,34 @@ const TradingPage = () => {
   };
 
   const openNotification = (type, title, content) => {
-    switch (type) {
-      case "success":
-        notification.success({
-          message: title,
-          description: content,
-          duration: waiting_time,
-        });
-        break;
-
-      case "info":
-        notification.info({
-          message: title,
-          description: content,
-          duration: waiting_time,
-        });
-        break;
-
-      case "error":
-        notification.error({
-          message: title,
-          description: content,
-          duration: waiting_time,
-        });
-        break;
-
-      default:
+    if (type === "Error") {
+      notification.error({
+        message: title,
+        description: content,
+        duration: waiting_time,
+      });
+    } else {
+      notification.open({
+        message: title,
+        description: content,
+        duration: waiting_time,
+      });
     }
 
-    var now = new Date();
     addLog(
-      dateFormat(now, "hh:MM:ss") +
-        " > " +
-        title.replace("Order Response from", "") +
+      type,
+      (title ? title.replace("Order Response from", "") : "") +
         " " +
-        content
+        (content ? content : "")
     );
   };
 
-  const addLog = (content) => {
+  const addLog = (type, content) => {
+    const now = new Date();
+    content = dateFormat(now, "hh:MM:ss") + " >\t" + content;
+
     setlogHistory((prevState) => {
-      return [content, ...prevState];
+      return [{ type: type, content: content }, ...prevState];
     });
   };
 
@@ -565,11 +543,11 @@ const TradingPage = () => {
                       message.error("対象の建玉はございません");
                       return;
                     }
-                    notification.info({
-                      message: "Request Close All",
-                      description: "Close all positions of system",
-                      duration: waiting_time,
-                    });
+                    openNotification(
+                      "Request",
+                      "Close All",
+                      "Request to close all positions."
+                    );
                     requestOrderApi({
                       Account: curAccount === "All" ? "All" : "Basket",
                       Mode: "ORDER_CLOSE_ALL",
@@ -600,16 +578,20 @@ const TradingPage = () => {
               />
               <Row>
                 <Col span={20}>
-                  <Divider orientation="left">約定・失効通知</Divider>
+                  <Divider orientation="left">取引日誌</Divider>
                 </Col>
                 <Col span={4} className="delete-log-history-button">
                   <Popconfirm
-                  title="ログをクリアしてもよろしいですか"
-                  onConfirm={() => {setlogHistory([])}}
-                  okText="はい"
-                  cancelText="番号"
+                    title="ログをクリアしてもよろしいですか"
+                    onConfirm={() => {
+                      setlogHistory([]);
+                    }}
+                    okText="はい"
+                    cancelText="番号"
                   >
-                  <Button danger type="text">ログ削除</Button>
+                    <Button danger type="text">
+                      ログ削除
+                    </Button>
                   </Popconfirm>
                 </Col>
               </Row>
@@ -618,7 +600,29 @@ const TradingPage = () => {
                   bordered
                   size="small"
                   dataSource={logHistory}
-                  renderItem={(item) => <List.Item>{item}</List.Item>}
+                  renderItem={(item) => (
+                    <List.Item>
+                      {item.type === "Request" && (
+                        <Typography.Text type="secondary">
+                          [{item.type}]{"\t\t"}
+                        </Typography.Text>
+                      )}
+                      {item.type === "Order" && (
+                        <Typography.Text type="success">
+                          [{item.type}]{"\t\t"}
+                        </Typography.Text>
+                      )}
+                      {item.type === "Notice" && (
+                        <Typography.Text mark>[{item.type}]{"\t\t"}</Typography.Text>
+                      )}
+                      {item.type === "Error" && (
+                        <Typography.Text type="danger">
+                          [{item.type}]{"\t\t"}
+                        </Typography.Text>
+                      )}
+                      {item.content}
+                    </List.Item>
+                  )}
                 ></List>
               </div>
             </div>
