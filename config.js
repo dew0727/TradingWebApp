@@ -20,6 +20,7 @@ const EVENTS = {
 
 // registered users
 const USERS = {
+    'admin': 'pass',
     'testuser0523@proton.com': 'test',
     'testuser1': 'testpass123',
     'testuser2': 'testpass123',

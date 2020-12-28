@@ -280,7 +280,7 @@ const processMessage = (topic, msg) => {
 
       var accounts = db.GetAccounts();
       if (!accounts.some((acc) => acc.name === accName)) return;
-
+      console.log(topic, response);
       if (sRsp !== "") {
         var response = {
           account: accName,
