@@ -31,7 +31,16 @@ const dateFormat = require("dateformat");
 const { TabPane } = Tabs;
 
 const brokers = ["GP", "YJFX", "SAXO"];
-const SymbolDictionary = ["EURUSD", "USDJPY", "GBPUSD", "GBPJPY", "EURJPY", "AUDJPY", "AUDUSD", "CADJPY"];
+const SymbolDictionary = [
+  "EURUSD",
+  "USDJPY",
+  "GBPUSD",
+  "GBPJPY",
+  "EURJPY",
+  "AUDJPY",
+  "AUDUSD",
+  "CADJPY",
+];
 
 const waiting_time = 5;
 
@@ -136,7 +145,7 @@ const TradingPage = () => {
       const id1 = SymbolDictionary.indexOf(a);
       const id2 = SymbolDictionary.indexOf(b);
 
-      return (1 / id1) < (1 / id2) ? 1 : -1;
+      return 1 / id1 < 1 / id2 ? 1 : -1;
     });
 
     return sorted;
@@ -362,8 +371,8 @@ const TradingPage = () => {
     addLog(
       type,
       (title ? title.replace("Order Response from", "") : "") +
-      " " +
-      (content ? content : "")
+        " " +
+        (content ? content : "")
     );
   };
 
@@ -603,27 +612,29 @@ const TradingPage = () => {
                   renderItem={(item) => (
                     <List.Item>
                       <Row>
-                        <Col span={3}>
+                        <Col span={2}>
                           {item.type === "Request" && (
                             <Typography.Text type="secondary">
-                              [{item.type}]{"\t\t"}
+                              [{item.type}]
                             </Typography.Text>
                           )}
                           {item.type === "Order" && (
                             <Typography.Text mark>
-                              [{item.type}]{"\t\t"}
+                              [{item.type}]
                             </Typography.Text>
                           )}
                           {item.type === "Notice" && (
-                            <Typography.Text type="success">[{item.type}]{"\t\t"}</Typography.Text>
+                            <Typography.Text type="success">
+                              [{item.type}]
+                            </Typography.Text>
                           )}
                           {item.type === "Error" && (
                             <Typography.Text type="danger">
-                              [{item.type}]{"\t\t"}
+                              [{item.type}]
                             </Typography.Text>
-                          )}</Col>
-                        <Col span={21}>
-                          {item.content}</Col>
+                          )}
+                        </Col>
+                        <Col span={22}>{item.content}</Col>
                       </Row>
                     </List.Item>
                   )}

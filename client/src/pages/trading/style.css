@@ -196,3 +196,12 @@
   flex-flow: column;
   padding: 1vw;
 }
+
+.log-history-time-line li {
+  padding: 5px !important;
+}
+
+.log-history-time-line .ant-row {
+  width: 100%;
+  flex-flow: row;
+}
