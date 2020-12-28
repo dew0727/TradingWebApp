@@ -615,22 +615,22 @@ const TradingPage = () => {
                         <Col span={2}>
                           {item.type === "Request" && (
                             <Typography.Text type="secondary">
-                              [{item.type}]
+                              [リクエスト]
                             </Typography.Text>
                           )}
                           {item.type === "Order" && (
                             <Typography.Text mark>
-                              [{item.type}]
+                              [取引]
                             </Typography.Text>
                           )}
                           {item.type === "Notice" && (
                             <Typography.Text type="success">
-                              [{item.type}]
+                              [通知]
                             </Typography.Text>
                           )}
                           {item.type === "Error" && (
                             <Typography.Text type="danger">
-                              [{item.type}]
+                              [エラー]
                             </Typography.Text>
                           )}
                         </Col>
