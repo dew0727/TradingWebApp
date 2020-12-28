@@ -280,13 +280,13 @@ const processMessage = (topic, msg) => {
 
       var accounts = db.GetAccounts();
       if (!accounts.some((acc) => acc.name === accName)) return;
-      console.log(topic, response);
       if (sRsp !== "") {
         var response = {
           account: accName,
           success: sRsp.split(",")[0] === "True",
           message: sRsp.split(",")[1],
         };
+        console.log(topic, response);
         socket.emit(topic, JSON.stringify(response));
       }
 

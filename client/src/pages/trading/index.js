@@ -608,12 +608,12 @@ const TradingPage = () => {
                         </Typography.Text>
                       )}
                       {item.type === "Order" && (
-                        <Typography.Text type="success">
+                        <Typography.Text mark>
                           [{item.type}]{"\t\t"}
                         </Typography.Text>
                       )}
                       {item.type === "Notice" && (
-                        <Typography.Text mark>[{item.type}]{"\t\t"}</Typography.Text>
+                        <Typography.Text type="success">[{item.type}]{"\t\t"}</Typography.Text>
                       )}
                       {item.type === "Error" && (
                         <Typography.Text type="danger">
