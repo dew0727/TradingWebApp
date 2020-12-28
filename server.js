@@ -6,11 +6,16 @@ const socketIO = require("socket.io");
 const rmq = require("./utils/rmq");
 const auth = require("./auth");
 const db = require("./utils/db");
+const path = require('path');
 
 // set config
-const port = config.SOCKET_PORT || 4001;
+const port = process.env.SOCKET_PORT || 3000;
 const app = express();
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, '/client/build')));
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, '/client/build', 'index.html'))
+});
 
 // server instance
 const server = http.createServer(app);
@@ -37,8 +42,8 @@ io.on(EVENTS.ON_CONNECTION, (socket) => {
 // http login
 app.post("/api/login", (req, res) => {
   var time = Date.now();
+  console.log("user authentication request " + req);
   var data = req.body.body;
-  console.log("user authentication request " + data);
   data = JSON.parse(data);
   const result = auth.authenticate(data.username, data.password);
   console.log("auth result: " + result);

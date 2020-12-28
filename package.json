@@ -4,7 +4,8 @@
   "scripts": {
     "client": "npm start --prefix client",
     "server": "node server.js",
-    "start": "concurrently \"npm run server\" \"npm run client\""
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "concurrently \"npm run server\" \"cd client & npm run build\""
   },
   "dependencies": {
     "amqplib": "^0.6.0",
