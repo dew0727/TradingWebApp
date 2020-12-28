@@ -135,7 +135,7 @@ const TradingPage = () => {
     const sorted = Object.keys(rates).sort((a, b) => {
       const id1 = SymbolDictionary.indexOf(a);
       const id2 = SymbolDictionary.indexOf(b);
-      
+
       return (1 / id1) < (1 / id2) ? 1 : -1;
     });
 
@@ -362,8 +362,8 @@ const TradingPage = () => {
     addLog(
       type,
       (title ? title.replace("Order Response from", "") : "") +
-        " " +
-        (content ? content : "")
+      " " +
+      (content ? content : "")
     );
   };
 
@@ -602,25 +602,29 @@ const TradingPage = () => {
                   dataSource={logHistory}
                   renderItem={(item) => (
                     <List.Item>
-                      {item.type === "Request" && (
-                        <Typography.Text type="secondary">
-                          [{item.type}]{"\t\t"}
-                        </Typography.Text>
-                      )}
-                      {item.type === "Order" && (
-                        <Typography.Text mark>
-                          [{item.type}]{"\t\t"}
-                        </Typography.Text>
-                      )}
-                      {item.type === "Notice" && (
-                        <Typography.Text type="success">[{item.type}]{"\t\t"}</Typography.Text>
-                      )}
-                      {item.type === "Error" && (
-                        <Typography.Text type="danger">
-                          [{item.type}]{"\t\t"}
-                        </Typography.Text>
-                      )}
-                      {item.content}
+                      <Row>
+                        <Col span={3}>
+                          {item.type === "Request" && (
+                            <Typography.Text type="secondary">
+                              [{item.type}]{"\t\t"}
+                            </Typography.Text>
+                          )}
+                          {item.type === "Order" && (
+                            <Typography.Text mark>
+                              [{item.type}]{"\t\t"}
+                            </Typography.Text>
+                          )}
+                          {item.type === "Notice" && (
+                            <Typography.Text type="success">[{item.type}]{"\t\t"}</Typography.Text>
+                          )}
+                          {item.type === "Error" && (
+                            <Typography.Text type="danger">
+                              [{item.type}]{"\t\t"}
+                            </Typography.Text>
+                          )}</Col>
+                        <Col span={21}>
+                          {item.content}</Col>
+                      </Row>
                     </List.Item>
                   )}
                 ></List>
