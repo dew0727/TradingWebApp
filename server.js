@@ -33,27 +33,27 @@ require("./utils/socket").socket.setIo(io);
 const EVENTS = config.EVENTS;
 
 io.on(EVENTS.ON_CONNECTION, (socket) => {
-  console.log("Socket User connected");
+  console.log(new Date().toLocaleString(), "Socket User connected");
   socket.on(EVENTS.ON_DISCONNECT, () => {
-    console.log("Socket User Disconnected");
+    console.log(new Date().toLocaleString(), "Socket User Disconnected");
   });
 });
 
 // http login
 app.post("/api/login", (req, res) => {
   var time = Date.now();
-  console.log("user authentication request " + req);
+  console.log(new Date().toLocaleString(), "user authentication request " + req);
   var data = req.body.body;
   data = JSON.parse(data);
   const result = auth.authenticate(data.username, data.password);
-  console.log("auth result: " + result);
+  console.log(new Date().toLocaleString(), "auth result: " + result);
 
   if (result == true) {
     subscribeForUser(data.username);
     db.Init();
   }
 
-  console.log("pricefeed", db.GetPriceFeed());
+  console.log(new Date().toLocaleString(), "pricefeed", db.GetPriceFeed());
 
   res.json({
     auth: result,
@@ -66,7 +66,7 @@ app.post("/api/login", (req, res) => {
 app.post("/api/logout", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-  console.log("user logout request " + data);
+  console.log(new Date().toLocaleString(), "user logout request " + data);
 
   unsubscribeForUser(data.username);
 
@@ -79,7 +79,7 @@ app.post("/api/logout", (req, res) => {
 app.post("/api/add-account", (req, res) => {
   var data = req.body.body;
 
-  console.log("add account data: ", data);
+  console.log(new Date().toLocaleString(), "add account data: ", data);
   data = JSON.parse(data);
   var account = {
     name: data.broker + data.number,
@@ -99,7 +99,7 @@ app.post("/api/add-account", (req, res) => {
 app.post("/api/update-account", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-  console.log("update account data: ", data);
+  console.log(new Date().toLocaleString(), "update account data: ", data);
   const account = {
     name: data.broker + data.number,
     basket: data.basket ? data.basket : false,
@@ -117,7 +117,7 @@ app.post("/api/update-account", (req, res) => {
 
 app.post("/api/delete-account", (req, res) => {
   var data = req.body.body;
-  console.log("delete account data: ", data);
+  console.log(new Date().toLocaleString(), "delete account data: ", data);
 
   data = JSON.parse(data);
 
@@ -132,7 +132,7 @@ app.post("/api/delete-account", (req, res) => {
 app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
 
-  console.log("request order: ", data);
+  console.log(new Date().toLocaleString(), "request order: ", data);
 
   data = JSON.parse(data);
 
@@ -217,16 +217,16 @@ app.post("/api/price-feed", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
   var feed = data.feed;
-  console.log(feed);
+  console.log(new Date().toLocaleString(), feed);
 
   db.SetPriceFeed(feed);
-  console.log("Price-feed: ", db.GetPriceFeed());
+  console.log(new Date().toLocaleString(), "Price-feed: ", db.GetPriceFeed());
   res.json({
     success: true,
   });
 });
 
-server.listen(port, () => console.log(`Listening on port ${port}`));
+server.listen(port, () => console.log(new Date().toLocaleString(), `Listening on port ${port}`));
 
 const subscribeForUser = (user) => {
   rmq.subscribeChannel(EVENTS.ON_PRICE_TICK, user);
@@ -238,7 +238,7 @@ const subscribeForUser = (user) => {
 };
 
 const unsubscribeForUser = (user) => {
-  console.log("unsbscribing user: ", user);
+  console.log(new Date().toLocaleString(), "unsbscribing user: ", user);
   rmq.unsubscribeQueue(EVENTS.ON_PRICE_TICK, user);
   rmq.unsubscribeQueue(EVENTS.ON_ACCOUNT, user);
   rmq.unsubscribeQueue(EVENTS.ON_POSLIST, user);

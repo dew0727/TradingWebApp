@@ -23,7 +23,7 @@ amqp.connect(
   `amqp://${userName}:${password}@${rabbitmqHost}`,
   (error0, connection) => {
     if (error0) {
-      console.log(0);
+      console.log(new Date().toLocaleString(), 0);
       throw error0;
     }
 
@@ -46,21 +46,21 @@ const whenConnected = (chan) => {
 };
 
 const publishMessage = (topic, sMsg) => {
-  console.log("publish msg", topic, sMsg);
+  console.log(new Date().toLocaleString(), "publish msg", topic, sMsg);
   channel.publish(exchange, topic, Buffer.from('"' + sMsg + '"'), {
     deliveryMode: 2,
     type: exchange,
   });
 
-  console.log(sMsg);
+  console.log(new Date().toLocaleString(), sMsg);
 };
 
 const unsubscribeQueue = (topic, username) => {
   const queue = "System.String, mscorlib_" + topic + username;
-  console.log("deleteing queue: ", queue);
+  console.log(new Date().toLocaleString(), "deleteing queue: ", queue);
   channel.deleteQueue(queue, (err, ok) => {
-    console.log(err, ok);
-    if (ok) console.log("Deleted queue named ", queue);
+    console.log(new Date().toLocaleString(), err, ok);
+    if (ok) console.log(new Date().toLocaleString(), "Deleted queue named ", queue);
   });
 };
 
@@ -76,7 +76,7 @@ const subscribeChannel = (topic, username) => {
         throw error2;
       }
 
-      console.log(
+      console.log(new Date().toLocaleString(), 
         " [*] Waiting for messages in %s. To exit press CTRL+C",
         q.queue
       );
@@ -89,7 +89,7 @@ const subscribeChannel = (topic, username) => {
           if (msg && msg.content) {
             var str = msg.content.toString().replace('"', "");
             str = str.replace('"', "");
-            //console.log(topic, str);
+            //console.log(new Date().toLocaleString(), topic, str);
             processMessage(topic, str);
           }
         },
@@ -286,7 +286,7 @@ const processMessage = (topic, msg) => {
           success: sRsp.split(",")[0] === "True",
           message: sRsp.split(",")[1],
         };
-        console.log(topic, response);
+        console.log(new Date().toLocaleString(), topic, response);
         socket.emit(topic, JSON.stringify(response));
       }
 

@@ -210,7 +210,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               newSignal(ORDER_MODE.CLOSE_ALL, "", 0);
             }}
           >
-            前決済
+            決済
           </Button>
         </Col>
       </Row>
