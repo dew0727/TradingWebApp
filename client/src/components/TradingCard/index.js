@@ -337,7 +337,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
                 });
               }}
             >
-              LMT
+              指値
             </Button>
           </Col>
           <Col className="trading-card-label trading-card-value" span={12}>
@@ -367,7 +367,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
                 setorderType("MARKET");
               }}
             >
-              MKT
+              成行
             </Button>
           </Col>
         </Row>
