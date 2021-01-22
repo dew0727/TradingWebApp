@@ -108,3 +108,7 @@
 .lmt-price-value input {
   text-align-last: center !important;
 }
+
+.trading-card-value .ant-btn {
+  padding: 0 !important;
+}

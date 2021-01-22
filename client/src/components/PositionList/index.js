@@ -1,8 +1,9 @@
 import React from "react";
 import { Button, Table, Grid } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 import "./style.css";
 
-const PositionTable = ({ positions, onClickCloseAll }) => {
+const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
   const isDesktop = Grid.useBreakpoint()?.sm;
 
   const columns = [
@@ -62,6 +63,22 @@ const PositionTable = ({ positions, onClickCloseAll }) => {
       align: "center",
       key: "account",
       defaultSortOrder: "ascend",
+    },
+    {
+      title: "削除",
+      className: "position-close",
+      align: "center",
+      render: (position) => (
+        <Button
+          type="primary"
+          block
+          danger
+          icon={<CloseOutlined />}
+          onClick={(e) => {
+            onClickCloseOne(position.symbol, position.account);
+          }}
+        />
+      ),
     },
   ];
 

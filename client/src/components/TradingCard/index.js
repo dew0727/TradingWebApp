@@ -337,7 +337,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
                 });
               }}
             >
-              指値
+              <span>指値</span>
             </Button>
           </Col>
           <Col className="trading-card-label trading-card-value" span={12}>

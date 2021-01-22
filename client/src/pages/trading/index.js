@@ -544,6 +544,25 @@ const TradingPage = () => {
               <div className="trading-table-wrapper">
                 <PositionTable
                   positions={parsePosList()}
+                  onClickCloseOne={(symbol, account) => {
+                    if (
+                      parsePosList() === undefined ||
+                      parsePosList().length < 1
+                    ) {
+                      message.error("対象の建玉はございません");
+                      return;
+                    }
+                    openNotification(
+                      "Request",
+                      "Close Position",
+                      "Request to close positions of " + symbol,
+                    );
+                    requestOrderApi({
+                      Account: account,
+                      Mode: "ORDER_CLOSE_ALL",
+                      Symbol: symbol,
+                    });
+                  }}
                   onClickCloseAll={() => {
                     if (
                       parsePosList() === undefined ||
@@ -573,6 +592,18 @@ const TradingPage = () => {
                       Account: acc,
                       Mode: "ORDER_DELETE",
                       Symbol: ticket,
+                    });
+                  }}
+                  onClickOrderCloseAll={() => {
+                    openNotification(
+                      "Request",
+                      "Close All Pending Orders",
+                      "Request to close all pending orders."
+                    );
+                    requestOrderApi({
+                      Account: curAccount === "All" ? "All" : "Basket",
+                      Mode: "ORDER_DELETE_ALL",
+                      Symbol: "ALL",
                     });
                   }}
                 />

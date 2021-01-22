@@ -180,6 +180,32 @@ app.post("/api/order-request", (req, res) => {
       if (!db.GetAccountStatus(accName)) break;
       rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
       break;
+
+    case "ORDER_DELETE_ALL":
+      if (data.Symbol === "ALL") {
+        accounts.forEach((acc) => {
+          if (db.GetAccountStatus(acc.name) && (acc.basket || accName === "All")) {
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          }
+        });
+      } else {
+        if (accName === "Basket" || accName === "All") {
+          accounts.forEach((acc) => {
+            if (db.GetAccountStatus(acc.name) && (acc.basket || accName === "All")) {
+              orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
+              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            }
+          });
+        } else {
+          if (db.GetAccountStatus(accName)) {
+            orderMsg = `${accName}@${data.Mode},${data.Symbol}`;
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          }
+        }
+      }
+      break;
+
     case "ORDER_CLOSE_ALL":
       if (data.Symbol === "ALL") {
         accounts.forEach((acc) => {
