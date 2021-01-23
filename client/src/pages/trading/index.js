@@ -359,20 +359,22 @@ const TradingPage = () => {
         message: title,
         description: content,
         duration: waiting_time,
+        placement: "bottomRight",
       });
     } else {
       notification.open({
         message: title,
         description: content,
         duration: waiting_time,
+        placement: "bottomRight",
       });
     }
 
     addLog(
       type,
       (title ? title.replace("Order Response from", "") : "") +
-        " " +
-        (content ? content : "")
+      " " +
+      (content ? content : "")
     );
   };
 
@@ -617,65 +619,14 @@ const TradingPage = () => {
                 }
               />
               <Row>
-                <Col span={20}>
-                  <Divider orientation="left">取引日誌</Divider>
-                </Col>
-                <Col span={4} className="delete-log-history-button">
-                  <Popconfirm
-                    title="ログをクリアしてもよろしいですか"
-                    onConfirm={() => {
-                      setlogHistory([]);
-                    }}
-                    okText="はい"
-                    cancelText="番号"
-                  >
-                    <Button danger type="text">
-                      ログ削除
-                    </Button>
-                  </Popconfirm>
-                </Col>
+
               </Row>
-              <div className="log-history-time-line scrollable-container">
-                <List
-                  bordered
-                  size="small"
-                  dataSource={logHistory}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <Row>
-                        <Col span={2}>
-                          {item.type === "Request" && (
-                            <Typography.Text type="secondary">
-                              [リクエスト]
-                            </Typography.Text>
-                          )}
-                          {item.type === "Order" && (
-                            <Typography.Text mark>
-                              [取引]
-                            </Typography.Text>
-                          )}
-                          {item.type === "Notice" && (
-                            <Typography.Text type="success">
-                              [通知]
-                            </Typography.Text>
-                          )}
-                          {item.type === "Error" && (
-                            <Typography.Text type="danger">
-                              [エラー]
-                            </Typography.Text>
-                          )}
-                        </Col>
-                        <Col span={22}>{item.content}</Col>
-                      </Row>
-                    </List.Item>
-                  )}
-                ></List>
-              </div>
+
             </div>
           </div>
         </TabPane>
         <TabPane tab="設定" key="setting">
-          <div className="settings-wrapper">
+          <Row><div className="settings-wrapper">
             <div className="settings-form-wrapper">
               <Form
                 labelCol={{ span: 10, offset: 1 }}
@@ -757,6 +708,70 @@ const TradingPage = () => {
                 locale={locale}
               />
             </div>
+
+          </div>
+          </Row>
+          <div className="log-history-row-wrapper">
+            <Row>
+              <Col span={20}>
+                <Divider orientation="left">取引日誌</Divider>
+              </Col>
+              <Col span={4} className="delete-log-history-button">
+                <Popconfirm
+                  title="ログをクリアしてもよろしいですか"
+                  onConfirm={() => {
+                    setlogHistory([]);
+                  }}
+                  okText="はい"
+                  cancelText="番号"
+                >
+                  <Button danger type="text">
+                    ログ削除
+                    </Button>
+                </Popconfirm>
+              </Col>
+              </Row>
+            <Row>
+              <Col span={24}>
+                <div className="log-history-time-line scrollable-container">
+                  <List
+                    bordered
+                    size="small"
+                    dataSource={logHistory}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <Row>
+                          <Col span={2}>
+                            {item.type === "Request" && (
+                              <Typography.Text type="secondary">
+                                [リクエスト]
+                              </Typography.Text>
+                            )}
+                            {item.type === "Order" && (
+                              <Typography.Text mark>
+                                [取引]
+                              </Typography.Text>
+                            )}
+                            {item.type === "Notice" && (
+                              <Typography.Text type="success">
+                                [通知]
+                              </Typography.Text>
+                            )}
+                            {item.type === "Error" && (
+                              <Typography.Text type="danger">
+                                [エラー]
+                              </Typography.Text>
+                            )}
+                          </Col>
+                          <Col span={22}>{item.content}</Col>
+                        </Row>
+                      </List.Item>
+                    )}
+                  ></List>
+                </div>
+              </Col>
+            </Row>
+
           </div>
         </TabPane>
       </Tabs>

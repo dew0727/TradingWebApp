@@ -205,3 +205,7 @@
   width: 100%;
   flex-flow: row;
 }
+
+.log-history-row-wrapper {
+  max-width: 1000px;
+}
