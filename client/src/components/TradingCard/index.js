@@ -9,6 +9,8 @@ const ORDER_TYPES = {
   BUYSTOP: "BUYSTOP",
   SELLLMIT: "SELLLIMIT",
   SELLSTOP: "SELLSTOP",
+  LIMIT: "LIMIT",
+  STOP: "STOP",
 };
 
 const COMMAND = {
@@ -105,15 +107,40 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
       return;
     }
 
-    let ordType = "";
+    let ordType = "MARKET";
     if (orderType !== ORDER_TYPES.MARKET) {
       reqPrice = orderContent.price;
-      if (command === COMMAND.BUY) {
-        if (reqPrice < ask) ordType = "BUYLIMIT";
-        else ordType = "BUYSTOP";
-      } else {
-        if (reqPrice > bid) ordType = "SELLLIMIT";
-        else ordType = "SELLSTOP";
+
+      if (orderType === ORDER_TYPES.LIMIT) {
+        if (command === COMMAND.BUY && reqPrice > ask) 
+        {
+          message.error("Invalid price for BUY LIMIT order");
+          return;
+        }
+
+        if (command === COMMAND.SELL && reqPrice < bid) 
+        {
+          message.error("Invalid price for SELL LIMIT order");
+          return;
+        }
+
+        ordType = command + "LIMIT";
+      } 
+      else if (orderType === ORDER_TYPES.STOP)
+      {
+        if (command === COMMAND.BUY && reqPrice < ask) 
+        {
+          message.error("Invalid price for BUY STOP order");
+          return;
+        }
+
+        if (command === COMMAND.SELL && reqPrice > bid) 
+        {
+          message.error("Invalid price for SELL STOP order");
+          return;
+        }
+
+        ordType = command + "STOP";
       }
     }
 
@@ -140,7 +167,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
       Price: reqPrice,
       SL: orderContent.sl,
       TP: orderContent.tp,
-      Type: orderType === ORDER_TYPES.MARKET ? orderType : ordType,
+      Type: ordType,
     };
     reqOrder(orderMsg);
   };
@@ -324,8 +351,20 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
         </div>
       </div>
       <div className="card-net-pos-info">
+      
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
-          <Col className="trading-card-value buy-lots" span={6}>
+        <Col className="trading-card-value sell-lots" span={5}>
+            <Button
+              block
+              type={orderType === "MARKET" ? "primary" : "default"}
+              onClick={() => {
+                setorderType("MARKET");
+              }}
+            >
+              成行
+            </Button>
+          </Col>
+          <Col className="trading-card-value buy-lots" span={5}>
             <Button
               block
               type={orderType === "LIMIT" ? "primary" : "default"}
@@ -340,7 +379,22 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               <span>指値</span>
             </Button>
           </Col>
-          <Col className="trading-card-label trading-card-value" span={12}>
+          <Col className="trading-card-value buy-lots" span={6}>
+            <Button
+              block
+              type={orderType === "STOP" ? "danger" : "default"}
+              onClick={() => {
+                setorderType("STOP");
+                setOrderContent({
+                  ...orderContent,
+                  price: bid,
+                });
+              }}
+            >
+              <span>迸指値</span>
+            </Button>
+          </Col>
+          <Col className="trading-card-label trading-card-value" span={8}>
             <InputNumber
               className="lmt-price-value"
               step={"0." + "0".repeat(point - 1) + "1"}
@@ -359,17 +413,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               }}
             />
           </Col>
-          <Col className="trading-card-value sell-lots" span={6}>
-            <Button
-              block
-              type={orderType === "MARKET" ? "primary" : "default"}
-              onClick={() => {
-                setorderType("MARKET");
-              }}
-            >
-              成行
-            </Button>
-          </Col>
+          
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
           <Col className="trading-card-value buy-lots" span={6}>

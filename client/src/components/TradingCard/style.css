@@ -1,5 +1,5 @@
 .trading-card-container {
-  width: 215px;
+  width: 220px;
   background-color: #e5e5e5;
   border-style: solid;
   border-color: black;
@@ -106,7 +106,8 @@
 }
 
 .lmt-price-value input {
-  text-align-last: center !important;
+  text-align-last: left !important;
+  padding: 1px;
 }
 
 .trading-card-value .ant-btn {
