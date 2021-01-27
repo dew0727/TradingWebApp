@@ -391,7 +391,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
                 });
               }}
             >
-              <span>迸指値</span>
+              <span>逆指値</span>
             </Button>
           </Col>
           <Col className="trading-card-label trading-card-value" span={8}>
