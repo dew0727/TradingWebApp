@@ -109,6 +109,11 @@
   text-align-last: center !important;
 }
 
+.lmt-price-value input:focus{
+  text-align-last:auto !important;  
+  padding: 0 1px !important; 
+}
+
 .trading-card-value .ant-btn {
   padding: 0 !important;
 }

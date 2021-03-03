@@ -30,7 +30,7 @@ const dateFormat = require("dateformat");
 
 const { TabPane } = Tabs;
 
-const brokers = ["GP", "YJFX", "SAXO"];
+const brokers = ["GP", "YJFX", "SAXO", "FXGBM"];
 const SymbolDictionary = [
   "EURUSD",
   "USDJPY",

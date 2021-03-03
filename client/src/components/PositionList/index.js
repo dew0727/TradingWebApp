@@ -42,6 +42,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       dataIndex: "profit",
       align: "center",
       key: "profit",
+      render: (profit)=>(profit.toFixed(0))
     },
     {
       title: isDesktop ? "スワップ" : "スワ..",
@@ -49,6 +50,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       dataIndex: "swap",
       align: "center",
       key: "swap",
+      render: (swap)=>(swap.toFixed(0))
     },
     {
       title: isDesktop ? "損益合計" : "損益..",

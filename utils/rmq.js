@@ -190,7 +190,7 @@ const processMessage = (topic, msg) => {
       var items = sContent.split(";");
 
       var positions = [];
-      var total_profit = 0;
+      
       for (var i = 0; i < items.length; i++) {
         var posItems = items[i].split(",");
 
@@ -199,7 +199,7 @@ const processMessage = (topic, msg) => {
         var open_price = Number.parseFloat(posItems[2]).toFixed(5);
         var swap = Number.parseFloat(posItems[3]);
         var profit = Number.parseFloat(posItems[4]);
-        total_profit += profit;
+        var total_profit = profit + swap;
         var posCount = Number.parseFloat(posItems[5]);
         var current_price = Number.parseFloat(posItems[6]);
 
@@ -210,18 +210,18 @@ const processMessage = (topic, msg) => {
           current_price,
           profit,
           swap,
-          total_profit: 0,
+          total_profit: total_profit.toFixed(0),
           account: accName,
         };
 
         positions.push(position);
       }
 
-      total_profit = total_profit.toFixed(2);
-      positions = positions.map((pos) => {
-        pos.total_profit = total_profit;
-        return pos;
-      });
+      // total_profit = total_profit.toFixed(2);
+      // positions = positions.map((pos) => {
+      //   pos.total_profit = total_profit;
+      //   return pos;
+      // });
 
       var data = { account: accName, positions };
       socket.emit(topic, JSON.stringify(data));
