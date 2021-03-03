@@ -1,8 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useDebounce } from "use-debounce";
 import { Table, InputNumber, Grid } from "antd";
 import "./style.css";
 
+const DefaultValueInput = ({ valueDefault, onChange, max }) => {
+  const [input, setInput] = useState(valueDefault);
+  const [value] = useDebounce(input, 100);
+
+  useEffect(() => {
+    console.log(value);
+    valueDefault !== value && onChange && onChange(value);
+  }, [value, valueDefault]);
+
+  return (
+    <InputNumber
+      key={"default-lots-input-" + value}
+      className="account-settings-default-lots-input"
+      value={value}
+      step={1}
+      min={1}
+      max={max}
+      onChange={(v) => setInput(v)}
+      size={"small"}
+    />
+  );
+};
+
+let maxLots = localStorage.getItem("maxDefault");
+if (typeof maxLots === 'undefined' || maxLots < 1) maxLots = 2;
+
+
 const AccountSettingTable = ({ accounts, callback }) => {
+  
+  const [maxDefault, setMaxDefault] = useState(maxLots);
+
   const isDesktop = Grid.useBreakpoint()?.sm;
   const columns = [
     {
@@ -84,16 +115,13 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "center",
       render: (text, record) => {
         return (
-          <InputNumber
-            className="account-settings-default-lots-input"
-            defaultValue={record.default}
-            step={1}
-            min={1}
+          <DefaultValueInput
+            valueDefault={record.default}
+            max={maxDefault}
             onChange={(val) => {
               if (val !== null && val !== "" && val >= 0)
                 onHandleClickBasket({ accname: record.name, defaultLots: val });
             }}
-            size={"small"}
           />
         );
       },
@@ -129,7 +157,26 @@ const AccountSettingTable = ({ accounts, callback }) => {
         columns={columns}
         dataSource={typeof accounts !== "object" ? [] : accounts}
         bordered
-        title={() => "口座情報"}
+        title={() => 
+          <div className="position-table-title-control">
+            <span>口座情報</span>
+            <div>
+              <label>Max Value: </label>
+              <InputNumber
+                className="account-settings-default-lots-input"
+                defaultValue={maxLots}
+                step={1}
+                min={1}
+                onChange={(v) => {
+                  localStorage.setItem("maxDefault", v);
+                  setMaxDefault(v);
+                }}
+                size={"small"}
+              />
+            </div>
+            
+          </div>  
+        }
         pagination={false}
         locale={locale}
       />

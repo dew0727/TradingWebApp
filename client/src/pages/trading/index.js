@@ -15,6 +15,7 @@ import {
   Typography,
   Divider,
   Popconfirm,
+  Switch,
 } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
@@ -43,6 +44,7 @@ const SymbolDictionary = [
 ];
 
 const waiting_time = 5;
+let enableNotify = localStorage.getItem("enableNotify") ? true : false ;
 
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
@@ -337,16 +339,28 @@ const TradingPage = () => {
   };
 
   const extraAction = (
-    <Button
-      size={"default"}
-      danger
-      type="text"
-      onClick={() => {
-        Logout();
-      }}
-    >
-      ログアウト
-    </Button>
+    <div>
+      <label>Notification </label>
+      <Switch checkedChildren="ON" unCheckedChildren="OFF" defaultChecked={enableNotify} onChange={
+        (e) => {
+          enableNotify = e;
+          if (enableNotify === false) localStorage.removeItem("enableNotify");
+          else localStorage.setItem("enableNotify", true);
+        }
+      }
+      />
+      
+      <Button
+        size={"default"}
+        danger
+        type="text"
+        onClick={() => {
+          Logout();
+        }}
+      >
+        ログアウト
+      </Button>
+    </div>
   );
 
   let locale = {
@@ -354,6 +368,8 @@ const TradingPage = () => {
   };
 
   const openNotification = (type, title, content) => {
+    console.log(enableNotify);
+    if (enableNotify !== true) return;
     if (type === "Error") {
       notification.error({
         message: title,
