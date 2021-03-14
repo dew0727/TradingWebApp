@@ -117,3 +117,15 @@
 .trading-card-value .ant-btn {
   padding: 0 !important;
 }
+
+.trading-card-container .ant-input-number-handler-wrap{
+  width: 16px !important;
+}
+
+.trading-card-container .ant-input-number-handler-down-inner{
+  right: 2px !important;
+}
+
+.trading-card-container .ant-input-number-handler-up-inner{
+  right: 2px !important;
+}

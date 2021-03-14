@@ -3,14 +3,18 @@ import { useDebounce } from "use-debounce";
 import { Table, InputNumber, Grid } from "antd";
 import "./style.css";
 
+
+let maxLots = localStorage.getItem("maxDefault");
+if (maxLots === undefined || maxLots < 1) maxLots = 2;
+
+
 const DefaultValueInput = ({ valueDefault, onChange, max }) => {
   const [input, setInput] = useState(valueDefault);
   const [value] = useDebounce(input, 100);
 
   useEffect(() => {
-    console.log(value);
     valueDefault !== value && onChange && onChange(value);
-  }, [value, valueDefault]);
+  }, [value]);
 
   return (
     <InputNumber
@@ -25,10 +29,6 @@ const DefaultValueInput = ({ valueDefault, onChange, max }) => {
     />
   );
 };
-
-let maxLots = localStorage.getItem("maxDefault");
-if (typeof maxLots === 'undefined' || maxLots < 1) maxLots = 2;
-
 
 const AccountSettingTable = ({ accounts, callback }) => {
   
@@ -50,7 +50,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "right",
       render: (text, record) => {
         return record.balance
-          ? record.balance.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          ? Math.round(record.balance).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
@@ -61,7 +61,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "right",
       render: (text, record) => {
         return record.margin
-          ? record.margin.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          ? Math.round(record.margin).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
@@ -72,7 +72,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "right",
       render: (text, record) => {
         return record.profit
-          ? record.profit.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          ? Math.round(record.profit).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
@@ -83,7 +83,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "right",
       render: (text, record) => {
         return record.equity
-          ? record.equity.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          ? Math.round(record.equity).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
@@ -119,8 +119,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
             valueDefault={record.default}
             max={maxDefault}
             onChange={(val) => {
-              if (val !== null && val !== "" && val >= 0)
+              if (val !== null && val !== "" && val >= 0) {
                 onHandleClickBasket({ accname: record.name, defaultLots: val });
+              }
             }}
           />
         );
@@ -142,7 +143,6 @@ const AccountSettingTable = ({ accounts, callback }) => {
 
   const onHandleClickBasket = ({ accname, basket, defaultLots }) => {
     if (basket !== undefined) basket = basket === true ? false : true;
-
     callback({ accname, basket, defaultLots });
   };
 

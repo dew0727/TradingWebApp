@@ -359,6 +359,10 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               type={orderType === "MARKET" ? "primary" : "default"}
               onClick={() => {
                 setorderType("MARKET");
+                setOrderContent({
+                  ...orderContent,
+                  price: 0,
+                });
               }}
             >
               成行
@@ -379,7 +383,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               <span>指値</span>
             </Button>
           </Col>
-          <Col className="trading-card-value buy-lots" span={6}>
+          <Col className="trading-card-value buy-lots" span={5}>
             <Button
               block
               type={orderType === "STOP" ? "danger" : "default"}
@@ -394,7 +398,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               <span>逆指値</span>
             </Button>
           </Col>
-          <Col className="trading-card-label trading-card-value" span={8}>
+          <Col className="trading-card-label trading-card-value" span={9}>
             <InputNumber
               className="lmt-price-value"
               key={`lmt-price-${curIndex}`}

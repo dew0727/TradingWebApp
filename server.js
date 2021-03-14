@@ -99,7 +99,7 @@ app.post("/api/add-account", (req, res) => {
 app.post("/api/update-account", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-  console.log(new Date().toLocaleString(), "update account data: ", data);
+  
   const account = {
     name: data.broker + data.number,
     basket: data.basket ? data.basket : false,
@@ -108,7 +108,7 @@ app.post("/api/update-account", (req, res) => {
   };
 
   const { success, error } = db.UpdateAccount(account);
-
+  console.log(new Date().toLocaleString(), "updated account data: ", db.GetAccount(account.name));
   res.json({
     success,
     error,
