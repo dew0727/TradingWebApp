@@ -74,8 +74,8 @@ const AddAccount = (account) => {
   };
 };
 
-const DeleteAccount = (accountName) => {
-  accounts = accounts.filter((acc) => acc.name !== accountName);
+const DeleteAccount = ({account}) => {
+  accounts = accounts.filter((acc) => acc.name !== account);
 
   SaveAccountsData();
 };

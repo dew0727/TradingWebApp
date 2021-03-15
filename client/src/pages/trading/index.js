@@ -99,12 +99,13 @@ const TradingPage = () => {
   ];
 
   const onHandleRemoveAccount = (account) => {
+    
     if (!isTrader && !masterAccounts.hasOwnProperty(account.name)) {
       console.log("Remove account. Master can only access master accounts");
       return;
     }
 
-    apiCall("/api/delete-account", account.name, "POST", (res, user, pass) => {
+    apiCall("/api/delete-account", {account: account.name}, "POST", (res, user, pass) => {
       if (res.success === true) {
         setAccounts(getAccounts().filter((acc) => acc.name !== account.name));
         openNotification("Notice", "", "Removed Account " + account.name);

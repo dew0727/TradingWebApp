@@ -104,10 +104,14 @@ app.post("/api/add-account", (req, res) => {
   console.log(new Date().toLocaleString(), "add account data: ", data);
   data = JSON.parse(data);
   var account = {
+    broker: data.broker,
+    number: data.number,
+    loginID: data.loginID,
+    password: data.password,
     name: data.broker + data.number,
     basket: data.basket == undefined ? false : data.basket,
     default: data.default == undefined ? 1 : data.default,
-    ...data,
+    master: data.role === "master" ? true : false,
   };
 
   const { success, error } = db.AddAccount(account);
