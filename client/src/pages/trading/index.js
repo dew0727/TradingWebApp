@@ -44,7 +44,7 @@ const SymbolDictionary = [
 ];
 
 const waiting_time = 5;
-let enableNotify = localStorage.getItem("enableNotify") ? true : false ;
+let enableNotify = localStorage.getItem("enableNotify") ? true : false;
 var isTrader = true;
 var masterAccounts = {};
 
@@ -99,6 +99,11 @@ const TradingPage = () => {
   ];
 
   const onHandleRemoveAccount = (account) => {
+    if (!isTrader && !masterAccounts.hasOwnProperty(account.name)) {
+      console.log("Remove account. Master can only access master accounts");
+      return;
+    }
+
     apiCall("/api/delete-account", account.name, "POST", (res, user, pass) => {
       if (res.success === true) {
         setAccounts(getAccounts().filter((acc) => acc.name !== account.name));
@@ -108,6 +113,11 @@ const TradingPage = () => {
   };
 
   const requestOrderApi = (reqMsg) => {
+    if (!isTrader && !masterAccounts.hasOwnProperty(reqMsg.Account)) {
+        console.log("Request Order. Master can only access master accounts");
+        return;
+    }
+
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
       if (res.success === true) {
         openNotification("Notice", "", "Server accepted request");
@@ -182,10 +192,12 @@ const TradingPage = () => {
       case EVENTS.ON_ACCOUNT:
         var account = JSON.parse(message);
 
-        if (isTrader === true && isTrader === account.master) {
+        if (account.master) {
           masterAccounts[account.name] = true;
-          console.log("Account stopped by user role", masterAccounts);
-          return;
+          if (isTrader) {
+            console.log("Account stopped by user role", masterAccounts);
+            return;
+          }
         }
 
         setAccounts((prevState) => {
@@ -214,8 +226,11 @@ const TradingPage = () => {
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
 
-        if (isTrader === true && masterAccounts.hasOwnProperty(accPos.account)) {
-          console.log("Position list stopped by role")
+        if (
+          isTrader === true &&
+          masterAccounts.hasOwnProperty(accPos.account)
+        ) {
+          console.log("Position list stopped by role");
           return;
         }
 
@@ -224,8 +239,11 @@ const TradingPage = () => {
       case EVENTS.ON_ORDERLIST:
         var accOrders = JSON.parse(message);
 
-        if (isTrader === true && masterAccounts.hasOwnProperty(accOrders.account)) {
-          console.log("Order list stopped by role")
+        if (
+          isTrader === true &&
+          masterAccounts.hasOwnProperty(accOrders.account)
+        ) {
+          console.log("Order list stopped by role");
           return;
         }
 
@@ -236,7 +254,10 @@ const TradingPage = () => {
       case EVENTS.ON_ORDER_RESPONSE:
         var response = JSON.parse(message);
 
-        if (isTrader === true && masterAccounts.hasOwnProperty(response.account)) {
+        if (
+          isTrader === true &&
+          masterAccounts.hasOwnProperty(response.account)
+        ) {
           console.log("Order response stopped by role");
           return;
         }
@@ -317,6 +338,10 @@ const TradingPage = () => {
 
   const updateAccountOrPriceFeed = ({ selectedBroker, selectedAccount }) => {
     if (selectedBroker) {
+      if (!isTrader) {
+        console.log("Price-Feed. Master can access only master accounts");
+        return;
+      }
       apiCall(
         "/api/price-feed",
         { feed: selectedBroker },
@@ -353,6 +378,12 @@ const TradingPage = () => {
       account.default = defaultLots;
       sMsg += ` default value is ${defaultLots}`;
     }
+
+    if (!isTrader && !masterAccounts.hasOwnProperty(account.name)) {
+      console.log("Master can only access master accounts");
+      return;
+    }
+
     apiCall("/api/update-account", account, "POST", (res, user, pass) => {
       if (res.success === true) {
         setAccounts((prevState) => {
@@ -368,15 +399,17 @@ const TradingPage = () => {
   const extraAction = (
     <div>
       <label>Notification </label>
-      <Switch checkedChildren="ON" unCheckedChildren="OFF" defaultChecked={enableNotify} onChange={
-        (e) => {
+      <Switch
+        checkedChildren="ON"
+        unCheckedChildren="OFF"
+        defaultChecked={enableNotify}
+        onChange={(e) => {
           enableNotify = e;
           if (enableNotify === false) localStorage.removeItem("enableNotify");
           else localStorage.setItem("enableNotify", true);
-        }
-      }
+        }}
       />
-      
+
       <Button
         size={"default"}
         danger
@@ -416,8 +449,8 @@ const TradingPage = () => {
     addLog(
       type,
       (title ? title.replace("Order Response from", "") : "") +
-      " " +
-      (content ? content : "")
+        " " +
+        (content ? content : "")
     );
   };
 
@@ -600,7 +633,7 @@ const TradingPage = () => {
                     openNotification(
                       "Request",
                       "Close Position",
-                      "Request to close positions of " + symbol,
+                      "Request to close positions of " + symbol
                     );
                     requestOrderApi({
                       Account: account,
@@ -661,98 +694,95 @@ const TradingPage = () => {
                   onHandleAccSetting(accname, basket, defaultLots)
                 }
               />
-              <Row>
-
-              </Row>
-
+              <Row></Row>
             </div>
           </div>
         </TabPane>
         <TabPane tab="設定" key="setting">
-          <Row><div className="settings-wrapper">
-            <div className="settings-form-wrapper">
-              <Form
-                labelCol={{ span: 10, offset: 1 }}
-                wrapperCol={{ span: 12, offset: 1 }}
-                layout="horizontal"
-                size="small"
-                onFinish={onFinish}
-              >
-                <Form.Item
-                  label="Broker"
-                  name="broker"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Select one!",
-                    },
-                  ]}
+          <Row>
+            <div className="settings-wrapper">
+              <div className="settings-form-wrapper">
+                <Form
+                  labelCol={{ span: 10, offset: 1 }}
+                  wrapperCol={{ span: 12, offset: 1 }}
+                  layout="horizontal"
+                  size="small"
+                  onFinish={onFinish}
                 >
-                  <Select defaultValue="Select">
-                    {brokers.map((item, index) => {
-                      return (
-                        <Select.Option key={index} value={item}>
-                          {item}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  label="Account Number"
-                  name="number"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Input account number!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Account Number" />
-                </Form.Item>
-                <Form.Item
-                  label="Login"
-                  name="loginID"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Input login!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Login" />
-                </Form.Item>
-                <Form.Item
-                  label="Password"
-                  name="password"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Input password!",
-                    },
-                  ]}
-                >
-                  <Input placeholder="Password" />
-                </Form.Item>
-                <Form.Item label=" " colon={false}>
-                  <Button type="primary" size="default" htmlType="submit">
-                    口座追加
-                  </Button>
-                </Form.Item>
-              </Form>
+                  <Form.Item
+                    label="Broker"
+                    name="broker"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Select one!",
+                      },
+                    ]}
+                  >
+                    <Select defaultValue="Select">
+                      {brokers.map((item, index) => {
+                        return (
+                          <Select.Option key={index} value={item}>
+                            {item}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    label="Account Number"
+                    name="number"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Input account number!",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Account Number" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Login"
+                    name="loginID"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Input login!",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Login" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Password"
+                    name="password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Input password!",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Password" />
+                  </Form.Item>
+                  <Form.Item label=" " colon={false}>
+                    <Button type="primary" size="default" htmlType="submit">
+                      口座追加
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </div>
+              <div className="account-list-wrapper">
+                <Table
+                  bordered
+                  title={() => "口座リスト"}
+                  pagination={false}
+                  dataSource={getAccounts()}
+                  columns={acc_columns}
+                  locale={locale}
+                />
+              </div>
             </div>
-            <div className="account-list-wrapper">
-              <Table
-                bordered
-                title={() => "口座リスト"}
-                pagination={false}
-                dataSource={getAccounts()}
-                columns={acc_columns}
-                locale={locale}
-              />
-            </div>
-
-          </div>
           </Row>
           <div className="log-history-row-wrapper">
             <Row>
@@ -770,10 +800,10 @@ const TradingPage = () => {
                 >
                   <Button danger type="text">
                     ログ削除
-                    </Button>
+                  </Button>
                 </Popconfirm>
               </Col>
-              </Row>
+            </Row>
             <Row>
               <Col span={24}>
                 <div className="log-history-time-line scrollable-container">
@@ -791,9 +821,7 @@ const TradingPage = () => {
                               </Typography.Text>
                             )}
                             {item.type === "Order" && (
-                              <Typography.Text mark>
-                                [取引]
-                              </Typography.Text>
+                              <Typography.Text mark>[取引]</Typography.Text>
                             )}
                             {item.type === "Notice" && (
                               <Typography.Text type="success">
@@ -814,7 +842,6 @@ const TradingPage = () => {
                 </div>
               </Col>
             </Row>
-
           </div>
         </TabPane>
       </Tabs>
