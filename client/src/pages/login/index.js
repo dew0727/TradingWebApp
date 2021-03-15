@@ -7,44 +7,34 @@ import "./style.css";
 import { apiCall, authenticate } from "../../utils/api";
 
 const Login = () => {
-  const [auth, setAuth] = useState({
-    auth: '',
-  });
+  const [auth, setAuth] = useState(false);
 
-  // useEffect(() => {
-  //   const user = localStorage.getItem("username");
-  //   const pass = localStorage.getItem("password");
-  //   const token = localStorage.getItem("authToken");
-
-  //   if (token === undefined) {
-  //     if (user !== undefined && pass !== undefined)
-  //     apiCall(
-  //       "/api/login",
-  //       { username: user, password: pass },
-  //       "POST",
-  //       (res) => {
-  //         if (res === true)
-  //           setAuth({
-  //             auth: localStorage.getItem("authToken"),
-  //           });
-  //       }
-  //     );
-  //   }
-  // }, []);
+  useEffect(() => {
+    apiCall(
+      "/api/login",
+      { },
+      "POST",
+      (res) => {
+        if (res.auth === true)
+          setAuth(true);
+      }
+    );
+  }, []);
 
   const onFinish = (values) => {
+    Object.assign(values, {login: true});
+    
     apiCall("/api/login", values, "POST", (res) => {
-      if (authenticate(res) === true) {
-        setAuth({
-          auth: localStorage.getItem("authToken"),
-        });
-      } else {
+      console.log(res);
+      if (authenticate(res) === false) {
         message.error("認証に失敗しました。ユーザーID(またはログイン名)とパスワードを正しく入力してください。");
+      } else {
+        setAuth(true);
       }
     });
   };
 
-  if (auth.auth !== "") {
+  if (auth === true) {
     return <Redirect to={{ pathname: "/trading" }} />;
   }
 
