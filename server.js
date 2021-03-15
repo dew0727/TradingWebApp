@@ -70,13 +70,21 @@ app.post("/api/logout", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
   console.log(new Date().toLocaleString(), "user logout request " + data);
+  const result = authenticate(data);
 
-  unsubscribeForUser(data.username);
-
-  res.json({
-    success: true,
-    token: "false",
-  });
+  if (result.success === true) {
+    console.log("Un-subscribing with user ", result.email);
+    unsubscribeForUser(result.email);
+    res.json({
+      success: true,
+      token: result.token,
+      role: result.role,
+    });  
+  } else {
+    res.json({
+      success: false
+    })
+  }
 });
 
 app.post("/api/add-account", (req, res) => {

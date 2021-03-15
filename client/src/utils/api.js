@@ -1,21 +1,30 @@
 const axios = require("axios");
 
-const saveAuth = (user, password, token) => {
-  localStorage.setItem("username", user);
-  localStorage.setItem("password", password);
-  localStorage.setItem("authToken", token);
+// define constants
+const TOKEN = "twpAuthToken";
+const ROLE = "twpRole";
+
+const saveAuth = (token, role) => {
+  localStorage.setItem(TOKEN, token);
+  localStorage.setItem(ROLE, role);
 };
 
 const removeAuth = () => {
-  localStorage.removeItem("username");
-  localStorage.removeItem("password");
-  localStorage.removeItem("authToken");
+  localStorage.removeItem(TOKEN);
+  localStorage.removeItem(ROLE);
 };
 
+const getAuth = () => {
+  return {
+    token: localStorage.getItem(TOKEN),
+    role: localStorage.getItem(ROLE),
+  };
+}
+
 const authenticate = (res) => {
-  console.log("authenticate: " + res.auth);
+  console.log("Auth Result: ", res);
   if (res.auth !== undefined && res.auth === true) {
-    saveAuth(res.user, res.pass, res.token);
+    saveAuth(res.token, res.role);
     return true;
   } else {
     removeAuth();
@@ -24,6 +33,7 @@ const authenticate = (res) => {
 };
 
 const apiCall = (url, payload, method, callback) => {
+  payload = {...payload, ...getAuth()};
   axios
     .post(url, {
       method: method,
@@ -42,10 +52,7 @@ const apiCall = (url, payload, method, callback) => {
 };
 
 const Logout = () => {
-  const user = localStorage.getItem("username");
-  const pass = localStorage.getItem("password");
-
-  apiCall("/api/logout", { username: user, password: pass }, "POST", (res) => {
+  apiCall("/api/logout", {}, "POST", (res) => {
     if (res.success === true) {
       console.log(res);
     }
@@ -55,4 +62,4 @@ const Logout = () => {
   window.location.href = "/";
 };
 
-export { apiCall, saveAuth, authenticate, Logout };
+export { apiCall, saveAuth, authenticate, Logout, getAuth };

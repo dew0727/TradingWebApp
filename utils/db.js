@@ -196,19 +196,21 @@ const GetAuthToken = ({ username, password, token }) => {
   console.log("Authenticating start with ", username, password, token);
   let result = {};
 
-  if (token !== undefined) {
-    console.log("Authenticating with token: " + token);
-    users.forEach((user) => {
-      if (user.token == token)
-        Object.assign(result, { email: user.email, token, role: user.role });
-    });
-  } else {
+  if (username && password) {
     console.log("Authenticating with email and password", username, password);
     if (username !== undefined && password !== undefined) {
       users.forEach((user) => {
         if (user.email.toString() == username.toString()) {
           Object.assign(result, { email: user.email, token, role: user.role });
         }
+      });
+    }
+  } else {
+    if (token !== undefined) {
+      console.log("Authenticating with token: " + token);
+      users.forEach((user) => {
+        if (user.token == token)
+          Object.assign(result, { email: user.email, token, role: user.role });
       });
     }
   }
