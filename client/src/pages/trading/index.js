@@ -26,7 +26,7 @@ import PositionTable from "../../components/PositionList";
 import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
 import { EVENTS } from "../../config-client";
-import { apiCall, Logout } from "../../utils/api";
+import { apiCall, Logout, getAuth } from "../../utils/api";
 const dateFormat = require("dateformat");
 
 const { TabPane } = Tabs;
@@ -45,6 +45,8 @@ const SymbolDictionary = [
 
 const waiting_time = 5;
 let enableNotify = localStorage.getItem("enableNotify") ? true : false ;
+var isTrader = true;
+var traderAccounts = [];
 
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
@@ -267,7 +269,9 @@ const TradingPage = () => {
   };
 
   useEffect(() => {
-    createSocket(parseData);
+    const auth = getAuth();
+    isTrader = auth.role === "master" ? false : true;
+    createSocket(parseData, auth.token);
   }, []);
 
   const onFinish = (values) => {

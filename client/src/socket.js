@@ -1,8 +1,16 @@
 import socketIOClient from "socket.io-client";
 import { SOCKET_ENDPOINT, EVENTS } from "./config-client";
 
-const createSocket = (parseData) => {
-    const sockClient = socketIOClient(SOCKET_ENDPOINT);
+const createSocket = (parseData, token) => {
+  const sockClient = socketIOClient(SOCKET_ENDPOINT, {
+    auth: {
+      token: token
+    }
+  });
+
+sockClient.on("connect_error", err => {
+  console.log(err.message);
+});
 
   sockClient.on(EVENTS.ON_RATE, (msg) => {
     // var acc = parseRateMsg(msg);

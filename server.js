@@ -30,6 +30,17 @@ const io = socketIO(server, {
   },
 });
 
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  const auth = db.GetAuthToken({ token });
+  if (auth.email) {
+    next();
+  } else {
+    console.log("invlaid socket");
+    next(new Error("Failed authentication"));
+  }
+});
+
 // Initialize rabbitmq client with socket.
 require("./utils/socket").socket.setIo(io);
 
