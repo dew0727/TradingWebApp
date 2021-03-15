@@ -19,6 +19,7 @@ class Account {
     this.profit = 0;
     this.defaultLots = 1;
     this.basketOnOff = false;
+    this.master = false;
   }
 
   updateRate = (rate) => {

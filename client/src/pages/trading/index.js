@@ -46,7 +46,7 @@ const SymbolDictionary = [
 const waiting_time = 5;
 let enableNotify = localStorage.getItem("enableNotify") ? true : false ;
 var isTrader = true;
-var traderAccounts = [];
+var masterAccounts = {};
 
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
@@ -182,6 +182,12 @@ const TradingPage = () => {
       case EVENTS.ON_ACCOUNT:
         var account = JSON.parse(message);
 
+        if (isTrader === true && isTrader === account.master) {
+          masterAccounts[account.name] = true;
+          console.log("Account stopped by user role", masterAccounts);
+          return;
+        }
+
         setAccounts((prevState) => {
           if (typeof prevState !== "object")
             return [
@@ -207,16 +213,33 @@ const TradingPage = () => {
         break;
       case EVENTS.ON_POSLIST:
         var accPos = JSON.parse(message);
+
+        if (isTrader === true && masterAccounts.hasOwnProperty(accPos.account)) {
+          console.log("Position list stopped by role")
+          return;
+        }
+
         setPosList(Object.assign(posList, { [accPos.account]: accPos }));
         break;
       case EVENTS.ON_ORDERLIST:
         var accOrders = JSON.parse(message);
+
+        if (isTrader === true && masterAccounts.hasOwnProperty(accOrders.account)) {
+          console.log("Order list stopped by role")
+          return;
+        }
+
         setOrderList(
           Object.assign(orderList, { [accOrders.account]: accOrders })
         );
         break;
       case EVENTS.ON_ORDER_RESPONSE:
         var response = JSON.parse(message);
+
+        if (isTrader === true && masterAccounts.hasOwnProperty(response.account)) {
+          console.log("Order response stopped by role");
+          return;
+        }
 
         if (response.success) {
           openNotification(

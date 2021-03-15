@@ -15,7 +15,7 @@ const Login = () => {
       { },
       "POST",
       (res) => {
-        if (res.auth === true)
+        if (authenticate(res) === true)
           setAuth(true);
       }
     );

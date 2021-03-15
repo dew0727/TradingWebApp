@@ -169,6 +169,7 @@ const processMessage = (topic, msg) => {
         equity,
         basket: account.basket ? account.basket : false,
         default: account.default ? account.default : 1,
+        master: account.master,
         time: Date.now(),
       };
 
