@@ -47,6 +47,7 @@ const waiting_time = 5;
 let enableNotify = localStorage.getItem("enableNotify") ? true : false;
 var isTrader = true;
 var masterAccounts = {};
+var lastResponse = "";
 
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
@@ -101,7 +102,7 @@ const TradingPage = () => {
   const onHandleRemoveAccount = (account) => {
     
     if (!isTrader && !masterAccounts.hasOwnProperty(account.name)) {
-      console.log("Remove account. Master can only access master accounts");
+      //console.log("Remove account. Master can only access master accounts");
       return;
     }
 
@@ -115,7 +116,7 @@ const TradingPage = () => {
 
   const requestOrderApi = (reqMsg) => {
     if (!isTrader && !masterAccounts.hasOwnProperty(reqMsg.Account)) {
-        console.log("Request Order. Master can only access master accounts");
+        //console.log("Request Order. Master can only access master accounts");
         return;
     }
 
@@ -196,7 +197,7 @@ const TradingPage = () => {
         if (account.master) {
           masterAccounts[account.name] = true;
           if (isTrader) {
-            console.log("Account stopped by user role", masterAccounts);
+            //console.log("Account stopped by user role", masterAccounts);
             return;
           }
         }
@@ -231,7 +232,7 @@ const TradingPage = () => {
           isTrader === true &&
           masterAccounts.hasOwnProperty(accPos.account)
         ) {
-          console.log("Position list stopped by role");
+          //console.log("Position list stopped by role");
           return;
         }
 
@@ -244,7 +245,7 @@ const TradingPage = () => {
           isTrader === true &&
           masterAccounts.hasOwnProperty(accOrders.account)
         ) {
-          console.log("Order list stopped by role");
+          //console.log("Order list stopped by role");
           return;
         }
 
@@ -253,13 +254,16 @@ const TradingPage = () => {
         );
         break;
       case EVENTS.ON_ORDER_RESPONSE:
-        var response = JSON.parse(message);
+      if (lastResponse === message)  return;
+      lastResponse = message;
 
+        var response = JSON.parse(message);
+          console.log(response);
         if (
           isTrader === true &&
           masterAccounts.hasOwnProperty(response.account)
         ) {
-          console.log("Order response stopped by role");
+          //console.log("Order response stopped by role");
           return;
         }
 
@@ -340,7 +344,7 @@ const TradingPage = () => {
   const updateAccountOrPriceFeed = ({ selectedBroker, selectedAccount }) => {
     if (selectedBroker) {
       if (!isTrader) {
-        console.log("Price-Feed. Master can access only master accounts");
+        //console.log("Price-Feed. Master can access only master accounts");
         return;
       }
       apiCall(
@@ -381,7 +385,7 @@ const TradingPage = () => {
     }
 
     if (!isTrader && !masterAccounts.hasOwnProperty(account.name)) {
-      console.log("Master can only access master accounts");
+      //console.log("Master can only access master accounts");
       return;
     }
 
@@ -429,7 +433,12 @@ const TradingPage = () => {
   };
 
   const openNotification = (type, title, content) => {
-    console.log(enableNotify);
+    addLog(
+      type,
+      (title ? title.replace("Order Response from", "") : "") +
+        " " +
+        (content ? content : "")
+    );
     if (enableNotify !== true) return;
     if (type === "Error") {
       notification.error({
@@ -446,13 +455,6 @@ const TradingPage = () => {
         placement: "bottomRight",
       });
     }
-
-    addLog(
-      type,
-      (title ? title.replace("Order Response from", "") : "") +
-        " " +
-        (content ? content : "")
-    );
   };
 
   const addLog = (type, content) => {
