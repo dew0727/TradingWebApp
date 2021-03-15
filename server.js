@@ -4,25 +4,28 @@ const http = require("http");
 const config = require("./config");
 const socketIO = require("socket.io");
 const rmq = require("./utils/rmq");
-const auth = require("./auth");
+const { authenticate } = require("./auth");
 const db = require("./utils/db");
-const path = require('path');
+const path = require("path");
 
 // set config
 const port = process.env.SOCKET_PORT || 3000;
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '/client/build')));
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, '/client/build', 'index.html'))
+app.use(express.static(path.join(__dirname, "/client/build")));
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname, "/client/build", "index.html"));
 });
+
+// initialized database
+db.Init();
 
 // server instance
 const server = http.createServer(app);
 
 const io = socketIO(server, {
   cors: {
-    origin: '*',
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -41,25 +44,25 @@ io.on(EVENTS.ON_CONNECTION, (socket) => {
 
 // http login
 app.post("/api/login", (req, res) => {
-  var time = Date.now();
-  console.log(new Date().toLocaleString(), "user authentication request " + req);
   var data = req.body.body;
   data = JSON.parse(data);
-  const result = auth.authenticate(data.username, data.password);
-  console.log(new Date().toLocaleString(), "auth result: " + result);
 
-  if (result == true) {
-    subscribeForUser(data.username);
-    db.Init();
+  console.log(new Date().toLocaleString(), "Request to login with ", data);
+
+  const result = authenticate(data);
+
+  console.log("Auth Result:", result);
+  if (result.success === true) {
+    console.log("Subscribing with user ", result.email);
+    subscribeForUser(result.email);
   }
 
   console.log(new Date().toLocaleString(), "pricefeed", db.GetPriceFeed());
 
   res.json({
-    auth: result,
-    token: "true",
-    user: data.username,
-    pass: data.password,
+    auth: result.success,
+    token: result.token,
+    role: result.role,
   });
 });
 
@@ -99,7 +102,7 @@ app.post("/api/add-account", (req, res) => {
 app.post("/api/update-account", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-  
+
   const account = {
     name: data.broker + data.number,
     basket: data.basket ? data.basket : false,
@@ -108,7 +111,11 @@ app.post("/api/update-account", (req, res) => {
   };
 
   const { success, error } = db.UpdateAccount(account);
-  console.log(new Date().toLocaleString(), "updated account data: ", db.GetAccount(account.name));
+  console.log(
+    new Date().toLocaleString(),
+    "updated account data: ",
+    db.GetAccount(account.name)
+  );
   res.json({
     success,
     error,
@@ -184,7 +191,10 @@ app.post("/api/order-request", (req, res) => {
     case "ORDER_DELETE_ALL":
       if (data.Symbol === "ALL") {
         accounts.forEach((acc) => {
-          if (db.GetAccountStatus(acc.name) && (acc.basket || accName === "All")) {
+          if (
+            db.GetAccountStatus(acc.name) &&
+            (acc.basket || accName === "All")
+          ) {
             orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
@@ -192,7 +202,10 @@ app.post("/api/order-request", (req, res) => {
       } else {
         if (accName === "Basket" || accName === "All") {
           accounts.forEach((acc) => {
-            if (db.GetAccountStatus(acc.name) && (acc.basket || accName === "All")) {
+            if (
+              db.GetAccountStatus(acc.name) &&
+              (acc.basket || accName === "All")
+            ) {
               orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
               rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
             }
@@ -209,7 +222,10 @@ app.post("/api/order-request", (req, res) => {
     case "ORDER_CLOSE_ALL":
       if (data.Symbol === "ALL") {
         accounts.forEach((acc) => {
-          if (db.GetAccountStatus(acc.name) && (acc.basket || accName === "All")) {
+          if (
+            db.GetAccountStatus(acc.name) &&
+            (acc.basket || accName === "All")
+          ) {
             orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
@@ -217,7 +233,10 @@ app.post("/api/order-request", (req, res) => {
       } else {
         if (accName === "Basket" || accName === "All") {
           accounts.forEach((acc) => {
-            if (db.GetAccountStatus(acc.name) && (acc.basket || accName === "All")) {
+            if (
+              db.GetAccountStatus(acc.name) &&
+              (acc.basket || accName === "All")
+            ) {
               orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
               rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
             }
@@ -252,7 +271,9 @@ app.post("/api/price-feed", (req, res) => {
   });
 });
 
-server.listen(port, () => console.log(new Date().toLocaleString(), `Listening on port ${port}`));
+server.listen(port, () =>
+  console.log(new Date().toLocaleString(), `Listening on port ${port}`)
+);
 
 const subscribeForUser = (user) => {
   rmq.subscribeChannel(EVENTS.ON_PRICE_TICK, user);

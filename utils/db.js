@@ -2,14 +2,17 @@ const fs = require("fs");
 
 const DB_PATH_ACCOUNT = "./db/accounts.json";
 const DB_PATH_PRICE_FEED = "./db/priceFeed.json";
+const DB_PATH_USERS = "./db/users.json";
 
 let accounts = [];
 let accountStatus = [];
 let priceFeed = "";
+let users = {};
 
 const Init = () => {
   LoadAccountsData();
   LoadPriceFeed();
+  LoadUsersData();
 
   if (accounts.Length == 0) accountStatus = [];
   else {
@@ -78,10 +81,7 @@ const DeleteAccount = (accountName) => {
 };
 
 const GetAccounts = () => {
-  if (
-    accounts === undefined ||
-    accounts.length < 1
-  ) {
+  if (accounts === undefined || accounts.length < 1) {
     LoadAccountsData();
   }
 
@@ -108,7 +108,7 @@ const SaveAccountsData = () => {
 
 const GetAccountStatus = (accName) => {
   const accStatus = accountStatus.find((acc) => acc.name === accName);
-    return accStatus ? accStatus.status : false;
+  return accStatus ? accStatus.status : false;
 };
 
 const UpdateAccountStatus = (name, status) => {
@@ -155,6 +155,67 @@ const GetPriceFeed = () => {
   return priceFeed;
 };
 
+/**
+ * User managment
+ */
+const LoadUsersData = () => {
+  console.log("Loading user data from file");
+  if (!fs.existsSync(DB_PATH_USERS)) {
+    console.log("no user data file");
+    users = [];
+    return;
+  }
+
+  const sData = fs.readFileSync(DB_PATH_USERS);
+  if (sData.toString() === "") {
+    users = [];
+    return [];
+  }
+  users = JSON.parse(sData);
+};
+
+const SaveUsersData = () => {
+  fs.writeFileSync(DB_PATH_USERS, JSON.stringify(users));
+};
+
+const SetAuthToken = (username, authToken) => {
+  if (!authToken) return null;
+
+  users.forEach((user) => {
+    if (user.email === username) {
+      user.token = authToken;
+      console.log("Save token for user", user.email, authToken);
+      SaveUsersData();
+    }
+  });
+
+  return authToken;
+};
+
+const GetAuthToken = ({ username, password, token }) => {
+  console.log("Authenticating start with ", username, password, token);
+  let result = {};
+
+  if (token !== undefined) {
+    console.log("Authenticating with token: " + token);
+    users.forEach((user) => {
+      if (user.token == token)
+        Object.assign(result, { email: user.email, token, role: user.role });
+    });
+  } else {
+    console.log("Authenticating with email and password", username, password);
+    if (username !== undefined && password !== undefined) {
+      users.forEach((user) => {
+        if (user.email.toString() == username.toString()) {
+          Object.assign(result, { email: user.email, token, role: user.role });
+        }
+      });
+    }
+  }
+
+  return result;
+};
+
 module.exports = {
   Init,
   AddAccount,
@@ -166,4 +227,6 @@ module.exports = {
   GetAccountStatus,
   SetPriceFeed,
   GetPriceFeed,
+  SetAuthToken,
+  GetAuthToken,
 };
