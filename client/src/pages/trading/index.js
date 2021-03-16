@@ -63,12 +63,7 @@ const TradingPage = () => {
       name: "Basket",
       status: false,
       time: Date.now(),
-    },
-    {
-      name: "All",
-      status: false,
-      time: Date.now(),
-    },
+    }
   ]);
   const [posList, setPosList] = useState({});
   const [orderList, setOrderList] = useState({});
@@ -117,7 +112,7 @@ const TradingPage = () => {
   const requestOrderApi = (reqMsg) => {
     if (!isTrader && !masterAccounts.hasOwnProperty(reqMsg.Account)) {
         //console.log("Request Order. Master can only access master accounts");
-        return;
+        //return;
     }
 
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
@@ -207,11 +202,6 @@ const TradingPage = () => {
             return [
               {
                 name: "Basket",
-                status: false,
-                time: Date.now(),
-              },
-              {
-                name: "All",
                 status: false,
                 time: Date.now(),
               },

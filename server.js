@@ -162,7 +162,7 @@ app.post("/api/delete-account", (req, res) => {
 app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-  var isTrader = data.role == "trader" ? true : false;
+  var isMaster = data.role == "master" ? true : false;
 
   const accName = data.Account;
   const accounts = db.GetAccounts();
@@ -170,188 +170,77 @@ app.post("/api/order-request", (req, res) => {
 
   switch (data.Mode) {
     case "ORDER_OPEN":
-      if (accName === "Basket" || accName === "All") {
-        accounts.forEach((acc) => {
-          if (acc.master && isTrader) {
-            console.log("this order won't be executed, due to user is trader");
-            return;
-          }
-
-          if (db.GetAccountStatus(acc.name)) {
-            if ((accName === "All" || acc.basket) && acc.default > 0) {
-              orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
-                data.Command
-              },${data.Lots * acc.default},${data.Price},${data.SL},${
-                data.TP
-              },${data.Type}`;
-
-              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+      accounts.forEach((acc) => {
+        if (db.GetAccountStatus(acc.name)) {
+          if ((accName === "Basket" && acc.basket && acc.default > 0) || acc.name === accName || acc.master) {
+            if (isMaster && !acc.master) {
+              console.log("Skip trader acc in case master");
+              return;
             }
+
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+              data.Command
+            },${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${
+              data.Type
+            }`;
+
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
-        });
-      } else {
-        const acc = accounts.find((acc) => acc.name === accName);
-
-        if (acc === undefined) {
-          res.json({
-            success: false,
-          });
-          return;
         }
-
-        if (acc.master && isTrader) {
-          console.log("this order won't be executed, due to user is trader");
-          res.json({
-            success: false,
-          });
-          return;
-        }
-
-        if (db.GetAccountStatus(acc.name) && acc.default > 0) {
-          orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${data.Command},${
-            data.Lots * acc.default
-          },${data.Price},${data.SL},${data.TP},${data.Type}`;
-
-          rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
-        }
-      }
-
+      });
       break;
     case "ORDER_DELETE":
-      const acc = accounts.find((acc) => acc.name === accName);
-
-      if (acc === undefined) {
-        res.json({
-          success: false,
-        });
-        return;
-      }
-
-      // check for master
-      if (acc.master && isTrader) {
-        console.log("this order won't be executed, due to user is trader");
-        res.json({
-          success: false,
-        });
-        return;
-      }
-
-      orderMsg = `${accName}@ORDER_DELETE,${data.Symbol}`;
-      if (!db.GetAccountStatus(accName)) break;
-      rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
-      break;
-
-    case "ORDER_DELETE_ALL":
-      if (data.Symbol === "ALL") {
-        accounts.forEach((acc) => {
-          // cheeck for master
-          if (acc.master && isTrader) {
-            console.log("this order won't be executed, due to user is trader");
+      accounts.forEach((acc) => {
+        if (
+          db.GetAccountStatus(acc.name) &&
+          ((acc.basket && accName === "Basket") || (acc.name === accName || acc.master))
+        ) {
+          if (isMaster && !acc.master) {
+            console.log("Skip trader acc in case master");
             return;
           }
 
-          if (
-            db.GetAccountStatus(acc.name) &&
-            (acc.basket || accName === "All")
-          ) {
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
-            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
-          }
-        });
-      } else {
-        if (accName === "Basket" || accName === "All") {
-          accounts.forEach((acc) => {
-            // cheeck for master
-            if (acc.master && isTrader) {
-              console.log(
-                "this order won't be executed, due to user is trader"
-              );
-              return;
-            }
-
-            if (
-              db.GetAccountStatus(acc.name) &&
-              (acc.basket || accName === "All")
-            ) {
-              orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
-              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
-            }
-          });
-        } else {
-          const acc = accounts.find((acc) => acc.name === accName);
-
-          if (acc === undefined) {
-            res.json({
-              success: false,
-            });
+          if (!isMaster && acc.name !== accName && !acc.master){
             return;
           }
 
-          if (acc.master && isTrader) {
-            console.log("account role is master but user is trader");
-            break;
-          }
-
-          if (db.GetAccountStatus(accName)) {
-            orderMsg = `${accName}@${data.Mode},${data.Symbol}`;
-            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
-          }
+          console.log(orderMsg);
+          orderMsg = `${acc.name}@ORDER_DELETE,${data.Symbol}`;
+          rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
         }
-      }
+      });
       break;
-
-    case "ORDER_CLOSE_ALL":
-      if (data.Symbol === "ALL") {
-        accounts.forEach((acc) => {
-          if (acc.master && isTrader) {
-            console.log("account role is master but user is trader");
-            return;
-          }
-
-          if (
-            db.GetAccountStatus(acc.name) &&
-            (acc.basket || accName === "All")
-          ) {
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
-            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
-          }
-        });
-      } else {
-        if (accName === "Basket" || accName === "All") {
-          accounts.forEach((acc) => {
-            if (acc.master && isTrader) {
-              console.log("account role is master but user is trader");
-              return;
-            }
-
-            if (
-              db.GetAccountStatus(acc.name) &&
-              (acc.basket || accName === "All")
-            ) {
-              orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
-              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
-            }
-          });
-        } else {
-          const acc = accounts.find((acc) => acc.name === accName);
-
-          if (acc.master && isTrader) {
-            console.log("account role is master but user is trader");
-            res.json({
-              success: false,
-            });
-            return;
-          }
-
-          if (db.GetAccountStatus(accName)) {
-            orderMsg = `${accName}@${data.Mode},${data.Symbol}`;
-            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
-          }
-        }
-      }
-      break;
-
     default:
+      if (data.Symbol === "ALL") {
+        accounts.forEach((acc) => {
+          if (db.GetAccountStatus(acc.name) && acc.basket) {
+            if (isMaster && !acc.master) {
+              console.log("Skip trader acc in case master");
+              return;
+            }
+
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          }
+        });
+      } else {
+        accounts.forEach((acc) => {
+          if (
+            db.GetAccountStatus(acc.name) &&
+            ((acc.basket && accName === "Basket") || (acc.name === accName || acc.master))
+          ) {
+            if (acc.master && (!acc.basket && accName === "Basket")) return;
+            if (isMaster && !acc.master) {
+              console.log("Skip trader acc in case master");
+              return;
+            }
+
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          }
+        });
+      }
+      break;
   }
 
   res.json({
