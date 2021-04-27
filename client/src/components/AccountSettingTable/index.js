@@ -21,8 +21,8 @@ const DefaultValueInput = ({ valueDefault, onChange, max }) => {
       key={"default-lots-input-" + value}
       className="account-settings-default-lots-input"
       value={value}
-      step={1}
-      min={1}
+      step={0.1}
+      min={0}
       max={max}
       onChange={(v) => setInput(v)}
       size={"small"}
