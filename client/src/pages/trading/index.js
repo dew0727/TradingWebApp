@@ -31,7 +31,7 @@ const dateFormat = require("dateformat");
 
 const { TabPane } = Tabs;
 
-const brokers = ["GP", "YJFX", "SAXO", "FXGBM"];
+var brokers = ["GP", "YJFX", "SAXO", "FXGBM"];
 const SymbolDictionary = [
   "EURUSD",
   "USDJPY",
@@ -310,6 +310,7 @@ const TradingPage = () => {
   useEffect(() => {
     const auth = getAuth();
     isTrader = auth.role === "master" ? false : true;
+    brokers = isTrader ? ["GP", "YJFX", "SAXO"] : ["GP", "YJFX", "SAXO", "FXGBM"] ;
     createSocket(parseData, auth.token);
   }, []);
 
