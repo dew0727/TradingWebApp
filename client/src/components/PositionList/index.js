@@ -65,6 +65,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       align: "center",
       key: "account",
       defaultSortOrder: "ascend",
+      sorter: (a, b) => a.account.localeCompare(b.account),
     },
     {
       title: "削除",

@@ -42,6 +42,7 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
       dataIndex: "account",
       align: "center",
       key: "account",
+      sorter: (a, b) => a.symbol.localeCompare(b.symbol),
     },
     {
       title: "削除",
