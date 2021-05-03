@@ -3,10 +3,23 @@ const axios = require("axios");
 // define constants
 const TOKEN = "twpAuthToken";
 const ROLE = "twpRole";
+const REMEMBER_ME='twpEnableRememberMe';
+
+const rememberState = () => {
+  const state =  localStorage.getItem(REMEMBER_ME)
+  console.log('remember state: ', state)
+  return state === 'true'
+}
+
+const setRememberState = (checked) => {
+  localStorage.setItem(REMEMBER_ME, checked)
+}
 
 const saveAuth = (token, role) => {
-  localStorage.setItem(TOKEN, token);
-  localStorage.setItem(ROLE, role);
+  if (rememberState()) {
+    localStorage.setItem(TOKEN, token);
+    localStorage.setItem(ROLE, role);
+  }
 };
 
 const removeAuth = () => {
@@ -58,8 +71,9 @@ const Logout = () => {
     }
   });
 
-  removeAuth();
+  if (!rememberState())
+    removeAuth();
   window.location.href = "/";
 };
 
-export { apiCall, saveAuth, authenticate, Logout, getAuth };
+export { apiCall, saveAuth, authenticate, Logout, getAuth, removeAuth, rememberState, setRememberState };

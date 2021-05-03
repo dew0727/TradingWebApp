@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, message } from "antd";
+import { Form, Input, Button, Row, Col, message, Checkbox } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Redirect } from "react-router-dom";
 
 import "./style.css";
-import { apiCall, authenticate } from "../../utils/api";
+import { apiCall, authenticate, removeAuth, rememberState, setRememberState } from "../../utils/api";
+
 
 const Login = () => {
   const [auth, setAuth] = useState(false);
-
+  const [rememberMe, setRememberMe] = useState(true)
+ 
   useEffect(() => {
+    setRememberMe(rememberState());
     apiCall(
       "/api/login",
       { },
@@ -36,6 +39,15 @@ const Login = () => {
 
   if (auth === true) {
     return <Redirect to={{ pathname: "/trading" }} />;
+  }
+
+  const onChangeRememberMe = (checked) => {
+    console.log(checked)
+    setRememberState(checked)
+    setRememberMe(checked)
+    if (!checked){
+      removeAuth();
+    }
   }
 
   return (
@@ -65,6 +77,9 @@ const Login = () => {
               placeholder="Password"
             />
           </Form.Item>
+          <Checkbox checked={rememberMe} onChange={(e) => onChangeRememberMe(e.target.checked)}>
+              Keep me logged in
+            </Checkbox>
           <Form.Item>
             <Button
               type="primary"
