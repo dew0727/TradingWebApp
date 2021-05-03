@@ -173,6 +173,11 @@ app.post("/api/order-request", (req, res) => {
       accounts.forEach((acc) => {
         if (db.GetAccountStatus(acc.name)) {
           if ((accName === "Basket" && acc.basket && acc.default > 0) || acc.name === accName || acc.master) {
+            if (acc.master && !acc.basket ) { 
+              console.log("Skip to trade becasue master account basket set off");
+              return; 
+            }
+            
             if (isMaster && !acc.master) {
               console.log("Skip trader acc in case master");
               return;
@@ -195,6 +200,11 @@ app.post("/api/order-request", (req, res) => {
           db.GetAccountStatus(acc.name) &&
           ((acc.basket && accName === "Basket") || (acc.name === accName || acc.master))
         ) {
+          if (acc.master && !acc.basket ) { 
+            console.log("Skip to trade becasue master account basket set off");
+            return; 
+          }
+
           if (isMaster && !acc.master) {
             console.log("Skip trader acc in case master");
             return;
@@ -214,6 +224,11 @@ app.post("/api/order-request", (req, res) => {
       if (data.Symbol === "ALL") {
         accounts.forEach((acc) => {
           if (db.GetAccountStatus(acc.name) && acc.basket) {
+            if (acc.master && !acc.basket ) { 
+              console.log("Skip to trade becasue master account basket set off");
+              return; 
+            }
+
             if (isMaster && !acc.master) {
               console.log("Skip trader acc in case master");
               return;
@@ -229,7 +244,10 @@ app.post("/api/order-request", (req, res) => {
             db.GetAccountStatus(acc.name) &&
             ((acc.basket && accName === "Basket") || (acc.name === accName || acc.master))
           ) {
-            if (acc.master && (!acc.basket && accName === "Basket")) return;
+            if (acc.master && !acc.basket ) { 
+              console.log("Skip to trade becasue master account basket set off");
+              return; 
+            }
             if (isMaster && !acc.master) {
               console.log("Skip trader acc in case master");
               return;
