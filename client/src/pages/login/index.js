@@ -13,20 +13,26 @@ const Login = () => {
  
   useEffect(() => {
     setRememberMe(rememberState());
-    apiCall(
-      "/api/login",
-      { },
-      "POST",
-      (res) => {
-        if (authenticate(res) === true)
-          setAuth(true);
-      }
-    );
   }, []);
 
   const onFinish = (values) => {
     Object.assign(values, {login: true});
     
+    if (rememberMe) {
+      apiCall(
+        "/api/login",
+        { },
+        "POST",
+        (res) => {
+          if (authenticate(res) === true) {
+            setAuth(true);
+          }
+        }
+      );
+
+      if (auth === true) return;
+    }
+
     apiCall("/api/login", values, "POST", (res) => {
       console.log(res);
       if (authenticate(res) === false) {
@@ -60,7 +66,7 @@ const Login = () => {
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: "Please input your Username!" }]}
+            rules={[{ message: "Please input your Username!" }]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
@@ -69,7 +75,7 @@ const Login = () => {
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "Please input your Password!" }]}
+            rules={[{ message: "Please input your Password!" }]}
           >
             <Input
               prefix={<LockOutlined className="site-form-item-icon" />}

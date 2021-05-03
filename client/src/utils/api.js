@@ -16,10 +16,8 @@ const setRememberState = (checked) => {
 }
 
 const saveAuth = (token, role) => {
-  if (rememberState()) {
-    localStorage.setItem(TOKEN, token);
-    localStorage.setItem(ROLE, role);
-  }
+  localStorage.setItem(TOKEN, token);
+  localStorage.setItem(ROLE, role);
 };
 
 const removeAuth = () => {
