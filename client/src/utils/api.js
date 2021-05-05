@@ -1,19 +1,35 @@
 const axios = require("axios");
+const { encrypt, decrypt } = require("./crypto");
 
 // define constants
 const TOKEN = "twpAuthToken";
 const ROLE = "twpRole";
-const REMEMBER_ME='twpEnableRememberMe';
+const REMEMBER_ME = "twpEnableRememberMe";
+
+const saveCredential = ({ usr, pwd }) => {
+  localStorage.setItem("temp-2", encrypt("const error", usr));
+  localStorage.setItem("temp-1", encrypt("const error", pwd));
+};
+
+const getCredential = () => {
+  if (rememberState()) {
+    return {
+      user: decrypt("const error", localStorage.getItem("temp-2")),
+      pwd: decrypt("const error", localStorage.getItem("temp-1")),
+    };
+  }
+
+  return { user: "", pwd: "" };
+};
 
 const rememberState = () => {
-  const state =  localStorage.getItem(REMEMBER_ME)
-  console.log('remember state: ', state)
-  return state === 'true'
-}
+  const state = localStorage.getItem(REMEMBER_ME);
+  return state === "true";
+};
 
 const setRememberState = (checked) => {
-  localStorage.setItem(REMEMBER_ME, checked)
-}
+  localStorage.setItem(REMEMBER_ME, checked);
+};
 
 const saveAuth = (token, role) => {
   localStorage.setItem(TOKEN, token);
@@ -23,6 +39,8 @@ const saveAuth = (token, role) => {
 const removeAuth = () => {
   localStorage.removeItem(TOKEN);
   localStorage.removeItem(ROLE);
+  localStorage.removeItem("temp-2")
+  localStorage.removeItem("temp-1")
 };
 
 const getAuth = () => {
@@ -30,7 +48,7 @@ const getAuth = () => {
     token: localStorage.getItem(TOKEN),
     role: localStorage.getItem(ROLE),
   };
-}
+};
 
 const authenticate = (res) => {
   console.log("Auth Result: ", res);
@@ -44,7 +62,7 @@ const authenticate = (res) => {
 };
 
 const apiCall = (url, payload, method, callback) => {
-  payload = {...payload, ...getAuth()};
+  payload = { ...payload, ...getAuth() };
   axios
     .post(url, {
       method: method,
@@ -69,9 +87,19 @@ const Logout = () => {
     }
   });
 
-  if (!rememberState())
-    removeAuth();
+  if (!rememberState()) removeAuth();
   window.location.href = "/";
 };
 
-export { apiCall, saveAuth, authenticate, Logout, getAuth, removeAuth, rememberState, setRememberState };
+export {
+  apiCall,
+  saveAuth,
+  authenticate,
+  Logout,
+  getAuth,
+  removeAuth,
+  rememberState,
+  setRememberState,
+  saveCredential,
+  getCredential,
+};
