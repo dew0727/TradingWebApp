@@ -11,7 +11,11 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
       align: "center",
       key: "symbol",
       defaultSortOrder: "ascend",
-      sorter: (a, b) => a.ticket.localeCompare(b.ticket),
+      sorter: (a, b) => {
+        const val = a.ticket.localeCompare(b.ticket);
+        if (val !== 0) return val;
+        return a.account.localeCompare(b.account);
+      },
     },
     {
       title: "買売",
@@ -42,7 +46,6 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
       dataIndex: "account",
       align: "center",
       key: "account",
-      sorter: (a, b) => a.symbol.localeCompare(b.symbol),
     },
     {
       title: "削除",

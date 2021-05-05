@@ -13,7 +13,11 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       align: "center",
       key: "symbol",
       defaultSortOrder: "ascend",
-      sorter: (a, b) => a.symbol.localeCompare(b.symbol),
+      sorter: (a, b) => {
+        const val = a.symbol.localeCompare(b.symbol);
+        if (val !== 0) return val;
+        return a.account.localeCompare(b.account);
+      },
     },
     {
       title: "建玉",
@@ -42,7 +46,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       dataIndex: "profit",
       align: "center",
       key: "profit",
-      render: (profit)=>(profit.toFixed(0))
+      render: (profit) => profit.toFixed(0),
     },
     {
       title: isDesktop ? "スワップ" : "スワ..",
@@ -50,7 +54,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       dataIndex: "swap",
       align: "center",
       key: "swap",
-      render: (swap)=>(swap.toFixed(0))
+      render: (swap) => swap.toFixed(0),
     },
     {
       title: isDesktop ? "損益合計" : "損益..",
@@ -64,8 +68,6 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       dataIndex: "account",
       align: "center",
       key: "account",
-      defaultSortOrder: "ascend",
-      sorter: (a, b) => a.account.localeCompare(b.account),
     },
     {
       title: "削除",
