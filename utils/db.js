@@ -200,7 +200,7 @@ const GetAuthToken = ({ username, password, token }) => {
     console.log("Authenticating with email and password", username, password);
     if (username !== undefined && password !== undefined) {
       users.forEach((user) => {
-        if (user.email.toString() == username.toString()) {
+        if ((user.email.toString() === username.toString()) && (user.password.toString() === password.toString())) {
           Object.assign(result, { email: user.email, token, role: user.role });
         }
       });

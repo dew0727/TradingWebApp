@@ -62,7 +62,9 @@ const authenticate = (res) => {
 };
 
 const apiCall = (url, payload, method, callback) => {
-  payload = { ...payload, ...getAuth() };
+  if (url !== "/api/login")
+    payload = { ...payload, ...getAuth() };
+    
   axios
     .post(url, {
       method: method,
