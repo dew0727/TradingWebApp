@@ -68,6 +68,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       dataIndex: "account",
       align: "center",
       key: "account",
+      sorter: (a, b) => a.account.localeCompare(b.account),
     },
     {
       title: "削除",
