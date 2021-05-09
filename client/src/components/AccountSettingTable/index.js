@@ -39,7 +39,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
     {
       title: "口座",
       dataIndex: "name",
-      align: "left",
+      align: "center",
       defaultSortOrder: "ascend",
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
@@ -47,7 +47,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       title: "残高",
       className: "column-balance",
       dataIndex: "balance",
-      align: "right",
+      align: "center",
       render: (text, record) => {
         return record.balance
           ? Math.round(record.balance).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
@@ -58,7 +58,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       title: isDesktop ? "マージン" : "マー..",
       className: "column-margin",
       dataIndex: "margin",
-      align: "right",
+      align: "center",
       render: (text, record) => {
         return record.margin
           ? Math.round(record.margin).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
@@ -69,7 +69,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       title: isDesktop ? "未確定損益" : "未確..",
       className: "column-profit",
       dataIndex: "profit",
-      align: "right",
+      align: "center",
       render: (text, record) => {
         return record.profit
           ? Math.round(record.profit).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
@@ -80,7 +80,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       title: "Equity",
       className: "column-equity",
       dataIndex: "equity",
-      align: "right",
+      align: "center",
       render: (text, record) => {
         return record.equity
           ? Math.round(record.equity).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
@@ -91,7 +91,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
       title: "Basket",
       className: "column-basket-on-off",
       dataindex: "basket",
-      align: "right",
+      align: "center",
       editable: true,
       render: (text, record) => {
         return (
@@ -103,7 +103,7 @@ const AccountSettingTable = ({ accounts, callback }) => {
               });
             }}
           >
-            {record.basket === true ? "ON" : "OFF"}
+            {record.basket === true ? <span className="account-status-live">ON</span> : <span className="account-status-dead">OFF</span>}
           </div>
         );
       },
@@ -131,12 +131,12 @@ const AccountSettingTable = ({ accounts, callback }) => {
       title: "Status",
       className: "column-default-status",
       dataIndex: "time",
-      align: "right",
+      align: "center",
       editable: false,
       render: (time) => {
         var curTime = Date.now();
-        if (curTime - time >= 30 * 1000) return "Dead";
-        else return "Live";
+        if (curTime - time >= 15 * 1000) return <span className="account-status-dead">DEAD</span>;
+        else return <span className="account-status-live">LIVE</span>;
       },
     },
   ];

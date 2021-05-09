@@ -10,3 +10,12 @@
   width: 100% !important;
   max-width: 50px !important;
 }
+
+.account-status-dead {
+  color: red;
+  font-weight: bolder;
+}
+
+.account-status-live {
+  color: greenyellow;
+}
