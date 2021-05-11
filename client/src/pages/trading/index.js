@@ -40,7 +40,6 @@ const SymbolDictionary = [
   "EURJPY",
   "AUDJPY",
   "AUDUSD",
-  "CADJPY",
 ];
 
 const waiting_time = 5;
@@ -63,8 +62,9 @@ const TradingPage = () => {
       name: "Basket",
       status: false,
       time: Date.now(),
-    }
+    },
   ]);
+
   const [posList, setPosList] = useState({});
   const [orderList, setOrderList] = useState({});
   const [rates, setRates] = useState({});
@@ -95,24 +95,28 @@ const TradingPage = () => {
   ];
 
   const onHandleRemoveAccount = (account) => {
-    
     if (!isTrader && !masterAccounts.hasOwnProperty(account.name)) {
       //console.log("Remove account. Master can only access master accounts");
       return;
     }
 
-    apiCall("/api/delete-account", {account: account.name}, "POST", (res, user, pass) => {
-      if (res.success === true) {
-        setAccounts(getAccounts().filter((acc) => acc.name !== account.name));
-        openNotification("Notice", "", "Removed Account " + account.name);
+    apiCall(
+      "/api/delete-account",
+      { account: account.name },
+      "POST",
+      (res, user, pass) => {
+        if (res.success === true) {
+          setAccounts(getAccounts().filter((acc) => acc.name !== account.name));
+          openNotification("Notice", "", "Removed Account " + account.name);
+        }
       }
-    });
+    );
   };
 
   const requestOrderApi = (reqMsg) => {
     if (!isTrader && !masterAccounts.hasOwnProperty(reqMsg.Account)) {
-        //console.log("Request Order. Master can only access master accounts");
-        //return;
+      //console.log("Request Order. Master can only access master accounts");
+      //return;
     }
 
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
@@ -186,6 +190,30 @@ const TradingPage = () => {
 
         setRates(rates);
         break;
+      case EVENTS.ON_STATUS:
+        const account_status = JSON.parse(message);
+
+        setAccounts((prevState) => {
+          return prevState.map((acc) => {
+            if (acc.name in account_status) {
+              acc.status = account_status[acc.name];
+              if (acc.status?.status === false) {
+                openNotification(
+                  "error",
+                  "アカウントエラー!",
+                  `${acc.name} 死んでいる`,
+                  true,
+                  acc.name
+                );
+              } else {
+                notification.close(acc.name);
+              }
+            }
+            return acc;
+          });
+        });
+
+        break;
       case EVENTS.ON_ACCOUNT:
         var account = JSON.parse(message);
 
@@ -244,11 +272,11 @@ const TradingPage = () => {
         );
         break;
       case EVENTS.ON_ORDER_RESPONSE:
-      if (lastResponse === message)  return;
-      lastResponse = message;
+        if (lastResponse === message) return;
+        lastResponse = message;
 
         var response = JSON.parse(message);
-          console.log(response);
+        console.log(response);
         if (
           isTrader === true &&
           masterAccounts.hasOwnProperty(response.account)
@@ -310,7 +338,9 @@ const TradingPage = () => {
   useEffect(() => {
     const auth = getAuth();
     isTrader = auth.role === "master" ? false : true;
-    brokers = isTrader ? ["GP", "YJFX", "SAXO"] : ["GP", "YJFX", "SAXO", "FXGBM"] ;
+    brokers = isTrader
+      ? ["GP", "YJFX", "SAXO"]
+      : ["GP", "YJFX", "SAXO", "FXGBM"];
     createSocket(parseData, auth.token);
   }, []);
 
@@ -423,28 +453,54 @@ const TradingPage = () => {
     emptyText: <span className="table-empty-message">ございません</span>,
   };
 
-  const openNotification = (type, title, content) => {
-    addLog(
-      type,
-      (title ? title.replace("Order Response from", "") : "") +
-        " " +
-        (content ? content : "")
-    );
-    if (enableNotify !== true) return;
-    if (type === "Error") {
-      notification.error({
+  const openNotification = (
+    type,
+    title,
+    content,
+    needConfirm = false,
+    modalKey = null
+  ) => {
+    if (needConfirm) {
+      const key = modalKey;
+      const btn = (
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => notification.close(key)}
+        >
+          Close
+        </Button>
+      );
+      notification[type]({
         message: title,
         description: content,
-        duration: waiting_time,
-        placement: "bottomRight",
+        btn,
+        key,
+        duration: 0,
       });
     } else {
-      notification.open({
-        message: title,
-        description: content,
-        duration: waiting_time,
-        placement: "bottomRight",
-      });
+      addLog(
+        type,
+        (title ? title.replace("Order Response from", "") : "") +
+          " " +
+          (content ? content : "")
+      );
+      if (enableNotify !== true) return;
+      if (type === "Error") {
+        notification.error({
+          message: title,
+          description: content,
+          duration: waiting_time,
+          placement: "bottomRight",
+        });
+      } else {
+        notification.open({
+          message: title,
+          description: content,
+          duration: waiting_time,
+          placement: "bottomRight",
+        });
+      }
     }
   };
 

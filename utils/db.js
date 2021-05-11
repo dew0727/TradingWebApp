@@ -74,7 +74,7 @@ const AddAccount = (account) => {
   };
 };
 
-const DeleteAccount = ({account}) => {
+const DeleteAccount = ({ account }) => {
   accounts = accounts.filter((acc) => acc.name !== account);
 
   SaveAccountsData();
@@ -111,6 +111,14 @@ const GetAccountStatus = (accName) => {
   return accStatus ? accStatus.status : false;
 };
 
+const GetAccountStatusAll = () => {
+  let statusAll = {};
+  accountStatus.forEach((status) => {
+    statusAll[status.name] = status;
+  });
+  return statusAll;
+};
+
 const UpdateAccountStatus = (name, status) => {
   accountStatus = accountStatus.map((x) => {
     var curTime = Date.now();
@@ -121,7 +129,7 @@ const UpdateAccountStatus = (name, status) => {
         time: curTime,
       };
     } else {
-      if (curTime - x.time >= 5 * 1000) {
+      if (curTime - x.time >= 120 * 1000) {
         return {
           ...x,
           status: false,
@@ -200,7 +208,10 @@ const GetAuthToken = ({ username, password, token }) => {
     console.log("Authenticating with email and password", username, password);
     if (username !== undefined && password !== undefined) {
       users.forEach((user) => {
-        if ((user.email.toString() === username.toString()) && (user.password.toString() === password.toString())) {
+        if (
+          user.email.toString() === username.toString() &&
+          user.password.toString() === password.toString()
+        ) {
           Object.assign(result, { email: user.email, token, role: user.role });
         }
       });
@@ -227,6 +238,7 @@ module.exports = {
   DeleteAccount,
   UpdateAccountStatus,
   GetAccountStatus,
+  GetAccountStatusAll,
   SetPriceFeed,
   GetPriceFeed,
   SetAuthToken,

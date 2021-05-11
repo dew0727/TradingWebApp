@@ -60,7 +60,8 @@ const unsubscribeQueue = (topic, username) => {
   console.log(new Date().toLocaleString(), "deleteing queue: ", queue);
   channel.deleteQueue(queue, (err, ok) => {
     console.log(new Date().toLocaleString(), err, ok);
-    if (ok) console.log(new Date().toLocaleString(), "Deleted queue named ", queue);
+    if (ok)
+      console.log(new Date().toLocaleString(), "Deleted queue named ", queue);
   });
 };
 
@@ -76,7 +77,8 @@ const subscribeChannel = (topic, username) => {
         throw error2;
       }
 
-      console.log(new Date().toLocaleString(), 
+      console.log(
+        new Date().toLocaleString(),
         " [*] Waiting for messages in %s. To exit press CTRL+C",
         q.queue
       );
@@ -153,7 +155,7 @@ const processMessage = (topic, msg) => {
       var account = db.GetAccount(accName);
       if (account === undefined) return;
 
-      var status = db.GetAccountStatus(accName);
+      var statusAll = db.GetAccountStatusAll();
 
       var balance = items[1];
       var margin = Number.parseFloat(items[2]);
@@ -170,10 +172,13 @@ const processMessage = (topic, msg) => {
         basket: account.basket ? account.basket : false,
         default: account.default ? account.default : 1,
         master: account.master,
-        time: Date.now(),
+        status: { 
+          status: db.GetAccountStatus(accName),
+          time: Date.now(), 
+        },
       };
-
       socket.emit(topic, JSON.stringify(accountInfo));
+      socket.emit(EVENTS.ON_STATUS, JSON.stringify(statusAll));
       break;
     case EVENTS.ON_POSLIST:
       var accName = msg.split("@")[0];
@@ -191,7 +196,7 @@ const processMessage = (topic, msg) => {
       var items = sContent.split(";");
 
       var positions = [];
-      
+
       for (var i = 0; i < items.length; i++) {
         var posItems = items[i].split(",");
 
