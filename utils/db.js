@@ -186,6 +186,36 @@ const SaveUsersData = () => {
   fs.writeFileSync(DB_PATH_USERS, JSON.stringify(users));
 };
 
+const GetUserSettings = (username) => {
+  console.log("Get user settings: ", { username });
+  let result = {};
+
+  users.forEach((user) => {
+    if (user.email === username) {
+      result["maxDefault"] = user.maxDefault || 100;
+    }
+  });
+
+  return result;
+};
+
+const SetUserSettings = (username, isMaster, data) => {
+  console.log(
+    "Trying to set user settings: ",
+    { username },
+    { isMaster },
+    { data }
+  );
+  users.forEach((user) => {
+    if (user.email === username) {
+      if (isMaster && user.role !== "master") return;
+      user.maxDefault = data.maxDefault;
+      console.log("Set user settings: ", { user });
+      SaveUsersData();
+    }
+  });
+};
+
 const SetAuthToken = (username, authToken) => {
   if (!authToken) return null;
 
@@ -243,4 +273,6 @@ module.exports = {
   GetPriceFeed,
   SetAuthToken,
   GetAuthToken,
+  GetUserSettings,
+  SetUserSettings,
 };

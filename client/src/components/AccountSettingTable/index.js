@@ -1,38 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useDebounce } from "use-debounce";
+import React, { useRef } from "react";
 import { Table, InputNumber, Grid } from "antd";
 import "./style.css";
 
+const AccountSettingTable = ({
+  accounts,
+  maxLots,
+  callback,
+  onChangeMaxValue,
+}) => {
+  const inputRef = useRef(null);
 
-let maxLots = localStorage.getItem("maxDefault");
-if (maxLots === undefined || maxLots < 1) maxLots = 2;
-
-
-const DefaultValueInput = ({ valueDefault, onChange, max }) => {
-  const [input, setInput] = useState(valueDefault);
-  const [value] = useDebounce(input, 100);
-
-  useEffect(() => {
-    valueDefault !== value && onChange && onChange(value);
-  }, [value]);
-
-  return (
-    <InputNumber
-      key={"default-lots-input-" + value}
-      className="account-settings-default-lots-input"
-      value={value}
-      step={0.1}
-      min={0}
-      max={max}
-      onChange={(v) => setInput(v)}
-      size={"small"}
-    />
-  );
-};
-
-const AccountSettingTable = ({ accounts, callback }) => {
-  
-  const [maxDefault, setMaxDefault] = useState(maxLots);
+  const onHandleStep = (e) => {
+    inputRef.current.blur();
+  };
 
   const isDesktop = Grid.useBreakpoint()?.sm;
   const columns = [
@@ -50,7 +30,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "center",
       render: (text, record) => {
         return record.balance
-          ? Math.round(record.balance).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          ? Math.round(record.balance)
+              .toString()
+              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
@@ -61,7 +43,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "center",
       render: (text, record) => {
         return record.margin
-          ? Math.round(record.margin).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          ? Math.round(record.margin)
+              .toString()
+              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
@@ -72,7 +56,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "center",
       render: (text, record) => {
         return record.profit
-          ? Math.round(record.profit).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          ? Math.round(record.profit)
+              .toString()
+              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
@@ -83,7 +69,9 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "center",
       render: (text, record) => {
         return record.equity
-          ? Math.round(record.equity).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+          ? Math.round(record.equity)
+              .toString()
+              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
@@ -103,7 +91,11 @@ const AccountSettingTable = ({ accounts, callback }) => {
               });
             }}
           >
-            {record.basket === true ? <span className="account-status-live">ON</span> : <span className="account-status-dead">OFF</span>}
+            {record.basket === true ? (
+              <span className="account-status-live">ON</span>
+            ) : (
+              <span className="account-status-dead">OFF</span>
+            )}
           </div>
         );
       },
@@ -115,14 +107,19 @@ const AccountSettingTable = ({ accounts, callback }) => {
       align: "center",
       render: (text, record) => {
         return (
-          <DefaultValueInput
-            valueDefault={record.default}
-            max={maxDefault}
+          <InputNumber
+            key={"default-lots-input-" + record.name}
+            className="account-settings-default-lots-input"
+            value={record.default}
+            step={0.1}
+            min={0}
+            max={maxLots}
             onChange={(val) => {
               if (val !== null && val !== "" && val >= 0) {
                 onHandleClickBasket({ accname: record.name, defaultLots: val });
               }
             }}
+            size={"small"}
           />
         );
       },
@@ -135,15 +132,16 @@ const AccountSettingTable = ({ accounts, callback }) => {
       editable: false,
       render: (status) => {
         var curTime = Date.now();
-        if (curTime - status?.time >= 15 * 1000) return <span className="account-status-dead">DEAD</span>;
+        if (curTime - status?.time >= 15 * 1000)
+          return <span className="account-status-dead">DEAD</span>;
         else return <span className="account-status-live">LIVE</span>;
       },
     },
   ];
 
-  const onHandleClickBasket = ({ accname, basket, defaultLots }) => {
+  const onHandleClickBasket = ({ accname, basket, defaultLots, maxVal }) => {
     if (basket !== undefined) basket = basket === true ? false : true;
-    callback({ accname, basket, defaultLots });
+    callback({ accname, basket, defaultLots, maxVal });
   };
 
   let locale = {
@@ -157,26 +155,27 @@ const AccountSettingTable = ({ accounts, callback }) => {
         columns={columns}
         dataSource={typeof accounts !== "object" ? [] : accounts}
         bordered
-        title={() => 
+        title={() => (
           <div className="position-table-title-control">
             <span>口座情報</span>
             <div>
               <label>Max Value: </label>
               <InputNumber
                 className="account-settings-default-lots-input"
-                defaultValue={maxLots}
+                ref={inputRef}
+                defaultValue={100}
+                value={maxLots}
                 step={1}
                 min={1}
                 onChange={(v) => {
-                  localStorage.setItem("maxDefault", v);
-                  setMaxDefault(v);
+                  onChangeMaxValue && onChangeMaxValue(v);
                 }}
+                onStep={onHandleStep}
                 size={"small"}
               />
             </div>
-            
-          </div>  
-        }
+          </div>
+        )}
         pagination={false}
         locale={locale}
       />

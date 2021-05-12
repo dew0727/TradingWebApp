@@ -11,8 +11,8 @@ const saveCredential = ({ usr, pwd }) => {
   localStorage.setItem("temp-1", encrypt("const error", pwd));
 };
 
-const getCredential = () => {
-  if (rememberState()) {
+const getCredential = (isForce = false) => {
+  if (rememberState() || isForce) {
     return {
       user: decrypt("const error", localStorage.getItem("temp-2")),
       pwd: decrypt("const error", localStorage.getItem("temp-1")),

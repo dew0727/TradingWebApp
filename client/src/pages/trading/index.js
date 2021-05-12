@@ -26,7 +26,7 @@ import PositionTable from "../../components/PositionList";
 import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
 import { EVENTS } from "../../config-client";
-import { apiCall, Logout, getAuth } from "../../utils/api";
+import { apiCall, Logout, getAuth, getCredential } from "../../utils/api";
 const dateFormat = require("dateformat");
 
 const { TabPane } = Tabs;
@@ -45,12 +45,14 @@ const SymbolDictionary = [
 const waiting_time = 5;
 let enableNotify = localStorage.getItem("enableNotify") ? true : false;
 var isTrader = true;
+var email = "none";
 var masterAccounts = {};
 var lastResponse = "";
 
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
+  const [maxDefaultLots, setMaxDefautLots] = useState(100);
   const lg = Grid.useBreakpoint()?.lg;
   const md = Grid.useBreakpoint()?.md;
   const sm = Grid.useBreakpoint()?.sm;
@@ -185,6 +187,16 @@ const TradingPage = () => {
 
   const parseData = (topic, message) => {
     switch (topic) {
+      case EVENTS.ON_USER_SETTINGS:
+        const settings = JSON.parse(message);
+        if (email in settings) {
+          const setting = settings[email];
+          const val = parseFloat(setting.maxDefault);
+          console.log(val);
+          !isNaN(val) && setting.maxDefault && setMaxDefautLots(val);
+        }
+
+        break;
       case EVENTS.ON_RATE:
         var rates = JSON.parse(message);
 
@@ -338,10 +350,13 @@ const TradingPage = () => {
   useEffect(() => {
     const auth = getAuth();
     isTrader = auth.role === "master" ? false : true;
+    email = getCredential(true)?.user;
+    console.log({ email });
     brokers = isTrader
       ? ["GP", "YJFX", "SAXO"]
       : ["GP", "YJFX", "SAXO", "FXGBM"];
     createSocket(parseData, auth.token);
+    getAccountSettings();
   }, []);
 
   const onFinish = (values) => {
@@ -382,6 +397,34 @@ const TradingPage = () => {
     if (selectedAccount) {
       setCurAccount(selectedAccount);
     }
+  };
+
+  const getAccountSettings = (user) => {
+    apiCall("/api/get-user-setting", {}, "POST", (res) => {
+      if (res.success === true) {
+        console.log("retrieved user settings: ", res.data);
+        const settings = JSON.parse(res.data);
+        if (email in settings) {
+          const setting = settings[email];
+          const val = parseFloat(setting.maxDefault);
+          console.log(val);
+          !isNaN(val) && setting.maxDefault && setMaxDefautLots(val);
+        }
+      }
+    });
+  };
+
+  const onChangeMaxValue = (maxVal) => {
+    apiCall(
+      "/api/update-user-setting",
+      { maxDefault: maxVal },
+      "POST",
+      (res, user, pass) => {
+        if (res.success === true) {
+          console.log("set max default lots: ", res.data);
+        }
+      }
+    );
   };
 
   const onHandleAccSetting = (accname, basket, defaultLots) => {
@@ -743,6 +786,8 @@ const TradingPage = () => {
                 callback={({ accname, basket, defaultLots }) =>
                   onHandleAccSetting(accname, basket, defaultLots)
                 }
+                onChangeMaxValue={onChangeMaxValue}
+                maxLots={maxDefaultLots}
               />
               <Row></Row>
             </div>

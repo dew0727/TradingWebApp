@@ -17,6 +17,7 @@ const EVENTS = {
     ON_ORDER_REQUEST: 'ORDER_REQUEST',
     ON_LOG: 'FAT_LOG',
     ON_STATUS: 'ACCOUNT_STATUS',
+    ON_USER_SETTINGS: 'USER_SETTINGS',
 }
 
 // registered users

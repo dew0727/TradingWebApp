@@ -7,6 +7,7 @@ const rmq = require("./utils/rmq");
 const { authenticate } = require("./auth");
 const db = require("./utils/db");
 const path = require("path");
+const { socket } = require("./utils/socket");
 
 // set config
 const port = process.env.SOCKET_PORT || 3000;
@@ -18,12 +19,12 @@ app.get("/*", function (req, res) {
 });
 
 const ipLogger = (req, res, next) => {
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
   console.log("client ip address: ", ip); // ip address of the user
-  next()
-}
+  next();
+};
 
-app.use(ipLogger)
+app.use(ipLogger);
 
 // initialized database
 db.Init();
@@ -50,7 +51,7 @@ io.use((socket, next) => {
 });
 
 // Initialize rabbitmq client with socket.
-require("./utils/socket").socket.setIo(io);
+socket.setIo(io);
 
 const EVENTS = config.EVENTS;
 
@@ -130,6 +131,60 @@ app.post("/api/add-account", (req, res) => {
   });
 });
 
+app.post("/api/update-user-setting", (req, res) => {
+  var data = req.body.body;
+  console.log("Update user settings: ", { data });
+
+  data = JSON.parse(data);
+  var isMaster = data.role === "master" ? true : false;
+
+  const auth = db.GetAuthToken({ token: data.token });
+  if (auth.email) {
+    db.SetUserSettings(auth.email, isMaster, data);
+    const userSettings = db.GetUserSettings(auth.email);
+    socket.emit(
+      EVENTS.ON_USER_SETTINGS,
+      JSON.stringify({ [auth.email]: userSettings })
+    );
+    res.json({
+      success: true,
+      data: JSON.stringify({ [auth.email]: userSettings })
+    });
+  } else {
+    console.log("invlaid token");
+    res.json({
+      success: false,
+      error: "invalid token",
+    });
+  }
+});
+
+app.post("/api/get-user-setting", (req, res) => {
+  var data = req.body.body;
+  console.log("get user settings: ", { data });
+
+  data = JSON.parse(data);
+  
+  const auth = db.GetAuthToken({ token: data.token });
+  if (auth.email) {
+    const userSettings = db.GetUserSettings(auth.email);
+    socket.emit(
+      EVENTS.ON_USER_SETTINGS,
+      JSON.stringify({ [auth.email]: userSettings })
+    );
+    res.json({
+      success: true,
+      data: JSON.stringify({ [auth.email]: userSettings })
+    });
+  } else {
+    console.log("invlaid token");
+    res.json({
+      success: false,
+      error: "invalid token",
+    });
+  }
+});
+
 app.post("/api/update-account", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
@@ -180,12 +235,18 @@ app.post("/api/order-request", (req, res) => {
     case "ORDER_OPEN":
       accounts.forEach((acc) => {
         if (db.GetAccountStatus(acc.name)) {
-          if ((accName === "Basket" && acc.basket && acc.default > 0) || acc.name === accName || acc.master) {
-            if (acc.master && !acc.basket ) { 
-              console.log("Skip to trade becasue master account basket set off");
-              return; 
+          if (
+            (accName === "Basket" && acc.basket && acc.default > 0) ||
+            acc.name === accName ||
+            acc.master
+          ) {
+            if (acc.master && !acc.basket) {
+              console.log(
+                "Skip to trade becasue master account basket set off"
+              );
+              return;
             }
-            
+
             if (isMaster && !acc.master) {
               console.log("Skip trader acc in case master");
               return;
@@ -206,11 +267,13 @@ app.post("/api/order-request", (req, res) => {
       accounts.forEach((acc) => {
         if (
           db.GetAccountStatus(acc.name) &&
-          ((acc.basket && accName === "Basket") || (acc.name === accName || acc.master))
+          ((acc.basket && accName === "Basket") ||
+            acc.name === accName ||
+            acc.master)
         ) {
-          if (acc.master && !acc.basket ) { 
+          if (acc.master && !acc.basket) {
             console.log("Skip to trade becasue master account basket set off");
-            return; 
+            return;
           }
 
           if (isMaster && !acc.master) {
@@ -218,7 +281,7 @@ app.post("/api/order-request", (req, res) => {
             return;
           }
 
-          if (!isMaster && acc.name !== accName && !acc.master){
+          if (!isMaster && acc.name !== accName && !acc.master) {
             return;
           }
 
@@ -232,9 +295,11 @@ app.post("/api/order-request", (req, res) => {
       if (data.Symbol === "ALL") {
         accounts.forEach((acc) => {
           if (db.GetAccountStatus(acc.name) && acc.basket) {
-            if (acc.master && !acc.basket ) { 
-              console.log("Skip to trade becasue master account basket set off");
-              return; 
+            if (acc.master && !acc.basket) {
+              console.log(
+                "Skip to trade becasue master account basket set off"
+              );
+              return;
             }
 
             if (isMaster && !acc.master) {
@@ -250,11 +315,15 @@ app.post("/api/order-request", (req, res) => {
         accounts.forEach((acc) => {
           if (
             db.GetAccountStatus(acc.name) &&
-            ((acc.basket && accName === "Basket") || (acc.name === accName || acc.master))
+            ((acc.basket && accName === "Basket") ||
+              acc.name === accName ||
+              acc.master)
           ) {
-            if (acc.master && !acc.basket ) { 
-              console.log("Skip to trade becasue master account basket set off");
-              return; 
+            if (acc.master && !acc.basket) {
+              console.log(
+                "Skip to trade becasue master account basket set off"
+              );
+              return;
             }
             if (isMaster && !acc.master) {
               console.log("Skip trader acc in case master");
