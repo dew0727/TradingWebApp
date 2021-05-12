@@ -75,6 +75,7 @@ app.post("/api/login", (req, res) => {
   if (result.success === true) {
     console.log("Subscribing with user ", result.email);
     subscribeForUser(result.email);
+    socket.emit(EVENTS.ON_USER_LOGIN, JSON.stringify({email: result.email}))
   }
 
   console.log(new Date().toLocaleString(), "pricefeed", db.GetPriceFeed());

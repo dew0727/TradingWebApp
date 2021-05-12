@@ -18,6 +18,7 @@ const EVENTS = {
     ON_LOG: 'FAT_LOG',
     ON_STATUS: 'ACCOUNT_STATUS',
     ON_USER_SETTINGS: 'USER_SETTINGS',
+    ON_USER_LOGIN: 'USER_LOGIN',
 }
 
 // registered users

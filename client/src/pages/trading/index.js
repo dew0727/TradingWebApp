@@ -187,6 +187,14 @@ const TradingPage = () => {
 
   const parseData = (topic, message) => {
     switch (topic) {
+      case EVENTS.ON_USER_LOGIN:
+        const login = JSON.parse(message);
+        console.log('login event', login)
+        if (login.email && email === login.email) {
+          window.location.href = "/";
+        }
+
+        break;
       case EVENTS.ON_USER_SETTINGS:
         const settings = JSON.parse(message);
         if (email in settings) {
