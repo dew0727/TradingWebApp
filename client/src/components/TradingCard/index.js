@@ -54,7 +54,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
     const curLots = Number.parseFloat(orderContent.lots);
     setOrderContent({
       ...orderContent,
-      lots: isPlus ? (Number.isNaN(curLots) ? size : curLots + size) : size,
+      lots: isPlus ? (Number.isNaN(curLots) ? size : Math.round((curLots + size) * 100) / 100) : size,
     });
   };
 
@@ -298,6 +298,39 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               block
               size="small"
               onClick={() => {
+                setOrderLots(0.1, 1);
+              }}
+            >
+              +0.1
+            </Button>
+          </div>
+          <div className="trading-card-quick-set-btn">
+            <Button
+              block
+              size="small"
+              onClick={() => {
+                setOrderLots(0.2, 1);
+              }}
+            >
+              +0.2
+            </Button>
+          </div>
+          <div className="trading-card-quick-set-btn">
+            <Button
+              block
+              size="small"
+              onClick={() => {
+                setOrderLots(0.5, 1);
+              }}
+            >
+              +0.5
+            </Button>
+          </div>
+          <div className="trading-card-quick-set-btn">
+            <Button
+              block
+              size="small"
+              onClick={() => {
                 setOrderLots(1, 1);
               }}
             >
@@ -309,43 +342,10 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
               block
               size="small"
               onClick={() => {
-                setOrderLots(5, 1);
+                setOrderLots(2, 1);
               }}
             >
-              +5
-            </Button>
-          </div>
-          <div className="trading-card-quick-set-btn">
-            <Button
-              block
-              size="small"
-              onClick={() => {
-                setOrderLots(10, 1);
-              }}
-            >
-              +10
-            </Button>
-          </div>
-          <div className="trading-card-quick-set-btn">
-            <Button
-              block
-              size="small"
-              onClick={() => {
-                setOrderLots(50, 1);
-              }}
-            >
-              +50
-            </Button>
-          </div>
-          <div className="trading-card-quick-set-btn">
-            <Button
-              block
-              size="small"
-              onClick={() => {
-                setOrderLots(100, 1);
-              }}
-            >
-              +100
+              +2
             </Button>
           </div>
         </div>
