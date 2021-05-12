@@ -1,4 +1,4 @@
-const SOCKET_PORT = 4001;
+const SOCKET_PORT = 3000;
 const RABBITMQ_HOST = "localhost";
 const RABBITMQ_USERNAME = "localhost";
 const RABBITMQ_PASSWORD = "localhost";
@@ -15,7 +15,8 @@ const EVENTS = {
     ON_PRICE_TICK: 'FAT_PRICE_TICK',
     ON_ORDER_RESPONSE: 'ORDER_RESPONSE',
     ON_ORDER_REQUEST: 'ORDER_REQUEST',
-    ON_LOG: 'FAT_LOG',    
+    ON_LOG: 'FAT_LOG',
+    ON_STATUS: 'ACCOUNT_STATUS',
 }
 
 // registered users

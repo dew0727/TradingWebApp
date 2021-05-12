@@ -1,4 +1,4 @@
-const SOCKET_ENDPOINT = "http://localhost:3000";
+const SOCKET_ENDPOINT = "http://192.168.1.243:3000";
 const EVENTS = {
   ON_CONNECTION: "connection",
   ON_DISCONNECT: "disconnect",

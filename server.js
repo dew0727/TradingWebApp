@@ -17,6 +17,14 @@ app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "/client/build", "index.html"));
 });
 
+const ipLogger = (req, res, next) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  console.log("client ip address: ", ip); // ip address of the user
+  next()
+}
+
+app.use(ipLogger)
+
 // initialized database
 db.Init();
 
