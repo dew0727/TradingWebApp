@@ -48,6 +48,10 @@ const createSocket = (parseData, token) => {
   sockClient.on(EVENTS.ON_USER_LOGIN, (msg) => {
     parseData(EVENTS.ON_USER_LOGIN, msg);
   });
+
+  sockClient.on(EVENTS.ON_GLOBAL_SETTINGS, (msg) => {
+    parseData(EVENTS.ON_GLOBAL_SETTINGS, msg);
+  });
 };
 
 export default createSocket;

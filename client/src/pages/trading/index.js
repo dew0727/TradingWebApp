@@ -187,9 +187,17 @@ const TradingPage = () => {
 
   const parseData = (topic, message) => {
     switch (topic) {
+      case EVENTS.ON_GLOBAL_SETTINGS:
+        const globals = JSON.parse(message);
+        console.log("event global settings", message);
+        if (globals["maxDefault"]) {
+          const val = parseFloat(globals.maxDefault);
+          !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
+        }
+        break;
       case EVENTS.ON_USER_LOGIN:
         const login = JSON.parse(message);
-        console.log('login event', login)
+        console.log("login event", login);
         if (login.email && email === login.email) {
           window.location.href = "/";
         }
@@ -364,7 +372,7 @@ const TradingPage = () => {
       ? ["GP", "YJFX", "SAXO"]
       : ["GP", "YJFX", "SAXO", "FXGBM"];
     createSocket(parseData, auth.token);
-    getAccountSettings();
+    getGlobalSettings();
   }, []);
 
   const onFinish = (values) => {
@@ -407,6 +415,19 @@ const TradingPage = () => {
     }
   };
 
+  const getGlobalSettings = () => {
+    apiCall("/api/get-global-setting", {}, "POST", (res) => {
+      if (res.success === true) {
+        const globals = JSON.parse(res.data);
+        console.log("retrieved global settings: ", globals);
+        if (globals.maxDefault) {
+          const val = parseFloat(globals.maxDefault);
+          !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
+        }
+      }
+    });
+  };
+
   const getAccountSettings = (user) => {
     apiCall("/api/get-user-setting", {}, "POST", (res) => {
       if (res.success === true) {
@@ -424,12 +445,12 @@ const TradingPage = () => {
 
   const onChangeMaxValue = (maxVal) => {
     apiCall(
-      "/api/update-user-setting",
-      { maxDefault: maxVal },
+      "/api/update-global-setting",
+      { settings: { maxDefault: maxVal } },
       "POST",
       (res, user, pass) => {
         if (res.success === true) {
-          console.log("set max default lots: ", res.data);
+          console.log("set max default lots");
         }
       }
     );

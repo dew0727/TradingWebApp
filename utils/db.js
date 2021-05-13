@@ -3,16 +3,19 @@ const fs = require("fs");
 const DB_PATH_ACCOUNT = "./db/accounts.json";
 const DB_PATH_PRICE_FEED = "./db/priceFeed.json";
 const DB_PATH_USERS = "./db/users.json";
+const DB_PATH_GLOBAL = "./db/global.json";
 
 let accounts = [];
 let accountStatus = [];
 let priceFeed = "";
 let users = {};
+let global = {};
 
 const Init = () => {
   LoadAccountsData();
   LoadPriceFeed();
   LoadUsersData();
+  LoadGlobalData();
 
   if (accounts.Length == 0) accountStatus = [];
   else {
@@ -182,6 +185,55 @@ const LoadUsersData = () => {
   users = JSON.parse(sData);
 };
 
+const LoadGlobalData = () => {
+  console.log("Loading global settings from file ...");
+
+  if (!fs.existsSync(DB_PATH_GLOBAL)) {
+    console.log("no global data file");
+    global = {};
+    return;
+  }
+
+  const sData = fs.readFileSync(DB_PATH_GLOBAL);
+  if (sData.toString() === "") {
+    global = {};
+    return {};
+  }
+  global = JSON.parse(sData);
+  console.log('loaded global settings', {global})
+};
+
+const SaveGlobalData = () => {
+  console.log('saving global', global)
+  fs.writeFileSync(DB_PATH_GLOBAL, JSON.stringify(global));
+};
+
+const SetGlobalSettingKeyValuePair = (key, value) => {
+  global[key] = value;
+  SaveGlobalData();
+};
+
+const SetGlobalSettings = (data) => {
+  console.log('set globals ', data)
+  if (data.toString === "") return;
+  for(const [key, value] of Object.entries(data)){
+    global[key] = value;
+  }
+
+  SaveGlobalData();
+  
+  return global;
+}
+
+const GetGlobalSettings = () => {
+  return global;
+};
+
+const GetGlobalSettingWithKey = (key) => {
+  if (key in global) return global[key];
+  return null;
+};
+
 const SaveUsersData = () => {
   fs.writeFileSync(DB_PATH_USERS, JSON.stringify(users));
 };
@@ -275,4 +327,6 @@ module.exports = {
   GetAuthToken,
   GetUserSettings,
   SetUserSettings,
+  SetGlobalSettings,
+  GetGlobalSettings,
 };

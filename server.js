@@ -75,7 +75,7 @@ app.post("/api/login", (req, res) => {
   if (result.success === true) {
     console.log("Subscribing with user ", result.email);
     subscribeForUser(result.email);
-    socket.emit(EVENTS.ON_USER_LOGIN, JSON.stringify({email: result.email}))
+    socket.emit(EVENTS.ON_USER_LOGIN, JSON.stringify({ email: result.email }));
   }
 
   console.log(new Date().toLocaleString(), "pricefeed", db.GetPriceFeed());
@@ -132,6 +132,70 @@ app.post("/api/add-account", (req, res) => {
   });
 });
 
+/**
+ * Global settings
+ */
+app.post("/api/update-global-setting", (req, res) => {
+  var data = req.body.body;
+  console.log("Update global settings: ", { data });
+
+  data = JSON.parse(data);
+  var isMaster = data.role === "master" ? true : false;
+
+  if (isMaster) {
+    console.log("Maste can't chenge the global settings");
+    return;
+  }
+
+  const auth = db.GetAuthToken({ token: data.token });
+  if (auth.email) {
+    if (data.settings) {
+      const globals = db.SetGlobalSettings(data.settings);
+      socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify(globals));
+      res.json({
+        success: true,
+        data: JSON.stringify(globals)
+      });
+    } else {
+      console.log("invalid data");
+      res.json({
+        success: false,
+        error: "invalid data",
+      });
+    }
+  } else {
+    console.log("invlaid token");
+    res.json({
+      success: false,
+      error: "invalid token",
+    });
+  }
+});
+
+app.post("/api/get-global-setting", (req, res) => {
+  var data = req.body.body;
+  console.log("get global settings: ", { data });
+
+  data = JSON.parse(data);
+
+  const auth = db.GetAuthToken({ token: data.token });
+  if (auth.email) {
+    const globals = db.GetGlobalSettings();
+    socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify(globals));
+    res.json({
+      success: true,
+      data: JSON.stringify(globals)
+    });
+  } else {
+    console.log("invlaid token");
+    res.json({
+      success: false,
+      error: "invalid token",
+    });
+  }
+});
+//=========================
+
 app.post("/api/update-user-setting", (req, res) => {
   var data = req.body.body;
   console.log("Update user settings: ", { data });
@@ -149,7 +213,7 @@ app.post("/api/update-user-setting", (req, res) => {
     );
     res.json({
       success: true,
-      data: JSON.stringify({ [auth.email]: userSettings })
+      data: JSON.stringify({ [auth.email]: userSettings }),
     });
   } else {
     console.log("invlaid token");
@@ -165,7 +229,7 @@ app.post("/api/get-user-setting", (req, res) => {
   console.log("get user settings: ", { data });
 
   data = JSON.parse(data);
-  
+
   const auth = db.GetAuthToken({ token: data.token });
   if (auth.email) {
     const userSettings = db.GetUserSettings(auth.email);
@@ -175,7 +239,7 @@ app.post("/api/get-user-setting", (req, res) => {
     );
     res.json({
       success: true,
-      data: JSON.stringify({ [auth.email]: userSettings })
+      data: JSON.stringify({ [auth.email]: userSettings }),
     });
   } else {
     console.log("invlaid token");
