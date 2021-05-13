@@ -53,6 +53,7 @@ const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
   const [maxDefaultLots, setMaxDefautLots] = useState(100);
+  const [curPriceFeed, setCurPriceFeed] = useState("");
   const lg = Grid.useBreakpoint()?.lg;
   const md = Grid.useBreakpoint()?.md;
   const sm = Grid.useBreakpoint()?.sm;
@@ -193,6 +194,10 @@ const TradingPage = () => {
         if (globals["maxDefault"]) {
           const val = parseFloat(globals.maxDefault);
           !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
+        }
+        if (globals.feed) {
+          console.log("price feed", globals.feed);
+          setCurPriceFeed(globals.feed);
         }
         break;
       case EVENTS.ON_USER_LOGIN:
@@ -424,6 +429,11 @@ const TradingPage = () => {
           const val = parseFloat(globals.maxDefault);
           !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
         }
+
+        if (globals.feed) {
+          console.log("price feed", globals.feed);
+          setCurPriceFeed(globals.feed);
+        }
       }
     });
   };
@@ -599,6 +609,7 @@ const TradingPage = () => {
               brokers={getAccountNames()}
               accounts={getAccountNames()}
               callback={updateAccountOrPriceFeed}
+              defaultFeed={curPriceFeed}
             />
           </div>
           <Row

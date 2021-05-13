@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import SymbolSelector from "../../components/SymbolSelector";
 import "./style.css";
 
-const TradingMenu = ({ brokers, accounts, callback }) => {
+const TradingMenu = ({ brokers, accounts, callback, defaultFeed }) => {
   const handleBrokerClick = (key) => {
     callback({selectedBroker: key});
   };
@@ -21,6 +21,7 @@ const TradingMenu = ({ brokers, accounts, callback }) => {
           symbols={brokers.filter(broker => broker !== "Basket" && broker !== "All")}
           defaultIndex = {0}
           callback={handleBrokerClick}
+          defaultValue={defaultFeed}
         />
       </div>
       <div className="traiding-account-selection">

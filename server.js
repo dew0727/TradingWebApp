@@ -180,7 +180,8 @@ app.post("/api/get-global-setting", (req, res) => {
 
   const auth = db.GetAuthToken({ token: data.token });
   if (auth.email) {
-    const globals = db.GetGlobalSettings();
+    let globals = db.GetGlobalSettings();
+    globals['feed'] = db.GetPriceFeed();
     socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify(globals));
     res.json({
       success: true,
@@ -416,6 +417,7 @@ app.post("/api/price-feed", (req, res) => {
 
   db.SetPriceFeed(feed);
   console.log(new Date().toLocaleString(), "Price-feed: ", db.GetPriceFeed());
+  socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify({feed: feed}));
   res.json({
     success: true,
   });
