@@ -119,7 +119,7 @@ const AccountSettingTable = ({
                 onHandleClickBasket({ accname: record.name, defaultLots: val });
               }
             }}
-            size={"small"}
+            size={"medium"}
           />
         );
       },
