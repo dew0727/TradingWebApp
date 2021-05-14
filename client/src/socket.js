@@ -1,12 +1,16 @@
 import socketIOClient from "socket.io-client";
 import { SOCKET_ENDPOINT, EVENTS } from "./config-client";
 
+let sockClient = null;
+
 const createSocket = (parseData, token) => {
-  const sockClient = socketIOClient(SOCKET_ENDPOINT, {
-    auth: {
-      token: token,
-    },
-  });
+  if (!sockClient) {
+    sockClient = socketIOClient(SOCKET_ENDPOINT, {
+      auth: {
+        token: token,
+      },
+    });
+  }
 
   sockClient.on("connect_error", (err) => {
     console.log(err.message);
