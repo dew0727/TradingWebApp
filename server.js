@@ -74,7 +74,7 @@ app.post("/api/login", (req, res) => {
   console.log("Auth Result:", result);
   if (result.success === true) {
     console.log("Subscribing with user ", result.email);
-    subscribeForUser(result.email);
+    // subscribeForUser(result.email);
     socket.emit(EVENTS.ON_USER_LOGIN, JSON.stringify({ email: result.email }));
   }
 
@@ -95,7 +95,7 @@ app.post("/api/logout", (req, res) => {
 
   if (result.success === true) {
     console.log("Un-subscribing with user ", result.email);
-    unsubscribeForUser(result.email);
+    // unsubscribeForUser(result.email);
     res.json({
       success: true,
       token: result.token,
@@ -445,3 +445,5 @@ const unsubscribeForUser = (user) => {
   rmq.unsubscribeQueue(EVENTS.ON_ORDER_RESPONSE, user);
   rmq.unsubscribeQueue(EVENTS.ON_RATE, user);
 };
+
+subscribeForUser(config.RABBITMQ_USERNAME);
