@@ -620,7 +620,7 @@ const TradingPage = () => {
             {xs ? (
               <div>Mobile</div>
             ) : (
-              <div>
+              <>
                 {getSymbols().length > 0 && (
                   <Col>
                     {
@@ -754,7 +754,7 @@ const TradingPage = () => {
                     )}
                   </>
                 )}
-              </div>
+              </>
             )}
           </Row>
           <div className="trading-net-info">
