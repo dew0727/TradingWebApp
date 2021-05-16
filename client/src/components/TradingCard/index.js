@@ -35,7 +35,7 @@ const specPrice = (symbol, price, fixsize = 5) => {
   return { first: first, last: last };
 };
 
-const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
+const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = false }) => {
   const [curSym, setcurSym] = useState();
   const [orderType, setorderType] = useState("MARKET");
   const [orderContent, setOrderContent] = useState({
@@ -183,7 +183,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index }) => {
   };
 
   return (
-    <div className="trading-card-container">
+    <div className={`trading-card-container${isMobile ? '-mobile' : ''}`}>
       <div className="card-symbol-name">
         <SymbolSelector
           symbols={symbols}

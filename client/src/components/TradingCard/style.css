@@ -17,6 +17,26 @@
   padding: 0;
 }
 
+.trading-card-container-mobile {
+  margin: auto;
+  width: 350px;
+  background-color: #e5e5e5;
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
+}
+
+.trading-card-container-mobile .ant-card-head {
+  display: flex;
+  align-items: center;
+  padding-left: 0px;
+  height: 60px;
+}
+
+.trading-card-container-mobile .ant-card-body {
+  padding: 0;
+}
+
 .command-header-bid {
   background-color: rgb(25, 97, 170);
   color: white;
@@ -127,5 +147,17 @@
 }
 
 .trading-card-container .ant-input-number-handler-up-inner{
+  right: 2px !important;
+}
+
+.trading-card-container-mobile .ant-input-number-handler-wrap{
+  width: 16px !important;
+}
+
+.trading-card-container-mobile .ant-input-number-handler-down-inner{
+  right: 2px !important;
+}
+
+.trading-card-container-mobile .ant-input-number-handler-up-inner{
   right: 2px !important;
 }

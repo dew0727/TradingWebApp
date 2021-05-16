@@ -17,6 +17,7 @@ import {
   Popconfirm,
   Switch,
 } from "antd";
+import Slider from 'react-slick'
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
@@ -72,8 +73,17 @@ const TradingPage = () => {
   const [posList, setPosList] = useState({});
   const [orderList, setOrderList] = useState({});
   const [rates, setRates] = useState({});
-
+  const [symbolCount, setSymbolCount] = useState(0)
+  const [symbolList, setSymbolList] = useState([])
   const [logHistory, setlogHistory] = useState([]);
+
+  useEffect(() => {
+    setSymbolCount(getSymbols(rates).length)
+  }, [rates])
+
+  useEffect(() => {
+    setSymbolList(getSymbols(rates))
+  }, [symbolCount])
 
   const acc_columns = [
     {
@@ -565,8 +575,8 @@ const TradingPage = () => {
       addLog(
         type,
         (title ? title.replace("Order Response from", "") : "") +
-          " " +
-          (content ? content : "")
+        " " +
+        (content ? content : "")
       );
       if (enableNotify !== true) return;
       if (type === "Error") {
@@ -596,6 +606,22 @@ const TradingPage = () => {
     });
   };
 
+  const contentStyle = {
+    height: '60px',
+    color: '#fff',
+    lineHeight: '60px',
+    textAlign: 'center',
+    background: '#364d79',
+  };
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  };
+
   return (
     <div className="traindg-home-page">
       <Tabs
@@ -613,19 +639,36 @@ const TradingPage = () => {
               defaultFeed={curPriceFeed}
             />
           </div>
-          <Row
-            className="site-card-wrapper trading-cards-wrapper"
-            gutter={[16, 16]}
-          >
-            {xs ? (
-              <div>Mobile</div>
-            ) : (
-              <>
-                {getSymbols().length > 0 && (
+          {xs ? (
+
+            <Slider {...settings}>
+              {symbolList.map((symbol, index) =>
+              (
+                <>
+                  <TradingCard
+                    symbols={symbolList}
+                    rates={rates}
+                    broker={curBroker}
+                    posInfo={parsePosList()}
+                    reqOrder={(order) => reqOrder(order)}
+                    index={index}
+                    isMobile
+                  />
+                </>
+              )
+              )}
+            </Slider>
+          ) : (
+            <>
+              <Row
+                className="site-card-wrapper trading-cards-wrapper"
+                gutter={[16, 16]}
+              >
+                {symbolList.length > 0 && (
                   <Col>
                     {
                       <TradingCard
-                        symbols={getSymbols(rates)}
+                        symbols={symbolList}
                         rates={rates}
                         broker={curBroker}
                         posInfo={parsePosList()}
@@ -638,11 +681,11 @@ const TradingPage = () => {
 
                 {sm && (
                   <>
-                    {getSymbols().length > 1 && (
+                    {symbolList.length > 1 && (
                       <Col>
                         {
                           <TradingCard
-                            symbols={getSymbols(rates)}
+                            symbols={symbolList}
                             rates={rates}
                             broker={curBroker}
                             posInfo={parsePosList()}
@@ -656,11 +699,11 @@ const TradingPage = () => {
                 )}
                 {md && (
                   <>
-                    {getSymbols().length > 2 && (
+                    {symbolList.length > 2 && (
                       <Col>
                         {
                           <TradingCard
-                            symbols={getSymbols(rates)}
+                            symbols={symbolList}
                             rates={rates}
                             broker={curBroker}
                             posInfo={parsePosList()}
@@ -674,11 +717,11 @@ const TradingPage = () => {
                 )}
                 {lg && (
                   <>
-                    {getSymbols().length > 3 && (
+                    {symbolList.length > 3 && (
                       <Col>
                         {
                           <TradingCard
-                            symbols={getSymbols(rates)}
+                            symbols={symbolList}
                             rates={rates}
                             broker={curBroker}
                             posInfo={parsePosList()}
@@ -692,11 +735,11 @@ const TradingPage = () => {
                 )}
                 {xl && (
                   <>
-                    {getSymbols().length > 4 && (
+                    {symbolList.length > 4 && (
                       <Col>
                         {
                           <TradingCard
-                            symbols={getSymbols(rates)}
+                            symbols={symbolList}
                             rates={rates}
                             broker={curBroker}
                             posInfo={parsePosList()}
@@ -710,11 +753,11 @@ const TradingPage = () => {
                 )}
                 {xxl && (
                   <>
-                    {getSymbols().length > 5 && (
+                    {symbolList.length > 5 && (
                       <Col>
                         {
                           <TradingCard
-                            symbols={getSymbols(rates)}
+                            symbols={symbolList}
                             rates={rates}
                             broker={curBroker}
                             posInfo={parsePosList()}
@@ -724,11 +767,11 @@ const TradingPage = () => {
                         }
                       </Col>
                     )}
-                    {getSymbols().length > 6 && (
+                    {symbolList.length > 6 && (
                       <Col>
                         {
                           <TradingCard
-                            symbols={getSymbols(rates)}
+                            symbols={symbolList}
                             rates={rates}
                             broker={curBroker}
                             posInfo={parsePosList()}
@@ -738,11 +781,11 @@ const TradingPage = () => {
                         }
                       </Col>
                     )}
-                    {getSymbols().length > 7 && (
+                    {symbolList.length > 7 && (
                       <Col>
                         {
                           <TradingCard
-                            symbols={getSymbols(rates)}
+                            symbols={symbolList}
                             rates={rates}
                             broker={curBroker}
                             posInfo={parsePosList()}
@@ -754,9 +797,10 @@ const TradingPage = () => {
                     )}
                   </>
                 )}
-              </>
-            )}
-          </Row>
+              </Row>
+            </>
+          )}
+
           <div className="trading-net-info">
             <div>
               <div className="trading-table-wrapper">
