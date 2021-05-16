@@ -74,7 +74,6 @@ app.post("/api/login", (req, res) => {
   console.log("Auth Result:", result);
   if (result.success === true) {
     console.log("Subscribing with user ", result.email);
-    // subscribeForUser(result.email);
     socket.emit(EVENTS.ON_USER_LOGIN, JSON.stringify({ email: result.email }));
   }
 
@@ -426,24 +425,3 @@ app.post("/api/price-feed", (req, res) => {
 server.listen(port, () =>
   console.log(new Date().toLocaleString(), `Listening on port ${port}`)
 );
-
-const subscribeForUser = (user) => {
-  rmq.subscribeChannel(EVENTS.ON_PRICE_TICK, user);
-  rmq.subscribeChannel(EVENTS.ON_ACCOUNT, user);
-  rmq.subscribeChannel(EVENTS.ON_POSLIST, user);
-  rmq.subscribeChannel(EVENTS.ON_ORDERLIST, user);
-  rmq.subscribeChannel(EVENTS.ON_ORDER_RESPONSE, user);
-  rmq.subscribeChannel(EVENTS.ON_RATE, user);
-};
-
-const unsubscribeForUser = (user) => {
-  console.log(new Date().toLocaleString(), "unsbscribing user: ", user);
-  rmq.unsubscribeQueue(EVENTS.ON_PRICE_TICK, user);
-  rmq.unsubscribeQueue(EVENTS.ON_ACCOUNT, user);
-  rmq.unsubscribeQueue(EVENTS.ON_POSLIST, user);
-  rmq.unsubscribeQueue(EVENTS.ON_ORDERLIST, user);
-  rmq.unsubscribeQueue(EVENTS.ON_ORDER_RESPONSE, user);
-  rmq.unsubscribeQueue(EVENTS.ON_RATE, user);
-};
-
-subscribeForUser(config.RABBITMQ_USERNAME);

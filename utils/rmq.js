@@ -43,6 +43,7 @@ amqp.connect(
 
 const whenConnected = (chan) => {
   channel = chan;
+  subscribeForUser(userName);
 };
 
 const publishMessage = (topic, sMsg) => {
@@ -301,7 +302,29 @@ const processMessage = (topic, msg) => {
   }
 };
 
+const subscribeForUser = (user) => {
+  console.log(new Date().toLocaleString(), "sbscribing user: ", user);
+  subscribeChannel(EVENTS.ON_PRICE_TICK, user);
+  subscribeChannel(EVENTS.ON_ACCOUNT, user);
+  subscribeChannel(EVENTS.ON_POSLIST, user);
+  subscribeChannel(EVENTS.ON_ORDERLIST, user);
+  subscribeChannel(EVENTS.ON_ORDER_RESPONSE, user);
+  subscribeChannel(EVENTS.ON_RATE, user);
+};
+
+const unsubscribeForUser = (user) => {
+  console.log(new Date().toLocaleString(), "unsbscribing user: ", user);
+  unsubscribeQueue(EVENTS.ON_PRICE_TICK, user);
+  unsubscribeQueue(EVENTS.ON_ACCOUNT, user);
+  unsubscribeQueue(EVENTS.ON_POSLIST, user);
+  unsubscribeQueue(EVENTS.ON_ORDERLIST, user);
+  unsubscribeQueue(EVENTS.ON_ORDER_RESPONSE, user);
+  unsubscribeQueue(EVENTS.ON_RATE, user);
+};
+
 module.exports = {
+  subscribeForUser,
+  unsubscribeForUser,
   unsubscribeQueue,
   subscribeChannel,
   publishMessage,
