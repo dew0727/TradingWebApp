@@ -112,30 +112,25 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
       reqPrice = orderContent.price;
 
       if (orderType === ORDER_TYPES.LIMIT) {
-        if (command === COMMAND.BUY && reqPrice > ask) 
-        {
+        if (command === COMMAND.BUY && reqPrice > ask) {
           message.error("Invalid price for BUY LIMIT order");
           return;
         }
 
-        if (command === COMMAND.SELL && reqPrice < bid) 
-        {
+        if (command === COMMAND.SELL && reqPrice < bid) {
           message.error("Invalid price for SELL LIMIT order");
           return;
         }
 
         ordType = command + "LIMIT";
-      } 
-      else if (orderType === ORDER_TYPES.STOP)
-      {
-        if (command === COMMAND.BUY && reqPrice < ask) 
-        {
+      }
+      else if (orderType === ORDER_TYPES.STOP) {
+        if (command === COMMAND.BUY && reqPrice < ask) {
           message.error("Invalid price for BUY STOP order");
           return;
         }
 
-        if (command === COMMAND.SELL && reqPrice > bid) 
-        {
+        if (command === COMMAND.SELL && reqPrice > bid) {
           message.error("Invalid price for SELL STOP order");
           return;
         }
@@ -233,6 +228,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
             block
             htmlType
             className="btn-control"
+            size={isMobile ? "large" : "middle"}
             onClick={() => {
               newSignal(ORDER_MODE.CLOSE_ALL, "", 0);
             }}
@@ -246,6 +242,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           <Button
             block
             className="command-header-bid"
+            size={isMobile ? "large" : "middle"}
             onClick={() => {
               newSignal(ORDER_MODE.OPEN, COMMAND.SELL, bid);
             }}
@@ -256,6 +253,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
         <Col span={10} offset={4}>
           <Button
             block
+            size={isMobile ? "large" : "middle"}
             className="command-header-ask"
             onClick={() => {
               newSignal(ORDER_MODE.OPEN, COMMAND.BUY, ask);
@@ -284,6 +282,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           <Col span={4}></Col>
           <Col span={8} className="trading-card-reset-btn">
             <Button
+              size={isMobile ? "large" : "middle"}
               onClick={(e) => {
                 reset();
               }}
@@ -296,7 +295,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           <div className="trading-card-quick-set-btn">
             <Button
               block
-              size="small"
+              size={isMobile ? "large" : "small"}
               onClick={() => {
                 setOrderLots(0.1, 1);
               }}
@@ -307,7 +306,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           <div className="trading-card-quick-set-btn">
             <Button
               block
-              size="small"
+              size={isMobile ? "large" : "small"}
               onClick={() => {
                 setOrderLots(0.2, 1);
               }}
@@ -318,7 +317,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           <div className="trading-card-quick-set-btn">
             <Button
               block
-              size="small"
+              size={isMobile ? "large" : "small"}
               onClick={() => {
                 setOrderLots(0.5, 1);
               }}
@@ -329,7 +328,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           <div className="trading-card-quick-set-btn">
             <Button
               block
-              size="small"
+              size={isMobile ? "large" : "small"}
               onClick={() => {
                 setOrderLots(1, 1);
               }}
@@ -340,7 +339,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           <div className="trading-card-quick-set-btn">
             <Button
               block
-              size="small"
+              size={isMobile ? "large" : "small"}
               onClick={() => {
                 setOrderLots(2, 1);
               }}
@@ -351,11 +350,12 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
         </div>
       </div>
       <div className="card-net-pos-info">
-      
+
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
-        <Col className="trading-card-value sell-lots" span={5}>
+          <Col className="trading-card-value sell-lots" span={5}>
             <Button
               block
+              size={isMobile ? "large" : "middle"}
               type={orderType === "MARKET" ? "primary" : "default"}
               onClick={() => {
                 setorderType("MARKET");
@@ -370,6 +370,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           </Col>
           <Col className="trading-card-value buy-lots" span={5}>
             <Button
+              size={isMobile ? "large" : "middle"}
               block
               type={orderType === "LIMIT" ? "primary" : "default"}
               onClick={() => {
@@ -386,6 +387,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           <Col className="trading-card-value buy-lots" span={5}>
             <Button
               block
+              size={isMobile ? "large" : "middle"}
               type={orderType === "STOP" ? "danger" : "default"}
               onClick={() => {
                 setorderType("STOP");
@@ -400,6 +402,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
           </Col>
           <Col className="trading-card-label trading-card-value" span={9}>
             <InputNumber
+              size={isMobile ? "large" : "middle"}
               className="lmt-price-value"
               key={`lmt-price-${curIndex}`}
               step={"0." + "0".repeat(point - 1) + "1"}
@@ -418,7 +421,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
               }}
             />
           </Col>
-          
+
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
           <Col className="trading-card-value buy-lots" span={6}>

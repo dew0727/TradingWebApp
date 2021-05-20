@@ -17,7 +17,8 @@ import {
   Popconfirm,
   Switch,
 } from "antd";
-import Slider from 'react-slick'
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
@@ -606,22 +607,6 @@ const TradingPage = () => {
     });
   };
 
-  const contentStyle = {
-    height: '60px',
-    color: '#fff',
-    lineHeight: '60px',
-    textAlign: 'center',
-    background: '#364d79',
-  };
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1
-  };
-
   return (
     <div className="traindg-home-page">
       <Tabs
@@ -641,23 +626,22 @@ const TradingPage = () => {
           </div>
           {xs ? (
 
-            <Slider {...settings}>
+            <Carousel autoPlay={false} showIndicators={false} showThumbs={false}>
               {symbolList.map((symbol, index) =>
               (
-                <>
-                  <TradingCard
-                    symbols={symbolList}
-                    rates={rates}
-                    broker={curBroker}
-                    posInfo={parsePosList()}
-                    reqOrder={(order) => reqOrder(order)}
-                    index={index}
-                    isMobile
-                  />
-                </>
+                <TradingCard
+                  key={`${symbol.toString()}-${index}`}
+                  symbols={symbolList}
+                  rates={rates}
+                  broker={curBroker}
+                  posInfo={parsePosList()}
+                  reqOrder={(order) => reqOrder(order)}
+                  index={index}
+                  isMobile
+                />
               )
               )}
-            </Slider>
+            </Carousel>
           ) : (
             <>
               <Row

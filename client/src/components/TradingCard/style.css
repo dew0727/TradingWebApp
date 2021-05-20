@@ -19,18 +19,28 @@
 
 .trading-card-container-mobile {
   margin: auto;
-  width: 350px;
+  width: 80vw;
   background-color: #e5e5e5;
   border-style: solid;
   border-color: black;
   border-width: 1px;
+  font-size: large;
+}
+
+.trading-card-container-mobile .ant-input {
+  font-size: large;
+}
+
+.trading-card-container-mobile .ant-input-number-input {
+  font-size: large;
+
 }
 
 .trading-card-container-mobile .ant-card-head {
   display: flex;
   align-items: center;
   padding-left: 0px;
-  height: 60px;
+  height: 80px;
 }
 
 .trading-card-container-mobile .ant-card-body {
@@ -123,6 +133,7 @@
 
 .lmt-price-value {
   width: 100% !important;
+  height: 100%;
 }
 
 .lmt-price-value input {
