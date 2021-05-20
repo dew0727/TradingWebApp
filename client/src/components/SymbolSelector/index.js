@@ -43,7 +43,7 @@ const SymbolSelector = ({ symbols, callback, defaultIndex, defaultValue }) => {
 
   return (
     <Dropdown overlay={menu} subMenuOpenDelay={0}>
-      <Button size="small">
+      <Button>
         {symbol} <DownOutlined />
       </Button>
     </Dropdown>
