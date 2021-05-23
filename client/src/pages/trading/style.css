@@ -209,3 +209,15 @@
 .log-history-row-wrapper {
   max-width: 1000px;
 }
+
+.carousel-item-padding {
+  margin-bottom: 30px;
+}
+
+.react-multiple-carousel__arrow--right {
+  right: calc(0% + 1px) !important;
+}
+
+.react-multiple-carousel__arrow--left {
+  left: calc(0% + 1px) !important;
+}

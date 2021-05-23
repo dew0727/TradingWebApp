@@ -18,7 +18,8 @@ import {
   Switch,
 } from "antd";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-import { Carousel } from 'react-responsive-carousel';
+import Carousel from 'react-multi-carousel';
+import 'react-multi-carousel/lib/styles.css';
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
@@ -50,6 +51,7 @@ var isTrader = true;
 var email = "none";
 var masterAccounts = {};
 var lastResponse = "";
+var isAllowUpdate = true;
 
 const TradingPage = () => {
   const [curBroker, setcurBroker] = useState("");
@@ -199,153 +201,156 @@ const TradingPage = () => {
   };
 
   const parseData = (topic, message) => {
-    switch (topic) {
-      case EVENTS.ON_GLOBAL_SETTINGS:
-        const globals = JSON.parse(message);
-        console.log("event global settings", message);
-        if (globals["maxDefault"]) {
-          const val = parseFloat(globals.maxDefault);
-          !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
-        }
-        if (globals.feed) {
-          console.log("price feed", globals.feed);
-          setCurPriceFeed(globals.feed);
-        }
-        break;
-      case EVENTS.ON_USER_LOGIN:
-        const login = JSON.parse(message);
-        console.log("login event", login);
-        if (login.email && email === login.email) {
-          window.location.href = "/";
-        }
+    if (isAllowUpdate) {
+      switch (topic) {
+        case EVENTS.ON_GLOBAL_SETTINGS:
+          const globals = JSON.parse(message);
+          console.log("event global settings", message);
+          if (globals["maxDefault"]) {
+            const val = parseFloat(globals.maxDefault);
+            !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
+          }
+          if (globals.feed) {
+            console.log("price feed", globals.feed);
+            setCurPriceFeed(globals.feed);
+          }
+          break;
+        case EVENTS.ON_USER_LOGIN:
+          const login = JSON.parse(message);
+          console.log("login event", login);
+          if (login.email && email === login.email) {
+            window.location.href = "/";
+          }
 
-        break;
-      case EVENTS.ON_USER_SETTINGS:
-        const settings = JSON.parse(message);
-        if (email in settings) {
-          const setting = settings[email];
-          const val = parseFloat(setting.maxDefault);
-          console.log(val);
-          !isNaN(val) && setting.maxDefault && setMaxDefautLots(val);
-        }
+          break;
+        case EVENTS.ON_USER_SETTINGS:
+          const settings = JSON.parse(message);
+          if (email in settings) {
+            const setting = settings[email];
+            const val = parseFloat(setting.maxDefault);
+            console.log(val);
+            !isNaN(val) && setting.maxDefault && setMaxDefautLots(val);
+          }
 
-        break;
-      case EVENTS.ON_RATE:
-        var rates = JSON.parse(message);
+          break;
+        case EVENTS.ON_RATE:
+          var rates = JSON.parse(message);
 
-        setRates(rates);
-        break;
-      case EVENTS.ON_STATUS:
-        const account_status = JSON.parse(message);
+          setRates(rates);
+          break;
+        case EVENTS.ON_STATUS:
+          const account_status = JSON.parse(message);
 
-        setAccounts((prevState) => {
-          return prevState.map((acc) => {
-            if (acc.name in account_status) {
-              acc.status = account_status[acc.name];
-              if (acc.status?.status === false) {
-                openNotification(
-                  "error",
-                  "アカウントエラー!",
-                  `${acc.name} 死んでいる`,
-                  true,
-                  acc.name
-                );
-              } else {
-                notification.close(acc.name);
+          setAccounts((prevState) => {
+            return prevState.map((acc) => {
+              if (acc.name in account_status) {
+                acc.status = account_status[acc.name];
+                if (acc.status?.status === false) {
+                  openNotification(
+                    "error",
+                    "アカウントエラー!",
+                    `${acc.name} 死んでいる`,
+                    true,
+                    acc.name
+                  );
+                } else {
+                  notification.close(acc.name);
+                }
               }
-            }
-            return acc;
+              return acc;
+            });
           });
-        });
 
-        break;
-      case EVENTS.ON_ACCOUNT:
-        var account = JSON.parse(message);
+          break;
+        case EVENTS.ON_ACCOUNT:
+          var account = JSON.parse(message);
 
-        if (account.master) {
-          masterAccounts[account.name] = true;
-          if (isTrader) {
-            //console.log("Account stopped by user role", masterAccounts);
+          if (account.master) {
+            masterAccounts[account.name] = true;
+            if (isTrader) {
+              //console.log("Account stopped by user role", masterAccounts);
+              return;
+            }
+          }
+
+          setAccounts((prevState) => {
+            if (typeof prevState !== "object")
+              return [
+                {
+                  name: "Basket",
+                  status: false,
+                  time: Date.now(),
+                },
+                account,
+              ];
+            if (prevState.some((acc) => acc.name === account.name))
+              return prevState.map((acc) =>
+                acc.name === account.name ? account : acc
+              );
+            else return [...prevState, account];
+          });
+
+          break;
+        case EVENTS.ON_POSLIST:
+          var accPos = JSON.parse(message);
+
+          if (
+            isTrader === true &&
+            masterAccounts.hasOwnProperty(accPos.account)
+          ) {
+            //console.log("Position list stopped by role");
             return;
           }
-        }
 
-        setAccounts((prevState) => {
-          if (typeof prevState !== "object")
-            return [
-              {
-                name: "Basket",
-                status: false,
-                time: Date.now(),
-              },
-              account,
-            ];
-          if (prevState.some((acc) => acc.name === account.name))
-            return prevState.map((acc) =>
-              acc.name === account.name ? account : acc
+          setPosList(Object.assign(posList, { [accPos.account]: accPos }));
+          break;
+        case EVENTS.ON_ORDERLIST:
+          var accOrders = JSON.parse(message);
+
+          if (
+            isTrader === true &&
+            masterAccounts.hasOwnProperty(accOrders.account)
+          ) {
+            //console.log("Order list stopped by role");
+            return;
+          }
+
+          setOrderList(
+            Object.assign(orderList, { [accOrders.account]: accOrders })
+          );
+          break;
+        case EVENTS.ON_ORDER_RESPONSE:
+          if (lastResponse === message) return;
+          lastResponse = message;
+
+          var response = JSON.parse(message);
+          console.log(response);
+          if (
+            isTrader === true &&
+            masterAccounts.hasOwnProperty(response.account)
+          ) {
+            //console.log("Order response stopped by role");
+            return;
+          }
+
+          if (response.success) {
+            openNotification(
+              "Order",
+              `Order Response from ${response.account}`,
+              response.message
             );
-          else return [...prevState, account];
-        });
-
-        break;
-      case EVENTS.ON_POSLIST:
-        var accPos = JSON.parse(message);
-
-        if (
-          isTrader === true &&
-          masterAccounts.hasOwnProperty(accPos.account)
-        ) {
-          //console.log("Position list stopped by role");
-          return;
-        }
-
-        setPosList(Object.assign(posList, { [accPos.account]: accPos }));
-        break;
-      case EVENTS.ON_ORDERLIST:
-        var accOrders = JSON.parse(message);
-
-        if (
-          isTrader === true &&
-          masterAccounts.hasOwnProperty(accOrders.account)
-        ) {
-          //console.log("Order list stopped by role");
-          return;
-        }
-
-        setOrderList(
-          Object.assign(orderList, { [accOrders.account]: accOrders })
-        );
-        break;
-      case EVENTS.ON_ORDER_RESPONSE:
-        if (lastResponse === message) return;
-        lastResponse = message;
-
-        var response = JSON.parse(message);
-        console.log(response);
-        if (
-          isTrader === true &&
-          masterAccounts.hasOwnProperty(response.account)
-        ) {
-          //console.log("Order response stopped by role");
-          return;
-        }
-
-        if (response.success) {
-          openNotification(
-            "Order",
-            `Order Response from ${response.account}`,
-            response.message
-          );
-        } else {
-          openNotification(
-            "Error",
-            `Order Response from ${response.account}`,
-            response.message
-          );
-        }
-        break;
-      default:
+          } else {
+            openNotification(
+              "Error",
+              `Order Response from ${response.account}`,
+              response.message
+            );
+          }
+          break;
+        default:
+      }
     }
+
   };
 
   const parseOrderList = () => {
@@ -607,6 +612,24 @@ const TradingPage = () => {
     });
   };
 
+  const responsive = {
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 3,
+      partialVisibilityGutter: 40 // this is needed to tell the amount of px that should be visible.
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 2,
+      partialVisibilityGutter: 30 // this is needed to tell the amount of px that should be visible.
+    },
+    mobile: {
+      breakpoint: { max: 576, min: 0 },
+      items: 1,
+      partialVisibilityGutter: 30 // this is needed to tell the amount of px that should be visible.
+    }
+  }
+
   return (
     <div className="traindg-home-page">
       <Tabs
@@ -626,7 +649,17 @@ const TradingPage = () => {
           </div>
           {xs ? (
 
-            <Carousel autoPlay={false} showIndicators={false} showThumbs={false}>
+            <Carousel
+              responsive={responsive}
+              focusOnSelect
+              swipeable={true}
+              draggable={false}
+              showDots={true}
+              infinite={true}
+              containerClass="carousel-container"
+              deviceType={'mobile'}
+              dotListClass="custom-dot-list-style"
+              itemClass="carousel-item-padding">
               {symbolList.map((symbol, index) =>
               (
                 <TradingCard
