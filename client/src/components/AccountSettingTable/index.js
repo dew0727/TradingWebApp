@@ -125,6 +125,29 @@ const AccountSettingTable = ({
       },
     },
     {
+      title: "Retry",
+      className: "column-default-lots",
+      dataIndex: "retryCount",
+      align: "center",
+      render: (text, record) => {
+        return (
+          <InputNumber
+            key={"retry-count-input-" + record.name}
+            className="account-settings-default-lots-input"
+            value={record.retryCount}
+            step={1}
+            min={1}
+            onChange={(val) => {
+              if (!isNaN(val) && val > 0) {
+                onHandleClickBasket({ accname: record.name, retryCount: val });
+              }
+            }}
+            size={"medium"}
+          />
+        );
+      },
+    },
+    {
       title: "Status",
       className: "column-default-status",
       dataIndex: "status",
@@ -139,9 +162,9 @@ const AccountSettingTable = ({
     },
   ];
 
-  const onHandleClickBasket = ({ accname, basket, defaultLots, maxVal }) => {
+  const onHandleClickBasket = ({ accname, basket, defaultLots, maxVal, retryCount }) => {
     if (basket !== undefined) basket = basket === true ? false : true;
-    callback({ accname, basket, defaultLots, maxVal });
+    callback({ accname, basket, defaultLots, maxVal, retryCount });
   };
 
   let locale = {

@@ -9,7 +9,7 @@ const authenticate = ( { username, password, token }) => {
 
   const auth = db.GetAuthToken({ username, password, token});
 
-  console.log("Authenticate Result: ", auth);
+  // console.log("Authenticate Result: ", auth);
 
   // if authenticate failed
   if (!auth.email)

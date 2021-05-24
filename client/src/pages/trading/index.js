@@ -17,9 +17,8 @@ import {
   Popconfirm,
   Switch,
 } from "antd";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
@@ -76,17 +75,17 @@ const TradingPage = () => {
   const [posList, setPosList] = useState({});
   const [orderList, setOrderList] = useState({});
   const [rates, setRates] = useState({});
-  const [symbolCount, setSymbolCount] = useState(0)
-  const [symbolList, setSymbolList] = useState([])
+  const [symbolCount, setSymbolCount] = useState(0);
+  const [symbolList, setSymbolList] = useState([]);
   const [logHistory, setlogHistory] = useState([]);
 
   useEffect(() => {
-    setSymbolCount(getSymbols(rates).length)
-  }, [rates])
+    setSymbolCount(getSymbols(rates).length);
+  }, [rates]);
 
   useEffect(() => {
-    setSymbolList(getSymbols(rates))
-  }, [symbolCount])
+    setSymbolList(getSymbols(rates));
+  }, [symbolCount]);
 
   const acc_columns = [
     {
@@ -350,7 +349,6 @@ const TradingPage = () => {
         default:
       }
     }
-
   };
 
   const parseOrderList = () => {
@@ -483,7 +481,7 @@ const TradingPage = () => {
     );
   };
 
-  const onHandleAccSetting = (accname, basket, defaultLots) => {
+  const onHandleAccSetting = (accname, basket, defaultLots, retryCount) => {
     if (accname === undefined) return;
     const account = getAccountByName(accname);
 
@@ -502,6 +500,11 @@ const TradingPage = () => {
     if (defaultLots !== undefined) {
       account.default = defaultLots;
       sMsg += ` default value is ${defaultLots}`;
+    }
+
+    if (!isNaN(retryCount)) {
+      account.retryCount = retryCount;
+      sMsg += " retry count is " + retryCount;
     }
 
     if (!isTrader && !masterAccounts.hasOwnProperty(account.name)) {
@@ -581,8 +584,8 @@ const TradingPage = () => {
       addLog(
         type,
         (title ? title.replace("Order Response from", "") : "") +
-        " " +
-        (content ? content : "")
+          " " +
+          (content ? content : "")
       );
       if (enableNotify !== true) return;
       if (type === "Error") {
@@ -616,19 +619,19 @@ const TradingPage = () => {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
       items: 3,
-      partialVisibilityGutter: 40 // this is needed to tell the amount of px that should be visible.
+      partialVisibilityGutter: 40, // this is needed to tell the amount of px that should be visible.
     },
     tablet: {
       breakpoint: { max: 1024, min: 464 },
       items: 2,
-      partialVisibilityGutter: 30 // this is needed to tell the amount of px that should be visible.
+      partialVisibilityGutter: 30, // this is needed to tell the amount of px that should be visible.
     },
     mobile: {
       breakpoint: { max: 576, min: 0 },
       items: 1,
-      partialVisibilityGutter: 30 // this is needed to tell the amount of px that should be visible.
-    }
-  }
+      partialVisibilityGutter: 30, // this is needed to tell the amount of px that should be visible.
+    },
+  };
 
   return (
     <div className="traindg-home-page">
@@ -648,7 +651,6 @@ const TradingPage = () => {
             />
           </div>
           {xs ? (
-
             <Carousel
               responsive={responsive}
               focusOnSelect
@@ -657,11 +659,11 @@ const TradingPage = () => {
               showDots={true}
               infinite={true}
               containerClass="carousel-container"
-              deviceType={'mobile'}
+              deviceType={"mobile"}
               dotListClass="custom-dot-list-style"
-              itemClass="carousel-item-padding">
-              {symbolList.map((symbol, index) =>
-              (
+              itemClass="carousel-item-padding"
+            >
+              {symbolList.map((symbol, index) => (
                 <TradingCard
                   key={`${symbol.toString()}-${index}`}
                   symbols={symbolList}
@@ -672,8 +674,7 @@ const TradingPage = () => {
                   index={index}
                   isMobile
                 />
-              )
-              )}
+              ))}
             </Carousel>
           ) : (
             <>
@@ -891,8 +892,8 @@ const TradingPage = () => {
             <div className="trading-table-wrapper account-setting-table-log-history">
               <AccountSettingTable
                 accounts={getAccounts()}
-                callback={({ accname, basket, defaultLots }) =>
-                  onHandleAccSetting(accname, basket, defaultLots)
+                callback={({ accname, basket, defaultLots, retryCount }) =>
+                  onHandleAccSetting(accname, basket, defaultLots, retryCount)
                 }
                 onChangeMaxValue={onChangeMaxValue}
                 maxLots={maxDefaultLots}

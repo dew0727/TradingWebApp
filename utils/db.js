@@ -39,6 +39,7 @@ const UpdateAccount = (account) => {
   if (prev) {
     prev.basket = account.basket;
     prev.default = account.default;
+    prev.retryCount = account.retryCount;
 
     accounts = accounts.map((acc) => {
       return acc.name === account.name ? prev : acc;
@@ -283,11 +284,11 @@ const SetAuthToken = (username, authToken) => {
 };
 
 const GetAuthToken = ({ username, password, token }) => {
-  console.log("Authenticating start with ", username, password, token);
+  // console.log("Authenticating start with ", username, password, token);
   let result = {};
 
   if (username && password) {
-    console.log("Authenticating with email and password", username, password);
+    // console.log("Authenticating with email and password", username, password);
     if (username !== undefined && password !== undefined) {
       users.forEach((user) => {
         if (
@@ -300,7 +301,7 @@ const GetAuthToken = ({ username, password, token }) => {
     }
   } else {
     if (token !== undefined) {
-      console.log("Authenticating with token: " + token);
+      // console.log("Authenticating with token: " + token);
       users.forEach((user) => {
         if (user.token == token)
           Object.assign(result, { email: user.email, token, role: user.role });

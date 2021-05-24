@@ -172,6 +172,7 @@ const processMessage = (topic, msg) => {
         equity,
         basket: account.basket ? account.basket : false,
         default: account.default ? account.default : 1,
+        retryCount: account.retryCount || 1,
         master: account.master,
         status: { 
           status: db.GetAccountStatus(accName),

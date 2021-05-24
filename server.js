@@ -19,9 +19,28 @@ app.get("/*", function (req, res) {
 });
 
 const ipLogger = (req, res, next) => {
-  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-  console.log("client ip address: ", ip); // ip address of the user
-  next();
+  try {
+    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+
+    var data = req.body.body;
+    data = JSON.parse(data);
+
+    if (!data.login) {
+      const result = authenticate(data);
+      const clientInfo = {
+        ip: ip,
+        role: data.role || "unknown",
+        email: result.email,
+        token: result.token,
+      };
+
+      console.log("Request from:", clientInfo);
+    }
+  } catch (error) {
+    console.log("request error: ", error);
+  } finally {
+    next();
+  }
 };
 
 app.use(ipLogger);
@@ -89,7 +108,10 @@ app.post("/api/login", (req, res) => {
 app.post("/api/logout", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-  console.log(new Date().toLocaleString(), "user logout request " + data);
+  console.log(
+    new Date().toLocaleString(),
+    "user logout request " + JSON.stringify(data)
+  );
   const result = authenticate(data);
 
   if (result.success === true) {
@@ -153,7 +175,7 @@ app.post("/api/update-global-setting", (req, res) => {
       socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify(globals));
       res.json({
         success: true,
-        data: JSON.stringify(globals)
+        data: JSON.stringify(globals),
       });
     } else {
       console.log("invalid data");
@@ -180,11 +202,11 @@ app.post("/api/get-global-setting", (req, res) => {
   const auth = db.GetAuthToken({ token: data.token });
   if (auth.email) {
     let globals = db.GetGlobalSettings();
-    globals['feed'] = db.GetPriceFeed();
+    globals["feed"] = db.GetPriceFeed();
     socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify(globals));
     res.json({
       success: true,
-      data: JSON.stringify(globals)
+      data: JSON.stringify(globals),
     });
   } else {
     console.log("invlaid token");
@@ -253,15 +275,16 @@ app.post("/api/get-user-setting", (req, res) => {
 app.post("/api/update-account", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-
   const account = {
     name: data.broker + data.number,
     basket: data.basket ? data.basket : false,
     default: data.default ? data.default : 1,
+    retryCount: data.retryCount ? data.retryCount : 1,
     ...data,
   };
 
   const { success, error } = db.UpdateAccount(account);
+
   console.log(
     new Date().toLocaleString(),
     "updated account data: ",
@@ -321,7 +344,7 @@ app.post("/api/order-request", (req, res) => {
               data.Command
             },${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${
               data.Type
-            }`;
+            },${acc.retryCount}`;
 
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
@@ -351,7 +374,7 @@ app.post("/api/order-request", (req, res) => {
           }
 
           console.log(orderMsg);
-          orderMsg = `${acc.name}@ORDER_DELETE,${data.Symbol}`;
+          orderMsg = `${acc.name}@ORDER_DELETE,${data.Symbol},${acc.retryCount}`;
           rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
         }
       });
@@ -372,7 +395,7 @@ app.post("/api/order-request", (req, res) => {
               return;
             }
 
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${acc.retryCount}`;
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
         });
@@ -395,7 +418,7 @@ app.post("/api/order-request", (req, res) => {
               return;
             }
 
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol}`;
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${acc.retryCount}`;
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
         });
@@ -416,7 +439,7 @@ app.post("/api/price-feed", (req, res) => {
 
   db.SetPriceFeed(feed);
   console.log(new Date().toLocaleString(), "Price-feed: ", db.GetPriceFeed());
-  socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify({feed: feed}));
+  socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify({ feed: feed }));
   res.json({
     success: true,
   });
