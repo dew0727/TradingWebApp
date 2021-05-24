@@ -3,6 +3,7 @@ const { socket } = require("./socket");
 const { EVENTS } = require("../config");
 const config = require("../config");
 const db = require("./db");
+const mainLogger = require('./logger').mainLogger;
 
 const rabbitmqHost = config.RABBITMQ_HOST;
 const exchange = config.EXCHANGE_NAME;
@@ -23,7 +24,6 @@ amqp.connect(
   `amqp://${userName}:${password}@${rabbitmqHost}`,
   (error0, connection) => {
     if (error0) {
-      console.log(new Date().toLocaleString(), 0);
       throw error0;
     }
 
@@ -47,22 +47,22 @@ const whenConnected = (chan) => {
 };
 
 const publishMessage = (topic, sMsg) => {
-  console.log(new Date().toLocaleString(), "publish msg", topic, sMsg);
+  mainLogger.info(`publish msg:  ${topic}, ${sMsg}`);
   channel.publish(exchange, topic, Buffer.from('"' + sMsg + '"'), {
     deliveryMode: 2,
     type: exchange,
   });
 
-  console.log(new Date().toLocaleString(), sMsg);
+  mainLogger.info( sMsg);
 };
 
 const unsubscribeQueue = (topic, username) => {
   const queue = "System.String, mscorlib_" + topic + username;
-  console.log(new Date().toLocaleString(), "deleteing queue: ", queue);
+  mainLogger.info(`deleteing queue: ${queue}`);
   channel.deleteQueue(queue, (err, ok) => {
-    console.log(new Date().toLocaleString(), err, ok);
+    mainLogger.info( err, ok);
     if (ok)
-      console.log(new Date().toLocaleString(), "Deleted queue named ", queue);
+      mainLogger.info( "Deleted queue named ", queue);
   });
 };
 
@@ -78,10 +78,8 @@ const subscribeChannel = (topic, username) => {
         throw error2;
       }
 
-      console.log(
-        new Date().toLocaleString(),
-        " [*] Waiting for messages in %s. To exit press CTRL+C",
-        q.queue
+      mainLogger.info(
+        `creating message queue ${q.queue}`
       );
 
       channel.bindQueue(q.queue, exchange, topic);
@@ -92,7 +90,7 @@ const subscribeChannel = (topic, username) => {
           if (msg && msg.content) {
             var str = msg.content.toString().replace('"', "");
             str = str.replace('"', "");
-            //console.log(new Date().toLocaleString(), topic, str);
+            //mainLogger.info( topic, str);
             processMessage(topic, str);
           }
         },
@@ -294,7 +292,7 @@ const processMessage = (topic, msg) => {
           success: sRsp.split(",")[0] === "True",
           message: sRsp.split(",")[1],
         };
-        console.log(new Date().toLocaleString(), topic, response);
+        mainLogger.info(topic + ", " + JSON.stringify(response));
         socket.emit(topic, JSON.stringify(response));
       }
 
@@ -304,7 +302,7 @@ const processMessage = (topic, msg) => {
 };
 
 const subscribeForUser = (user) => {
-  console.log(new Date().toLocaleString(), "sbscribing user: ", user);
+  mainLogger.info( `sbscribing user: ${user}`);
   subscribeChannel(EVENTS.ON_PRICE_TICK, user);
   subscribeChannel(EVENTS.ON_ACCOUNT, user);
   subscribeChannel(EVENTS.ON_POSLIST, user);
@@ -314,7 +312,7 @@ const subscribeForUser = (user) => {
 };
 
 const unsubscribeForUser = (user) => {
-  console.log(new Date().toLocaleString(), "unsbscribing user: ", user);
+  mainLogger.info( `unsbscribing user: ${user}`);
   unsubscribeQueue(EVENTS.ON_PRICE_TICK, user);
   unsubscribeQueue(EVENTS.ON_ACCOUNT, user);
   unsubscribeQueue(EVENTS.ON_POSLIST, user);

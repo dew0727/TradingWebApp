@@ -1,5 +1,4 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const http = require("http");
 const config = require("./config");
 const socketIO = require("socket.io");
@@ -8,11 +7,13 @@ const { authenticate } = require("./auth");
 const db = require("./utils/db");
 const path = require("path");
 const { socket } = require("./utils/socket");
+const mainLogger = require("./utils/logger").mainLogger;
 
 // set config
 const port = process.env.SOCKET_PORT || 3000;
 const app = express();
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, "/client/build")));
 app.get("/*", function (req, res) {
   res.sendFile(path.join(__dirname, "/client/build", "index.html"));
@@ -21,23 +22,21 @@ app.get("/*", function (req, res) {
 const ipLogger = (req, res, next) => {
   try {
     const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-
     var data = req.body.body;
     data = JSON.parse(data);
 
     if (!data.login) {
       const result = authenticate(data);
-      const clientInfo = {
-        ip: ip,
-        role: data.role || "unknown",
-        email: result.email,
-        token: result.token,
-      };
-
-      console.log("Request from:", clientInfo);
+      mainLogger.info(
+        ` >>> CLIENT_REQUEST: ${ip}, ${req.url}, ${data.role}, ${result.email}, ${req.body.body}`
+      );
+    } else {
+      mainLogger.info(
+        ` >>> CLIENT_REQUEST: ${ip}, ${req.url}, ${req.body.body}`
+      );
     }
   } catch (error) {
-    console.log("request error: ", error);
+    mainLogger.info(`request error: ${error}`);
   } finally {
     next();
   }
@@ -64,7 +63,7 @@ io.use((socket, next) => {
   if (auth.email) {
     next();
   } else {
-    console.log("invlaid socket");
+    mainLogger.info("invlaid socket");
     next(new Error("Failed authentication"));
   }
 });
@@ -75,9 +74,9 @@ socket.setIo(io);
 const EVENTS = config.EVENTS;
 
 io.on(EVENTS.ON_CONNECTION, (socket) => {
-  console.log(new Date().toLocaleString(), "Socket User connected");
+  mainLogger.info("Socket User connected");
   socket.on(EVENTS.ON_DISCONNECT, () => {
-    console.log(new Date().toLocaleString(), "Socket User Disconnected");
+    mainLogger.info("Socket User Disconnected");
   });
 });
 
@@ -85,18 +84,13 @@ io.on(EVENTS.ON_CONNECTION, (socket) => {
 app.post("/api/login", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-
-  console.log(new Date().toLocaleString(), "Request to login with ", data);
-
   const result = authenticate(data);
 
-  console.log("Auth Result:", result);
+  mainLogger.info(`Auth Result: ${JSON.stringify(result)}`);
   if (result.success === true) {
-    console.log("Subscribing with user ", result.email);
+    mainLogger.info(`Subscribing with user  ${result.email}`);
     socket.emit(EVENTS.ON_USER_LOGIN, JSON.stringify({ email: result.email }));
   }
-
-  console.log(new Date().toLocaleString(), "pricefeed", db.GetPriceFeed());
 
   res.json({
     auth: result.success,
@@ -108,21 +102,17 @@ app.post("/api/login", (req, res) => {
 app.post("/api/logout", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-  console.log(
-    new Date().toLocaleString(),
-    "user logout request " + JSON.stringify(data)
-  );
   const result = authenticate(data);
 
   if (result.success === true) {
-    console.log("Un-subscribing with user ", result.email);
-    // unsubscribeForUser(result.email);
+    mainLogger.info(`Logged out:  ${result.email}`);
     res.json({
       success: true,
       token: result.token,
       role: result.role,
     });
   } else {
+    mainLogger.info(`Logged out Failed:  ${result.email}`);
     res.json({
       success: false,
     });
@@ -132,7 +122,6 @@ app.post("/api/logout", (req, res) => {
 app.post("/api/add-account", (req, res) => {
   var data = req.body.body;
 
-  console.log(new Date().toLocaleString(), "add account data: ", data);
   data = JSON.parse(data);
   var account = {
     broker: data.broker,
@@ -146,7 +135,8 @@ app.post("/api/add-account", (req, res) => {
   };
 
   const { success, error } = db.AddAccount(account);
-
+  mainLogger.info(`Logged out Failed:  ${result.email}`);
+  
   res.json({
     success,
     error,
@@ -158,13 +148,11 @@ app.post("/api/add-account", (req, res) => {
  */
 app.post("/api/update-global-setting", (req, res) => {
   var data = req.body.body;
-  console.log("Update global settings: ", { data });
-
   data = JSON.parse(data);
   var isMaster = data.role === "master" ? true : false;
 
   if (isMaster) {
-    console.log("Maste can't chenge the global settings");
+    mainLogger.info("Master can't chenge the global settings");
     return;
   }
 
@@ -178,14 +166,14 @@ app.post("/api/update-global-setting", (req, res) => {
         data: JSON.stringify(globals),
       });
     } else {
-      console.log("invalid data");
+      mainLogger.info("invalid data");
       res.json({
         success: false,
         error: "invalid data",
       });
     }
   } else {
-    console.log("invlaid token");
+    mainLogger.info("invlaid token");
     res.json({
       success: false,
       error: "invalid token",
@@ -195,7 +183,6 @@ app.post("/api/update-global-setting", (req, res) => {
 
 app.post("/api/get-global-setting", (req, res) => {
   var data = req.body.body;
-  console.log("get global settings: ", { data });
 
   data = JSON.parse(data);
 
@@ -209,7 +196,7 @@ app.post("/api/get-global-setting", (req, res) => {
       data: JSON.stringify(globals),
     });
   } else {
-    console.log("invlaid token");
+    mainLogger.info("invlaid token");
     res.json({
       success: false,
       error: "invalid token",
@@ -220,8 +207,6 @@ app.post("/api/get-global-setting", (req, res) => {
 
 app.post("/api/update-user-setting", (req, res) => {
   var data = req.body.body;
-  console.log("Update user settings: ", { data });
-
   data = JSON.parse(data);
   var isMaster = data.role === "master" ? true : false;
 
@@ -238,7 +223,7 @@ app.post("/api/update-user-setting", (req, res) => {
       data: JSON.stringify({ [auth.email]: userSettings }),
     });
   } else {
-    console.log("invlaid token");
+    mainLogger.info("invlaid token");
     res.json({
       success: false,
       error: "invalid token",
@@ -248,8 +233,6 @@ app.post("/api/update-user-setting", (req, res) => {
 
 app.post("/api/get-user-setting", (req, res) => {
   var data = req.body.body;
-  console.log("get user settings: ", { data });
-
   data = JSON.parse(data);
 
   const auth = db.GetAuthToken({ token: data.token });
@@ -264,7 +247,7 @@ app.post("/api/get-user-setting", (req, res) => {
       data: JSON.stringify({ [auth.email]: userSettings }),
     });
   } else {
-    console.log("invlaid token");
+    mainLogger.info("invlaid token");
     res.json({
       success: false,
       error: "invalid token",
@@ -285,11 +268,6 @@ app.post("/api/update-account", (req, res) => {
 
   const { success, error } = db.UpdateAccount(account);
 
-  console.log(
-    new Date().toLocaleString(),
-    "updated account data: ",
-    db.GetAccount(account.name)
-  );
   res.json({
     success,
     error,
@@ -298,7 +276,6 @@ app.post("/api/update-account", (req, res) => {
 
 app.post("/api/delete-account", (req, res) => {
   var data = req.body.body;
-  console.log(new Date().toLocaleString(), "delete account data: ", data);
 
   data = JSON.parse(data);
 
@@ -329,14 +306,14 @@ app.post("/api/order-request", (req, res) => {
             acc.master
           ) {
             if (acc.master && !acc.basket) {
-              console.log(
+              mainLogger.info(
                 "Skip to trade becasue master account basket set off"
               );
               return;
             }
 
             if (isMaster && !acc.master) {
-              console.log("Skip trader acc in case master");
+              mainLogger.info("Skip trader acc in case master");
               return;
             }
 
@@ -360,12 +337,14 @@ app.post("/api/order-request", (req, res) => {
             acc.master)
         ) {
           if (acc.master && !acc.basket) {
-            console.log("Skip to trade becasue master account basket set off");
+            mainLogger.info(
+              "Skip to trade becasue master account basket set off"
+            );
             return;
           }
 
           if (isMaster && !acc.master) {
-            console.log("Skip trader acc in case master");
+            mainLogger.info("Skip trader acc in case master");
             return;
           }
 
@@ -373,7 +352,7 @@ app.post("/api/order-request", (req, res) => {
             return;
           }
 
-          console.log(orderMsg);
+          mainLogger.info(orderMsg);
           orderMsg = `${acc.name}@ORDER_DELETE,${data.Symbol},${acc.retryCount}`;
           rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
         }
@@ -384,14 +363,14 @@ app.post("/api/order-request", (req, res) => {
         accounts.forEach((acc) => {
           if (db.GetAccountStatus(acc.name) && acc.basket) {
             if (acc.master && !acc.basket) {
-              console.log(
+              mainLogger.info(
                 "Skip to trade becasue master account basket set off"
               );
               return;
             }
 
             if (isMaster && !acc.master) {
-              console.log("Skip trader acc in case master");
+              mainLogger.info("Skip trader acc in case master");
               return;
             }
 
@@ -408,13 +387,13 @@ app.post("/api/order-request", (req, res) => {
               acc.master)
           ) {
             if (acc.master && !acc.basket) {
-              console.log(
+              mainLogger.info(
                 "Skip to trade becasue master account basket set off"
               );
               return;
             }
             if (isMaster && !acc.master) {
-              console.log("Skip trader acc in case master");
+              mainLogger.info("Skip trader acc in case master");
               return;
             }
 
@@ -435,16 +414,14 @@ app.post("/api/price-feed", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
   var feed = data.feed;
-  console.log(new Date().toLocaleString(), feed);
+  mainLogger.info(feed);
 
   db.SetPriceFeed(feed);
-  console.log(new Date().toLocaleString(), "Price-feed: ", db.GetPriceFeed());
+  mainLogger.info(`Price-feed: ${JSON.stringify(db.GetPriceFeed())}`);
   socket.emit(EVENTS.ON_GLOBAL_SETTINGS, JSON.stringify({ feed: feed }));
   res.json({
     success: true,
   });
 });
 
-server.listen(port, () =>
-  console.log(new Date().toLocaleString(), `Listening on port ${port}`)
-);
+server.listen(port, () => mainLogger.info(`Listening on port ${port}`));

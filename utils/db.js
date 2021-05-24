@@ -1,4 +1,5 @@
 const fs = require("fs");
+const mainLogger = require("./logger").mainLogger;
 
 const DB_PATH_ACCOUNT = "./db/accounts.json";
 const DB_PATH_PRICE_FEED = "./db/priceFeed.json";
@@ -28,8 +29,8 @@ const Init = () => {
     });
   }
 
-  console.log("accounts", accounts);
-  console.log("status", accountStatus);
+  mainLogger.info(`accounts: ${JSON.stringify(accounts)}`);
+  mainLogger.info(`status ${JSON.stringify(accountStatus)}`);
 };
 
 const UpdateAccount = (account) => {
@@ -171,9 +172,9 @@ const GetPriceFeed = () => {
  * User managment
  */
 const LoadUsersData = () => {
-  console.log("Loading user data from file");
+  mainLogger.info("Loading user data from file");
   if (!fs.existsSync(DB_PATH_USERS)) {
-    console.log("no user data file");
+    mainLogger.info("no user data file");
     users = [];
     return;
   }
@@ -187,10 +188,10 @@ const LoadUsersData = () => {
 };
 
 const LoadGlobalData = () => {
-  console.log("Loading global settings from file ...");
+  mainLogger.info("Loading global settings from file ...");
 
   if (!fs.existsSync(DB_PATH_GLOBAL)) {
-    console.log("no global data file");
+    mainLogger.info("no global data file");
     global = {};
     return;
   }
@@ -201,11 +202,11 @@ const LoadGlobalData = () => {
     return {};
   }
   global = JSON.parse(sData);
-  console.log('loaded global settings', {global})
+  mainLogger.info(`loaded global settings', ${global}`);
 };
 
 const SaveGlobalData = () => {
-  console.log('saving global', global)
+  mainLogger.info(`saving global ${JSON.stringify(global)}`);
   fs.writeFileSync(DB_PATH_GLOBAL, JSON.stringify(global));
 };
 
@@ -215,16 +216,15 @@ const SetGlobalSettingKeyValuePair = (key, value) => {
 };
 
 const SetGlobalSettings = (data) => {
-  console.log('set globals ', data)
+  mainLogger.info(`set globals ${JSON.stringify(data)}`);
   if (data.toString === "") return;
-  for(const [key, value] of Object.entries(data)){
+  for (const [key, value] of Object.entries(data)) {
     global[key] = value;
   }
 
   SaveGlobalData();
-  
   return global;
-}
+};
 
 const GetGlobalSettings = () => {
   return global;
@@ -240,7 +240,7 @@ const SaveUsersData = () => {
 };
 
 const GetUserSettings = (username) => {
-  console.log("Get user settings: ", { username });
+  mainLogger.info(`Get user settings: ${username}`);
   let result = {};
 
   users.forEach((user) => {
@@ -253,17 +253,16 @@ const GetUserSettings = (username) => {
 };
 
 const SetUserSettings = (username, isMaster, data) => {
-  console.log(
-    "Trying to set user settings: ",
-    { username },
-    { isMaster },
-    { data }
-  );
+  mainLogger.info(`
+    Trying to set user settings:
+    ${username},
+    ${isMaster},
+    ${data}`);
   users.forEach((user) => {
     if (user.email === username) {
       if (isMaster && user.role !== "master") return;
       user.maxDefault = data.maxDefault;
-      console.log("Set user settings: ", { user });
+      mainLogger.info(`Set user settings: ", ${user}`);
       SaveUsersData();
     }
   });
@@ -275,7 +274,7 @@ const SetAuthToken = (username, authToken) => {
   users.forEach((user) => {
     if (user.email === username) {
       user.token = authToken;
-      console.log("Save token for user", user.email, authToken);
+      mainLogger.info(`Save token for user: ${user.email}, ${authToken}`);
       SaveUsersData();
     }
   });
@@ -284,11 +283,11 @@ const SetAuthToken = (username, authToken) => {
 };
 
 const GetAuthToken = ({ username, password, token }) => {
-  // console.log("Authenticating start with ", username, password, token);
+  // mainLogger.info("Authenticating start with ", username, password, token);
   let result = {};
 
   if (username && password) {
-    // console.log("Authenticating with email and password", username, password);
+    // mainLogger.info("Authenticating with email and password", username, password);
     if (username !== undefined && password !== undefined) {
       users.forEach((user) => {
         if (
@@ -301,7 +300,7 @@ const GetAuthToken = ({ username, password, token }) => {
     }
   } else {
     if (token !== undefined) {
-      // console.log("Authenticating with token: " + token);
+      // mainLogger.info("Authenticating with token: " + token);
       users.forEach((user) => {
         if (user.token == token)
           Object.assign(result, { email: user.email, token, role: user.role });

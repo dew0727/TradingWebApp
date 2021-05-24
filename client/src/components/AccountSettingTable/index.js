@@ -115,7 +115,7 @@ const AccountSettingTable = ({
             min={0}
             max={maxLots}
             onChange={(val) => {
-              if (val !== null && val !== "" && val >= 0) {
+              if (!isNaN(val) && val >= 0) {
                 onHandleClickBasket({ accname: record.name, defaultLots: val });
               }
             }}
@@ -155,7 +155,7 @@ const AccountSettingTable = ({
       editable: false,
       render: (status) => {
         var curTime = Date.now();
-        if (curTime - status?.time >= 15 * 1000)
+        if (curTime - status?.time >= 30 * 1000)
           return <span className="account-status-dead">DEAD</span>;
         else return <span className="account-status-live">LIVE</span>;
       },

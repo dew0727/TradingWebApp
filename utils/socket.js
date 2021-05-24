@@ -6,7 +6,7 @@ class socket {
 
   static emit = (topic, msg) => {
     if (this._io == null || this._io == undefined) {
-      console.log("Websocket is not defined");
+      console.info("Websocket is not defined");
       return;
     }
 
