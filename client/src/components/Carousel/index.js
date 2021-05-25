@@ -20,6 +20,8 @@ const CarouselComponent = ({
   posInfo,
   reqOrder,
   isMobile,
+  onHandleTouchEnd,
+  onHandleTouchStart
 }) => {
   const [cardIdx, setCardIdx] = useState(0);
   const maxCount = symbolList?.length || 1;
@@ -44,7 +46,7 @@ const CarouselComponent = ({
 
   return (
     <>
-      <div style={wrapperStyle}>
+      <div style={wrapperStyle} onTouchStart={onHandleTouchStart} onTouchEnd={onHandleTouchEnd}>
         <div className="swiper-arrow" onClick={() => onSwiped(LEFT)}>
           {<LeftOutlined className="swiper-left-arrow" />}
         </div>

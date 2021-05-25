@@ -644,8 +644,8 @@ const TradingPage = () => {
           {xs ? (
             <CarouselComponent
               className="card-swiper-wrapper"
-              onSwipeStart={onHandleTouchStart}
-              onSwipeEnd={onHandleTouchEnd}
+              onHandleTouchStart={onHandleTouchStart}
+              onHandleTouchEnd={onHandleTouchEnd}
               symbolList={symbolList}
               rates={rates}
               broker={curBroker}
