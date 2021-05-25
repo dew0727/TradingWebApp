@@ -1,12 +1,18 @@
 .swiper-arrow {
+    font-size: 1.5em;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
+.swiper-arrow:active {
+    opacity: 0.5;
+    background-color: black;
+}
+
 .swiper-trading-cards-body {
-    padding: 1vh 0 3vh 0;
+    padding: 0 0 2vh 0;
     overflow: hidden;
 }
 .swiper-page-info {

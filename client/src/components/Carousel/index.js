@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import styled from 'styled-components';
+import styled from "styled-components";
 import TradingCard from "../TradingCard";
 import "./index.css";
 
@@ -45,13 +45,8 @@ const CarouselComponent = ({
   return (
     <>
       <div style={wrapperStyle}>
-        <div className="swiper-arrow">
-          {
-            <LeftOutlined
-              className="swiper-left-arrow"
-              onClick={() => onSwiped(LEFT)}
-            />
-          }
+        <div className="swiper-arrow" onClick={() => onSwiped(LEFT)}>
+          {<LeftOutlined className="swiper-left-arrow" />}
         </div>
         <div {...handlers} className="swiper-trading-cards-body">
           <TradingCard
@@ -65,13 +60,8 @@ const CarouselComponent = ({
             isMobile={isMobile}
           />
         </div>
-        <div className="swiper-arrow">
-          {
-            <RightOutlined
-              className="swiper-right-arrow"
-              onClick={() => onSwiped(RIGHT)}
-            />
-          }
+        <div className="swiper-arrow" onClick={() => onSwiped(RIGHT)}>
+          {<RightOutlined className="swiper-right-arrow" />}
         </div>
       </div>
       <div className="swiper-page-info">{`${cardIdx + 1}/${maxCount}`}</div>

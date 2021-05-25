@@ -19,7 +19,7 @@
 
 .trading-card-container-mobile {
   margin: auto;
-  width: 80vw;
+  width: 84vw;
   background-color: #e5e5e5;
   border-style: solid;
   border-color: black;
@@ -33,7 +33,6 @@
 
 .trading-card-container-mobile .ant-input-number-input {
   font-size: large;
-
 }
 
 .trading-card-container-mobile .ant-card-head {
@@ -103,7 +102,7 @@
   flex-direction: column;
 }
 
-.trading-card-quick-set-lots{
+.trading-card-quick-set-lots {
   display: flex;
   justify-content: space-evenly;
 }
@@ -113,7 +112,7 @@
   justify-content: space-evenly;
 }
 
-.trading-card-input-lots{
+.trading-card-input-lots {
   display: flex;
   flex-flow: row;
   place-items: center;
@@ -140,35 +139,35 @@
   text-align-last: center !important;
 }
 
-.lmt-price-value input:focus{
-  text-align-last:auto !important;  
-  padding: 0 1px !important; 
+.lmt-price-value input:focus {
+  text-align-last: auto !important;
+  padding: 0 1px !important;
 }
 
 .trading-card-value .ant-btn {
   padding: 0 !important;
 }
 
-.trading-card-container .ant-input-number-handler-wrap{
+.trading-card-container .ant-input-number-handler-wrap {
   width: 16px !important;
 }
 
-.trading-card-container .ant-input-number-handler-down-inner{
+.trading-card-container .ant-input-number-handler-down-inner {
   right: 2px !important;
 }
 
-.trading-card-container .ant-input-number-handler-up-inner{
+.trading-card-container .ant-input-number-handler-up-inner {
   right: 2px !important;
 }
 
-.trading-card-container-mobile .ant-input-number-handler-wrap{
+.trading-card-container-mobile .ant-input-number-handler-wrap {
   width: 16px !important;
 }
 
-.trading-card-container-mobile .ant-input-number-handler-down-inner{
+.trading-card-container-mobile .ant-input-number-handler-down-inner {
   right: 2px !important;
 }
 
-.trading-card-container-mobile .ant-input-number-handler-up-inner{
+.trading-card-container-mobile .ant-input-number-handler-up-inner {
   right: 2px !important;
 }
