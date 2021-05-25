@@ -3,8 +3,8 @@ import { useSwipeable } from "react-swipeable";
 import TradingCard from "../TradingCard";
 import "./index.css";
 
-const RIGHT = 1;
-const LEFT = -1;
+const RIGHT = -1;
+const LEFT = 1;
 
 const CarouselComponent = ({
   symbolList,
@@ -22,10 +22,10 @@ const CarouselComponent = ({
       console.log('direction: ', direction, cardIdx)
     let index = cardIdx + direction;
 
-    if (index < 0) index = maxCount;
+    if (index < 0) index = maxCount - 1;
     if (index >= maxCount) index = 0;
 
-    console.log("set card index", index, maxCount);
+    console.log("set card index", index);
     setCardIdx(index);
   }
 
