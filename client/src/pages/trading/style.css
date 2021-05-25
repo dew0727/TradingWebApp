@@ -221,3 +221,8 @@
 .react-multiple-carousel__arrow--left {
   left: calc(0% + 1px) !important;
 }
+
+.card-swiper-wrapper {
+  padding: 0 1vw 0 1vw;
+  margin-bottom: 30px;
+}

@@ -17,8 +17,7 @@ import {
   Popconfirm,
   Switch,
 } from "antd";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+import CarouselComponent from '../../components/Carousel'
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
@@ -615,24 +614,15 @@ const TradingPage = () => {
     });
   };
 
-  const responsive = {
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 3,
-      partialVisibilityGutter: 40, // this is needed to tell the amount of px that should be visible.
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 2,
-      partialVisibilityGutter: 30, // this is needed to tell the amount of px that should be visible.
-    },
-    mobile: {
-      breakpoint: { max: 576, min: 0 },
-      items: 1,
-      partialVisibilityGutter: 30, // this is needed to tell the amount of px that should be visible.
-    },
+  const onHandleTouchStart = (e) => {
+    console.log("touch start");
+    isAllowUpdate = false;
   };
 
+  const onHandleTouchEnd = (e) => {
+    console.log("touch end");
+    isAllowUpdate = true;
+  };
   return (
     <div className="traindg-home-page">
       <Tabs
@@ -651,31 +641,17 @@ const TradingPage = () => {
             />
           </div>
           {xs ? (
-            <Carousel
-              responsive={responsive}
-              focusOnSelect
-              swipeable={true}
-              draggable={false}
-              showDots={true}
-              infinite={true}
-              containerClass="carousel-container"
-              deviceType={"mobile"}
-              dotListClass="custom-dot-list-style"
-              itemClass="carousel-item-padding"
-            >
-              {symbolList.map((symbol, index) => (
-                <TradingCard
-                  key={`${symbol.toString()}-${index}`}
-                  symbols={symbolList}
-                  rates={rates}
-                  broker={curBroker}
-                  posInfo={parsePosList()}
-                  reqOrder={(order) => reqOrder(order)}
-                  index={index}
-                  isMobile
-                />
-              ))}
-            </Carousel>
+            <CarouselComponent
+              className="card-swiper-wrapper"
+              onSwipeStart={onHandleTouchStart}
+              onSwipeEnd={onHandleTouchEnd}
+              symbolList={symbolList}
+              rates={rates}
+              broker={curBroker}
+              posInfo={parsePosList()}
+              reqOrder={reqOrder}
+              isMobile
+            />
           ) : (
             <>
               <Row
