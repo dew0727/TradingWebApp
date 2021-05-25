@@ -1,0 +1,15 @@
+.swiper-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.swiper-trading-cards-body {
+    padding: 1vh 0 3vh 0;
+    overflow: hidden;
+}
+.swiper-page-info {
+    display: flex;
+    justify-content: center;
+}

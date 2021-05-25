@@ -623,6 +623,7 @@ const TradingPage = () => {
     console.log("touch end");
     isAllowUpdate = true;
   };
+  
   return (
     <div className="traindg-home-page">
       <Tabs
