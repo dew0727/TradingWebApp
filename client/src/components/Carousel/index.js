@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { useSwipeable } from "react-swipeable";
+import React, { useState, useRef } from "react";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import styled from "styled-components";
+import { Carousel } from "antd";
 import TradingCard from "../TradingCard";
 import "./index.css";
 
@@ -9,9 +8,6 @@ const wrapperStyle = {
   display: "flex",
   "justify-content": "space-evenly",
 };
-
-const RIGHT = -1;
-const LEFT = 1;
 
 const CarouselComponent = ({
   symbolList,
@@ -21,52 +17,108 @@ const CarouselComponent = ({
   reqOrder,
   isMobile,
   onHandleTouchEnd,
-  onHandleTouchStart
+  onHandleTouchStart,
 }) => {
   const [cardIdx, setCardIdx] = useState(0);
+  const slider = useRef(null);
   const maxCount = symbolList?.length || 1;
 
-  const onSwiped = (direction) => {
-    let index = cardIdx + direction;
-
-    if (index < 0) index = maxCount - 1;
-    if (index >= maxCount) index = 0;
-
-    setCardIdx(index);
+  const onHandleChange = (val) => {
+    console.log("current id:", val);
+    setCardIdx(val);
   };
-
-  const handlers = useSwipeable({
-    delta: 5, // min distance(px) before a swipe starts
-    preventDefaultTouchmoveEvent: false, // call e.preventDefault *See Details*
-    trackTouch: true, // track touch input
-    trackMouse: true, // track mouse input
-    onSwipedLeft: () => onSwiped(LEFT),
-    onSwipedRight: () => onSwiped(RIGHT),
-  });
 
   return (
     <>
-      <div style={wrapperStyle} onTouchStart={onHandleTouchStart} onTouchEnd={onHandleTouchEnd}>
-        <div className="swiper-arrow" onClick={() => onSwiped(LEFT)}>
+      <div
+        style={wrapperStyle}
+        onTouchStart={onHandleTouchStart}
+        onTouchEnd={onHandleTouchEnd}
+      >
+        <div className="swiper-arrow" onClick={() => slider.current.prev()}>
           {<LeftOutlined className="swiper-left-arrow" />}
         </div>
-        <div {...handlers} className="swiper-trading-cards-body">
-          <TradingCard
-            key={`mobile-card-${cardIdx}`}
-            symbols={symbolList}
-            rates={rates}
-            broker={broker}
-            posInfo={posInfo}
-            reqOrder={reqOrder}
-            index={cardIdx}
-            isMobile={isMobile}
-          />
+        <div className="swiper-trading-cards-body">
+          <Carousel ref={slider} dots afterChange={onHandleChange}>
+            {maxCount > 0 && (
+              <TradingCard
+                key={`mobile-card-${0}`}
+                symbols={symbolList}
+                rates={rates}
+                broker={broker}
+                posInfo={posInfo}
+                reqOrder={reqOrder}
+                index={0}
+                isMobile={isMobile}
+              />
+            )}
+            {maxCount > 1 && (
+              <TradingCard
+                key={`mobile-card-${1}`}
+                symbols={symbolList}
+                rates={rates}
+                broker={broker}
+                posInfo={posInfo}
+                reqOrder={reqOrder}
+                index={1}
+                isMobile={isMobile}
+              />
+            )}
+            {maxCount > 2 && (
+              <TradingCard
+                key={`mobile-card-${2}`}
+                symbols={symbolList}
+                rates={rates}
+                broker={broker}
+                posInfo={posInfo}
+                reqOrder={reqOrder}
+                index={2}
+                isMobile={isMobile}
+              />
+            )}
+            {maxCount > 3 && (
+              <TradingCard
+                key={`mobile-card-${3}`}
+                symbols={symbolList}
+                rates={rates}
+                broker={broker}
+                posInfo={posInfo}
+                reqOrder={reqOrder}
+                index={3}
+                isMobile={isMobile}
+              />
+            )}
+            {maxCount > 4 && (
+              <TradingCard
+                key={`mobile-card-${2}`}
+                symbols={symbolList}
+                rates={rates}
+                broker={broker}
+                posInfo={posInfo}
+                reqOrder={reqOrder}
+                index={4}
+                isMobile={isMobile}
+              />
+            )}
+            {maxCount > 5 && (
+              <TradingCard
+                key={`mobile-card-${2}`}
+                symbols={symbolList}
+                rates={rates}
+                broker={broker}
+                posInfo={posInfo}
+                reqOrder={reqOrder}
+                index={5}
+                isMobile={isMobile}
+              />
+            )}
+          </Carousel>
         </div>
-        <div className="swiper-arrow" onClick={() => onSwiped(RIGHT)}>
+        <div className="swiper-arrow" onClick={() => slider.current.next()}>
           {<RightOutlined className="swiper-right-arrow" />}
         </div>
       </div>
-      <div className="swiper-page-info">{`${cardIdx + 1}/${maxCount}`}</div>
+      <div className="swiper-page-info">{`${cardIdx + 1}/${maxCount < 5 ? maxCount : 5 }`}</div>
     </>
   );
 };
