@@ -17,7 +17,7 @@ import {
   Popconfirm,
   Switch,
 } from "antd";
-import CarouselComponent from '../../components/Carousel'
+import CarouselComponent from "../../components/Carousel";
 import { CloseOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
@@ -199,6 +199,14 @@ const TradingPage = () => {
   };
 
   const parseData = (topic, message) => {
+    if (topic === EVENTS.ON_USER_LOGIN) {
+      const login = JSON.parse(message);
+      console.log("login event", login);
+      if (login.email && email === login.email) {
+        window.location.href = "/";
+      }
+    }
+
     if (isAllowUpdate) {
       switch (topic) {
         case EVENTS.ON_GLOBAL_SETTINGS:
@@ -212,14 +220,6 @@ const TradingPage = () => {
             console.log("price feed", globals.feed);
             setCurPriceFeed(globals.feed);
           }
-          break;
-        case EVENTS.ON_USER_LOGIN:
-          const login = JSON.parse(message);
-          console.log("login event", login);
-          if (login.email && email === login.email) {
-            window.location.href = "/";
-          }
-
           break;
         case EVENTS.ON_USER_SETTINGS:
           const settings = JSON.parse(message);
@@ -623,7 +623,7 @@ const TradingPage = () => {
     console.log("touch end");
     isAllowUpdate = true;
   };
-  
+
   return (
     <div className="traindg-home-page">
       <Tabs

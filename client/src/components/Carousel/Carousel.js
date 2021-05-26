@@ -1,5 +1,6 @@
 import React from "react";
 import { useSwipeable } from "react-swipeable";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 const NEXT = "NEXT";
@@ -7,7 +8,6 @@ const PREV = "PREV";
 
 const STOP_SLIDING = "stopSliding";
 const RESET_SLIDING = "reset";
-
 
 const getOrder = (index, pos, numItems) => {
   return index - pos < 0 ? numItems - Math.abs(index - pos) : index - pos;
@@ -24,14 +24,14 @@ function reducer(state, action) {
         ...state,
         dir: PREV,
         sliding: true,
-        pos: state.pos === 0 ? action.numItems - 1 : state.pos - 1
+        pos: state.pos === 0 ? action.numItems - 1 : state.pos - 1,
       };
     case NEXT:
       return {
         ...state,
         dir: NEXT,
         sliding: true,
-        pos: state.pos === action.numItems - 1 ? 0 : state.pos + 1
+        pos: state.pos === action.numItems - 1 ? 0 : state.pos + 1,
       };
     case STOP_SLIDING:
       return { ...state, sliding: false };
@@ -44,7 +44,7 @@ export const CarouselContainer = styled.div`
   display: flex;
   transition: ${(props) => (props.sliding ? "none" : "transform 0.5s ease")};
   transform: ${(props) => {
-    if (!props.sliding) return "translateX(calc(-80% - 20px))";
+    if (!props.sliding) return "translateX(calc(-100%))";
     if (props.dir === PREV) return "translateX(calc(2 * (-80% - 20px)))";
     return "translateX(0%)";
   }};
@@ -53,49 +53,67 @@ export const CarouselContainer = styled.div`
 const Wrapper = styled.div`
   width: 100%;
   overflow: hidden;
-  box-shadow: 5px 5px 20px 7px rgba(168, 168, 168, 1);
 `;
 
 const CarouselSlot = styled.div`
   flex: 1 0 100%;
-  flex-basis: 80%;
-  margin-right: 20px;
   order: ${(props) => props.order};
 `;
 
-const Carousel = (props) => {
+const wrapperStyle = {
+  display: "flex",
+  "justify-content": "space-evenly",
+  "margin-bottom": "1vh",
+};
+
+const Carousel = ({ children, onSlidingStart, onSlidingEnd }) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
-  const numItems = React.Children.count(props.children);
+  const numItems = React.Children.count(children);
 
   const slide = (dir) => {
     dispatch({ type: dir, numItems });
+    onSlidingStart();
     setTimeout(() => {
-      dispatch({ type: "stopSliding" });
+      dispatch({ type: STOP_SLIDING });
     }, 50);
+    setTimeout(() => {
+      onSlidingEnd();
+    }, 500);
   };
 
   const handlers = useSwipeable({
     onSwipedLeft: () => slide(NEXT),
     onSwipedRight: () => slide(PREV),
     preventDefaultTouchmoveEvent: true,
-    trackMouse: true
+    trackMouse: true,
   });
 
   return (
-    <div {...handlers}>
-      <Wrapper>
-        <CarouselContainer dir={state.dir} sliding={state.sliding}>
-          {React.Children.map(props.children, (child, index) => (
-            <CarouselSlot
-              key={index}
-              order={getOrder(index, state.pos, numItems)}
-            >
-              {child}
-            </CarouselSlot>
-          ))}
-        </CarouselContainer>
-      </Wrapper>
-    </div>
+    <>
+      <div {...handlers} style={wrapperStyle}>
+        <div className="swiper-arrow" onClick={() => slide(PREV)}>
+          {<LeftOutlined className="swiper-left-arrow" />}
+        </div>
+        <Wrapper>
+          <div>
+            <CarouselContainer dir={state.dir} sliding={state.sliding}>
+              {React.Children.map(children, (child, index) => (
+                <CarouselSlot
+                  key={index}
+                  order={getOrder(index, state.pos, numItems)}
+                >
+                  {child}
+                </CarouselSlot>
+              ))}
+            </CarouselContainer>
+          </div>
+        </Wrapper>
+        <div className="swiper-arrow" onClick={() => slide(NEXT)}>
+          {<RightOutlined className="swiper-right-arrow" />}
+        </div>
+      </div>
+      <div className="swiper-page-info">{`${state.pos + 1}/${numItems}`}</div>
+    </>
   );
 };
 

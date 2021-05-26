@@ -14,8 +14,7 @@ const CarouselComponent = ({
   onHandleTouchStart,
 }) => {
   return (
-    <div onTouchStart={onHandleTouchStart} onTouchEnd={onHandleTouchEnd}>
-      <Carousel>
+      <Carousel onSlidingStart={onHandleTouchStart} onSlidingEnd={onHandleTouchEnd}>
         {symbolList.map((symbol, index) => (
           <TradingCard
             key={`mobile-card-${index}-${symbol}`}
@@ -29,7 +28,6 @@ const CarouselComponent = ({
           />
         ))}
       </Carousel>
-    </div>
   );
 };
 
