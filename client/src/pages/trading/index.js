@@ -20,7 +20,7 @@ import {
   Modal,
 } from "antd";
 import CarouselComponent from "../../components/Carousel";
-import { CloseOutlined } from "@ant-design/icons";
+import { CloseOutlined, LoadingOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
 import "./style.css";
@@ -657,7 +657,11 @@ const TradingPage = () => {
       <Modal
         centered
         visible={isOpenModal && server_status === "BUSY"}
-        footer={[<Button danger onClick={() => setIsOpenModal(false)}>閉じる</Button>]}
+        footer={[
+          <Button danger onClick={() => setIsOpenModal(false)}>
+            閉じる
+          </Button>,
+        ]}
       >
         <Spin
           size="large"
@@ -680,6 +684,13 @@ const TradingPage = () => {
               defaultFeed={curPriceFeed}
             />
           </div>
+          {server_status === "BUSY" && (
+            <Spin
+              tip="注文は処理中です..."
+              style={{ width: "100%" }}
+              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+            />
+          )}
           {xs ? (
             <CarouselComponent
               className="card-swiper-wrapper"

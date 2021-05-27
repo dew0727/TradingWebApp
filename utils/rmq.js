@@ -311,7 +311,7 @@ const processMessage = (topic, msg) => {
   }
 };
 
-cron.schedule("*/5 * * * * *", function () {
+cron.schedule(`*/${config.ORDER_STATUS_CHECK_CYCLE} * * * * *`, function () {
   checkOrderStatus();
 });
 
@@ -330,16 +330,16 @@ const checkOrderStatus = () => {
     isStarted = false;
   } else {
     if (!isStarted) {
-      console.log("order started");
+      console.log("Order started");
       isStarted = true;
       startTime = Date.now();
     } else {
       endTime = Date.now();
       const stamps = endTime - startTime;
-      console.log("time stamps " + stamps);
-      if (stamps >= 10 * 1000) {
+      console.log("Delayed time " + stamps);
+      if (stamps >= config.ORDER_WAITING_LIMIT_TIME) {
         isStarted = false;
-        console.log('time over')
+        console.log("Time Over");
         db.InitOrderQueue();
         mainLogger.info("Forcely initialized order queue");
         console.log("Forcely initialized order queue");
