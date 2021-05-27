@@ -1,4 +1,5 @@
 const amqp = require("amqplib/callback_api");
+var cron = require("node-cron");
 const { socket } = require("./socket");
 const { EVENTS } = require("../config");
 const config = require("../config");
@@ -295,19 +296,56 @@ const processMessage = (topic, msg) => {
       break;
     case EVENTS.ON_ORDER_COMPLETE: {
       db.RemoveOrderedAccount(msg);
-      mainLogger.info(`${topic}, ${msg}`)
-      console.log(`${topic}, ${msg}`)
-      socket.emit(topic, msg)
-      if (db.IsEmptyOrderQueue()) {
-        mainLogger.info('order queue is empty now, notification to clients')
-        console.info('order queue is empty now, notification to clients')
-        socket.emit(topic, 'IDLE')
+      mainLogger.info(`${topic}, ${msg}`);
+      console.log(`${topic}, ${msg}`);
+      if (db.GetOrderQueueCount() === 0) {
+        mainLogger.info("order queue is empty now, notification to clients");
+        console.info("order queue is empty now, notification to clients");
+        socket.emit(EVENTS.ON_ORDER_COMPLETE, "IDLE");
       }
       break;
     }
 
     default:
       break;
+  }
+};
+
+cron.schedule("*/5 * * * * *", function () {
+  checkOrderStatus();
+});
+
+let isStarted = false;
+let startTime;
+let endTime;
+
+const checkOrderStatus = () => {
+  const orderCount = db.GetOrderQueueCount();
+  if (orderCount === 0) {
+    if (isStarted) {
+      mainLogger.info("order queue is empty now, notification to clients");
+      console.info("order queue is empty now, notification to clients");
+      socket.emit(EVENTS.ON_ORDER_COMPLETE, "IDLE");
+    }
+    isStarted = false;
+  } else {
+    if (!isStarted) {
+      console.log("order started");
+      isStarted = true;
+      startTime = Date.now();
+    } else {
+      endTime = Date.now();
+      const stamps = endTime - startTime;
+      console.log("time stamps " + stamps);
+      if (stamps >= 10 * 1000) {
+        isStarted = false;
+        console.log('time over')
+        db.InitOrderQueue();
+        mainLogger.info("Forcely initialized order queue");
+        console.log("Forcely initialized order queue");
+        socket.emit(EVENTS.ON_ORDER_COMPLETE, "IDLE");
+      }
+    }
   }
 };
 

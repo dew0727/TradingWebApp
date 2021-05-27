@@ -56,6 +56,9 @@ const createSocket = (parseData, token) => {
   sockClient.on(EVENTS.ON_GLOBAL_SETTINGS, (msg) => {
     parseData(EVENTS.ON_GLOBAL_SETTINGS, msg);
   });
+  sockClient.on(EVENTS.ON_ORDER_COMPLETE, (msg) => {
+    parseData(EVENTS.ON_ORDER_COMPLETE, msg);
+  });
 };
 
 export default createSocket;

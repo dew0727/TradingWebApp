@@ -15,16 +15,24 @@ let global = {};
 let orderQueue = [];
 
 const RemoveOrderedAccount = (accountName) => {
-  mainLogger.info('removing account from order queue: ' + accountName);
+  mainLogger.info("removing account from order queue: " + accountName);
   return (orderQueue = orderQueue.filter((item) => item != accountName));
 };
 
 const RegsterOrderedAccount = (accountName) => {
-  mainLogger.info('regstering account to order queue: ' + accountName);
+  mainLogger.info("regstering account to order queue: " + accountName);
   orderQueue.push(accountName);
 };
 
-const IsEmptyOrderQueue = () => orderQueue.length === 0;
+const InitOrderQueue = () => {
+  orderQueue = [];
+  mainLogger.info("Initialized order queue: ");
+  console.log('Initialized order queue')
+};
+
+const GetOrderQueueCount = () => {
+  return orderQueue.length || 0;
+};
 
 const Init = () => {
   LoadAccountsData();
@@ -345,5 +353,6 @@ module.exports = {
   GetGlobalSettings,
   RemoveOrderedAccount,
   RegsterOrderedAccount,
-  IsEmptyOrderQueue,
+  GetOrderQueueCount,
+  InitOrderQueue,
 };

@@ -16,6 +16,8 @@ import {
   Divider,
   Popconfirm,
   Switch,
+  Spin,
+  Modal,
 } from "antd";
 import CarouselComponent from "../../components/Carousel";
 import { CloseOutlined } from "@ant-design/icons";
@@ -86,6 +88,8 @@ const TradingPage = () => {
   const [symbolList, setSymbolList] = useState([]);
   const [logHistory, setlogHistory] = useState([]);
 
+  const [isOpenModal, setIsOpenModal] = useState(false);
+
   useEffect(() => {
     setSymbolCount(getSymbols(rates).length);
   }, [rates]);
@@ -143,6 +147,7 @@ const TradingPage = () => {
     }
 
     setServerStatus("BUSY");
+    setIsOpenModal(true);
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
       if (res.success === true) {
         openNotification("Notice", "", "Server accepted request");
@@ -157,8 +162,8 @@ const TradingPage = () => {
   };
 
   const reqOrder = (order) => {
-    if (server_status === 'BUSY') {
-      message.error('Server is processing orders now.')
+    if (server_status === "BUSY") {
+      message.error("Server is processing orders now.");
       return;
     }
 
@@ -223,7 +228,7 @@ const TradingPage = () => {
 
     if (topic === EVENTS.ON_ORDER_COMPLETE) {
       console.log("Order finished account: ", message);
-      setServerStatus(message)
+      if (message === "IDLE") setServerStatus("IDLE");
       return;
     }
 
@@ -649,6 +654,17 @@ const TradingPage = () => {
 
   return (
     <div className="traindg-home-page">
+      <Modal
+        centered
+        visible={isOpenModal && server_status === "BUSY"}
+        footer={[<Button danger onClick={() => setIsOpenModal(false)}>閉じる</Button>]}
+      >
+        <Spin
+          size="large"
+          tip="注文は処理中です..."
+          style={{ width: "100%" }}
+        />
+      </Modal>
       <Tabs
         onChange={updateAccountOrPriceFeed}
         type="card"
