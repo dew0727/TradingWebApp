@@ -3,7 +3,12 @@ import { Table, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import "./style.css";
 
+import { useApp } from "../../context";
+
 const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
+  const [useAppState] = useApp();
+  const { server_status } = useAppState;
+
   const columns = [
     {
       title: "通貨",
@@ -54,6 +59,7 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
       align: "center",
       render: (order) => (
         <Button
+          disabled={server_status === "BUSY"}
           type="primary"
           block
           danger
@@ -82,6 +88,7 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
           <div className="order-table-title-control">
             <span>有効注文</span>
             <Button
+              disabled={server_status === "BUSY"}
               size="small"
               type="primary"
               onClick={() => {

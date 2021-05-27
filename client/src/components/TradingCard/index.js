@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Row, Col, Button, Input, InputNumber, message } from "antd";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
+import { useApp } from "../../context";
 
 const ORDER_TYPES = {
   MARKET: "MARKET",
@@ -35,7 +36,16 @@ const specPrice = (symbol, price, fixsize = 5) => {
   return { first: first, last: last };
 };
 
-const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = false }) => {
+const TradingCard = ({
+  symbols,
+  posInfo,
+  rates,
+  reqOrder,
+  index,
+  isMobile = false,
+}) => {
+  const [useAppState] = useApp();
+  const { server_status } = useAppState;
   const [curSym, setcurSym] = useState();
   const [orderType, setorderType] = useState("MARKET");
   const [orderContent, setOrderContent] = useState({
@@ -54,7 +64,11 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
     const curLots = Number.parseFloat(orderContent.lots);
     setOrderContent({
       ...orderContent,
-      lots: isPlus ? (Number.isNaN(curLots) ? size : Math.round((curLots + size) * 100) / 100) : size,
+      lots: isPlus
+        ? Number.isNaN(curLots)
+          ? size
+          : Math.round((curLots + size) * 100) / 100
+        : size,
     });
   };
 
@@ -123,8 +137,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
         }
 
         ordType = command + "LIMIT";
-      }
-      else if (orderType === ORDER_TYPES.STOP) {
+      } else if (orderType === ORDER_TYPES.STOP) {
         if (command === COMMAND.BUY && reqPrice < ask) {
           message.error("Invalid price for BUY STOP order");
           return;
@@ -178,7 +191,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
   };
 
   return (
-    <div className={`trading-card-container${isMobile ? '-mobile' : ''}`}>
+    <div className={`trading-card-container${isMobile ? "-mobile" : ""}`}>
       <div className="card-symbol-name">
         <SymbolSelector
           symbols={symbols}
@@ -225,6 +238,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
       <Row gutter={[0, 10]} justify="center" align="center">
         <Col span={18}>
           <Button
+            disabled={server_status === "BUSY"}
             block
             htmlType
             className="btn-control"
@@ -240,6 +254,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
       <Row gutter={[0, 10]} align="center">
         <Col span={10}>
           <Button
+            disabled={server_status === "BUSY"}
             block
             className="command-header-bid"
             size={isMobile ? "large" : "middle"}
@@ -252,6 +267,7 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
         </Col>
         <Col span={10} offset={4}>
           <Button
+            disabled={server_status === "BUSY"}
             block
             size={isMobile ? "large" : "middle"}
             className="command-header-ask"
@@ -350,7 +366,6 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
         </div>
       </div>
       <div className="card-net-pos-info">
-
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
           <Col className="trading-card-value sell-lots" span={5}>
             <Button
@@ -421,7 +436,6 @@ const TradingCard = ({ symbols, posInfo, rates, reqOrder, index, isMobile = fals
               }}
             />
           </Col>
-
         </Row>
         <Row className="trading-card-posinfo trading-card-posinfo-lots">
           <Col className="trading-card-value buy-lots" span={6}>

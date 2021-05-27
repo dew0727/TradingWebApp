@@ -21,16 +21,12 @@ const EVENTS = {
     ON_USER_LOGIN: 'USER_LOGIN',
     ON_GLOBAL_SETTINGS: 'GLOBAL_SETTINGS',
 
-    ON_CHANGE_RETRY_COUNT: 'CHANGE_RETRYCOUNT',
+    ON_ORDER_COMPLETE: 'ORDER_COMPLETE_STATUS',
 }
 
 // registered users
 const USERS = {
     'admin': 'pass',
-    'testuser0523@proton.com': 'test',
-    'testuser1': 'testpass123',
-    'testuser2': 'testpass123',
-    'testuser3': 'testpass123',
 }
 
 module.exports = {

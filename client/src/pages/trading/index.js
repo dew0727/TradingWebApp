@@ -28,6 +28,9 @@ import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
 import { EVENTS } from "../../config-client";
 import { apiCall, Logout, getAuth, getCredential } from "../../utils/api";
+
+import { useApp } from "../../context";
+
 const dateFormat = require("dateformat");
 
 const { TabPane } = Tabs;
@@ -52,9 +55,14 @@ var lastResponse = "";
 var isAllowUpdate = true;
 
 const TradingPage = () => {
+  const [appState] = useApp();
+  const { server_status, setServerStatus } = appState;
+
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
   const [maxDefaultLots, setMaxDefautLots] = useState(100);
+  const [retryCount, setRetryCount] = useState(5);
+  const [waitingTime, setWaitingTime] = useState(0);
   const [curPriceFeed, setCurPriceFeed] = useState("");
   const xs = Grid.useBreakpoint()?.xs;
   const lg = Grid.useBreakpoint()?.lg;
@@ -134,6 +142,7 @@ const TradingPage = () => {
       //return;
     }
 
+    setServerStatus("BUSY");
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
       if (res.success === true) {
         openNotification("Notice", "", "Server accepted request");
@@ -148,6 +157,11 @@ const TradingPage = () => {
   };
 
   const reqOrder = (order) => {
+    if (server_status === 'BUSY') {
+      message.error('Server is processing orders now.')
+      return;
+    }
+
     const orderMsg = {
       ...order,
       Account: curAccount,
@@ -207,19 +221,18 @@ const TradingPage = () => {
       }
     }
 
+    if (topic === EVENTS.ON_ORDER_COMPLETE) {
+      console.log("Order finished account: ", message);
+      setServerStatus(message)
+      return;
+    }
+
     if (isAllowUpdate) {
       switch (topic) {
         case EVENTS.ON_GLOBAL_SETTINGS:
           const globals = JSON.parse(message);
           console.log("event global settings", message);
-          if (globals["maxDefault"]) {
-            const val = parseFloat(globals.maxDefault);
-            !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
-          }
-          if (globals.feed) {
-            console.log("price feed", globals.feed);
-            setCurPriceFeed(globals.feed);
-          }
+          ApplyGlobalSettings(globals);
           break;
         case EVENTS.ON_USER_SETTINGS:
           const settings = JSON.parse(message);
@@ -439,17 +452,27 @@ const TradingPage = () => {
       if (res.success === true) {
         const globals = JSON.parse(res.data);
         console.log("retrieved global settings: ", globals);
-        if (globals.maxDefault) {
-          const val = parseFloat(globals.maxDefault);
-          !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
-        }
-
-        if (globals.feed) {
-          console.log("price feed", globals.feed);
-          setCurPriceFeed(globals.feed);
-        }
+        ApplyGlobalSettings(globals);
       }
     });
+  };
+
+  const ApplyGlobalSettings = (settings) => {
+    if (settings["maxDefault"]) {
+      const val = parseFloat(settings.maxDefault);
+      setMaxDefautLots(val);
+    }
+    if (settings["retryCount"]) {
+      const val = parseInt(settings.retryCount);
+      setRetryCount(val);
+    }
+    if ("waitingTime" in settings) {
+      const val = parseInt(settings.waitingTime);
+      setWaitingTime(val);
+    }
+    if ("feed" in settings) {
+      setCurPriceFeed(settings.feed);
+    }
   };
 
   const getAccountSettings = (user) => {
@@ -467,14 +490,14 @@ const TradingPage = () => {
     });
   };
 
-  const onChangeMaxValue = (maxVal) => {
+  const onChangeGlobalSettings = (settings) => {
     apiCall(
       "/api/update-global-setting",
-      { settings: { maxDefault: maxVal } },
+      { settings },
       "POST",
       (res, user, pass) => {
         if (res.success === true) {
-          console.log("set max default lots");
+          console.log("update global settings");
         }
       }
     );
@@ -872,8 +895,8 @@ const TradingPage = () => {
                 callback={({ accname, basket, defaultLots, retryCount }) =>
                   onHandleAccSetting(accname, basket, defaultLots, retryCount)
                 }
-                onChangeMaxValue={onChangeMaxValue}
                 maxLots={maxDefaultLots}
+                {...{ retryCount, waitingTime, onChangeGlobalSettings }}
               />
               <Row></Row>
             </div>

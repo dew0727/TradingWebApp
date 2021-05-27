@@ -3,9 +3,11 @@ import { Button, Table, Grid } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import "./style.css";
 
+import { useApp } from "../../context";
 const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
   const isDesktop = Grid.useBreakpoint()?.sm;
-
+  const [useAppState] = useApp();
+  const { server_status } = useAppState;
   const columns = [
     {
       title: isDesktop ? "通貨" : "通..",
@@ -76,6 +78,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       align: "center",
       render: (position) => (
         <Button
+          disabled={server_status === "BUSY"}
           type="primary"
           block
           danger
@@ -104,6 +107,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
           <div className="position-table-title-control">
             <span>建玉</span>
             <Button
+              disabled={server_status === "BUSY"}
               size="small"
               type="primary"
               onClick={() => {

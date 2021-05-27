@@ -3,7 +3,7 @@ const { socket } = require("./socket");
 const { EVENTS } = require("../config");
 const config = require("../config");
 const db = require("./db");
-const mainLogger = require('./logger').mainLogger;
+const mainLogger = require("./logger").mainLogger;
 
 const rabbitmqHost = config.RABBITMQ_HOST;
 const exchange = config.EXCHANGE_NAME;
@@ -53,16 +53,15 @@ const publishMessage = (topic, sMsg) => {
     type: exchange,
   });
 
-  mainLogger.info( sMsg);
+  mainLogger.info(sMsg);
 };
 
 const unsubscribeQueue = (topic, username) => {
   const queue = "System.String, mscorlib_" + topic + username;
   mainLogger.info(`deleteing queue: ${queue}`);
   channel.deleteQueue(queue, (err, ok) => {
-    mainLogger.info( err, ok);
-    if (ok)
-      mainLogger.info( "Deleted queue named ", queue);
+    mainLogger.info(err, ok);
+    if (ok) mainLogger.info("Deleted queue named ", queue);
   });
 };
 
@@ -78,9 +77,7 @@ const subscribeChannel = (topic, username) => {
         throw error2;
       }
 
-      mainLogger.info(
-        `creating message queue ${q.queue}`
-      );
+      mainLogger.info(`creating message queue ${q.queue}`);
 
       channel.bindQueue(q.queue, exchange, topic);
 
@@ -172,9 +169,9 @@ const processMessage = (topic, msg) => {
         default: account.default ? account.default : 1,
         retryCount: account.retryCount || 1,
         master: account.master,
-        status: { 
+        status: {
           status: db.GetAccountStatus(accName),
-          time: Date.now(), 
+          time: Date.now(),
         },
       };
       socket.emit(topic, JSON.stringify(accountInfo));
@@ -295,6 +292,19 @@ const processMessage = (topic, msg) => {
         mainLogger.info(topic + ", " + JSON.stringify(response));
         socket.emit(topic, JSON.stringify(response));
       }
+      break;
+    case EVENTS.ON_ORDER_COMPLETE: {
+      db.RemoveOrderedAccount(msg);
+      mainLogger.info(`${topic}, ${msg}`)
+      console.log(`${topic}, ${msg}`)
+      socket.emit(topic, msg)
+      if (db.IsEmptyOrderQueue()) {
+        mainLogger.info('order queue is empty now, notification to clients')
+        console.info('order queue is empty now, notification to clients')
+        socket.emit(topic, 'IDLE')
+      }
+      break;
+    }
 
     default:
       break;
@@ -302,23 +312,25 @@ const processMessage = (topic, msg) => {
 };
 
 const subscribeForUser = (user) => {
-  mainLogger.info( `sbscribing user: ${user}`);
+  mainLogger.info(`sbscribing user: ${user}`);
   subscribeChannel(EVENTS.ON_PRICE_TICK, user);
   subscribeChannel(EVENTS.ON_ACCOUNT, user);
   subscribeChannel(EVENTS.ON_POSLIST, user);
   subscribeChannel(EVENTS.ON_ORDERLIST, user);
   subscribeChannel(EVENTS.ON_ORDER_RESPONSE, user);
   subscribeChannel(EVENTS.ON_RATE, user);
+  subscribeChannel(EVENTS.ON_ORDER_COMPLETE, user);
 };
 
 const unsubscribeForUser = (user) => {
-  mainLogger.info( `unsbscribing user: ${user}`);
+  mainLogger.info(`unsbscribing user: ${user}`);
   unsubscribeQueue(EVENTS.ON_PRICE_TICK, user);
   unsubscribeQueue(EVENTS.ON_ACCOUNT, user);
   unsubscribeQueue(EVENTS.ON_POSLIST, user);
   unsubscribeQueue(EVENTS.ON_ORDERLIST, user);
   unsubscribeQueue(EVENTS.ON_ORDER_RESPONSE, user);
   unsubscribeQueue(EVENTS.ON_RATE, user);
+  unsubscribeQueue(EVENTS.ON_ORDER_COMPLETE, user);
 };
 
 module.exports = {
