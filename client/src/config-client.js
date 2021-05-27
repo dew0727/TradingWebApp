@@ -1,4 +1,4 @@
-const SOCKET_ENDPOINT = "localhost:3000";
+const SOCKET_ENDPOINT = "/";
 const EVENTS = {
   ON_CONNECTION: "connection",
   ON_DISCONNECT: "disconnect",
