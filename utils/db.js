@@ -45,7 +45,8 @@ const Init = () => {
     accountStatus = accounts.map((x) => {
       return {
         name: x.name,
-        status: false,
+        status: 0,
+        master: x.master,
         time: Date.now(),
       };
     });
@@ -152,14 +153,20 @@ const UpdateAccountStatus = (name, status) => {
     if (x.name === name) {
       return {
         ...x,
-        status,
+        status: 0,
         time: curTime,
       };
     } else {
-      if (curTime - x.time >= 120 * 1000) {
+      if (curTime - x.time >= 3 * 1000) {
         return {
           ...x,
-          status: false,
+          status: 1,
+        };
+      }
+      if (curTime - x.time >= 12 * 1000) {
+        return {
+          ...x,
+          status: 2,
         };
       } else {
         return x;

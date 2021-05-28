@@ -257,21 +257,24 @@ const TradingPage = () => {
         case EVENTS.ON_STATUS:
           const account_status = JSON.parse(message);
 
+          for (const [key, value] of Object.entries(account_status)) {
+            if (value.status > 1 && (value.master !== isTrader)) {
+              openNotification(
+                "error",
+                "アカウントエラー!",
+                `${key} 死んでいる`,
+                true,
+                key
+              );
+            } else {
+              notification.close(key);
+            }
+          }
+
           setAccounts((prevState) => {
             return prevState.map((acc) => {
               if (acc.name in account_status) {
                 acc.status = account_status[acc.name];
-                if (acc.status?.status === false) {
-                  openNotification(
-                    "error",
-                    "アカウントエラー!",
-                    `${acc.name} 死んでいる`,
-                    true,
-                    acc.name
-                  );
-                } else {
-                  notification.close(acc.name);
-                }
               }
               return acc;
             });
@@ -611,8 +614,8 @@ const TradingPage = () => {
       addLog(
         type,
         (title ? title.replace("Order Response from", "") : "") +
-          " " +
-          (content ? content : "")
+        " " +
+        (content ? content : "")
       );
       if (enableNotify !== true) return;
       if (type === "Error") {

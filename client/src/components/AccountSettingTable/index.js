@@ -133,8 +133,7 @@ const AccountSettingTable = ({
       align: "center",
       editable: false,
       render: (status) => {
-        var curTime = Date.now();
-        if (curTime - status?.time >= 30 * 1000)
+        if (status?.status > 0)
           return <span className="account-status-dead">DEAD</span>;
         else return <span className="account-status-live">LIVE</span>;
       },
