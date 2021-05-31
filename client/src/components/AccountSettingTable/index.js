@@ -193,7 +193,7 @@ const AccountSettingTable = ({
                     onChangeGlobalSettings({ waitingTime: v });
                 }}
                 size={"small"}
-              />
+              /><span>ms</span>
             </div>
             <div>
               <label>Max Value: </label>
