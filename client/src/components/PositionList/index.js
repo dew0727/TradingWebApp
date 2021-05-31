@@ -28,6 +28,9 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       dataIndex: "lots",
       align: "center",
       key: "lots",
+      render: (lots) => (
+        <span>{lots ? numberWithCommas(lots * 10000) : 0}</span>
+      ),
     },
     {
       title: isDesktop ? "平均レート" : "平均..",
