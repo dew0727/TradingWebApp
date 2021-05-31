@@ -136,7 +136,6 @@ app.post("/api/add-account", (req, res) => {
   };
 
   const { success, error } = db.AddAccount(account);
-  mainLogger.info(`Logged out Failed:  ${result.email}`);
 
   res.json({
     success,
@@ -297,6 +296,7 @@ app.post("/api/order-request", (req, res) => {
   if (port !== 3000) return
   const accName = data.Account;
   const accounts = db.GetAccounts();
+  const globalSettings = db.GetGlobalSettings();
   let orderMsg = "";
 
   switch (data.Mode) {
@@ -320,10 +320,15 @@ app.post("/api/order-request", (req, res) => {
               return;
             }
 
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${data.Command
-              },${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${data.Type
-              },${acc.retryCount}`;
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+              data.Command
+            },${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${
+              data.Type
+            },${globalSettings.retryCount || 1},${
+              globalSettings.waitingTime || 0
+            }`;
 
+            db.RegsterOrderedAccount(acc.name)
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
         }
@@ -354,7 +359,10 @@ app.post("/api/order-request", (req, res) => {
           }
 
           mainLogger.info(orderMsg);
-          orderMsg = `${acc.name}@ORDER_DELETE,${data.Symbol},${acc.retryCount}`;
+          orderMsg = `${acc.name}@ORDER_DELETE,${data.Symbol},${
+            globalSettings.retryCount || 1
+          },${globalSettings.waitingTime || 0}`;
+          db.RegsterOrderedAccount(acc.name)
           rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
         }
       });
@@ -375,7 +383,11 @@ app.post("/api/order-request", (req, res) => {
               return;
             }
 
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${acc.retryCount}`;
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+              globalSettings.retryCount || 1
+            },${globalSettings.waitingTime || 0}`;
+
+            db.RegsterOrderedAccount(acc.name)
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
         });
@@ -398,7 +410,10 @@ app.post("/api/order-request", (req, res) => {
               return;
             }
 
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${acc.retryCount}`;
+            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+              globalSettings.retryCount || 1
+            },${globalSettings.waitingTime || 0}`;
+            db.RegsterOrderedAccount(acc.name)
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
         });

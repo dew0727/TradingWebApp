@@ -6,7 +6,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import { Login, TradingPage } from "./pages";
-
+import { AppProvider } from "./context";
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   return (
@@ -25,12 +25,14 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
 const AppRouter = () => {
   return (
-    <Router>
-      <Switch>
-        <PrivateRoute path="/trading" component={TradingPage} />
-        <Route path="/" exact component={() => <Login />} />
-      </Switch>
-    </Router>
+    <AppProvider>
+      <Router>
+        <Switch>
+          <PrivateRoute path="/trading" component={TradingPage} />
+          <Route path="/" exact component={() => <Login />} />
+        </Switch>
+      </Router>
+    </AppProvider>
   );
 };
 

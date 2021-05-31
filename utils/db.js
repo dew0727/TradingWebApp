@@ -12,6 +12,28 @@ let priceFeed = "";
 let users = {};
 let global = {};
 
+let orderQueue = [];
+
+const RemoveOrderedAccount = (accountName) => {
+  mainLogger.info("removing account from order queue: " + accountName);
+  return (orderQueue = orderQueue.filter((item) => item != accountName));
+};
+
+const RegsterOrderedAccount = (accountName) => {
+  mainLogger.info("regstering account to order queue: " + accountName);
+  orderQueue.push(accountName);
+};
+
+const InitOrderQueue = () => {
+  orderQueue = [];
+  mainLogger.info("Initialized order queue: ");
+  console.log('Initialized order queue')
+};
+
+const GetOrderQueueCount = () => {
+  return orderQueue.length || 0;
+};
+
 const Init = () => {
   LoadAccountsData();
   LoadPriceFeed();
@@ -202,7 +224,7 @@ const LoadGlobalData = () => {
     return {};
   }
   global = JSON.parse(sData);
-  mainLogger.info(`loaded global settings', ${global}`);
+  mainLogger.info(`loaded global settings', ${JSON.stringify(global)}`);
 };
 
 const SaveGlobalData = () => {
@@ -329,4 +351,8 @@ module.exports = {
   SetUserSettings,
   SetGlobalSettings,
   GetGlobalSettings,
+  RemoveOrderedAccount,
+  RegsterOrderedAccount,
+  GetOrderQueueCount,
+  InitOrderQueue,
 };

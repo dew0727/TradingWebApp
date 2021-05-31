@@ -5,8 +5,10 @@ import "./style.css";
 const AccountSettingTable = ({
   accounts,
   maxLots,
+  retryCount,
+  waitingTime,
   callback,
-  onChangeMaxValue,
+  onChangeGlobalSettings,
 }) => {
   const inputRef = useRef(null);
 
@@ -125,29 +127,6 @@ const AccountSettingTable = ({
       },
     },
     {
-      title: "Retry",
-      className: "column-default-lots",
-      dataIndex: "retryCount",
-      align: "center",
-      render: (text, record) => {
-        return (
-          <InputNumber
-            key={"retry-count-input-" + record.name}
-            className="account-settings-default-lots-input"
-            value={record.retryCount}
-            step={1}
-            min={1}
-            onChange={(val) => {
-              if (!isNaN(val) && val > 0) {
-                onHandleClickBasket({ accname: record.name, retryCount: val });
-              }
-            }}
-            size={"medium"}
-          />
-        );
-      },
-    },
-    {
       title: "Status",
       className: "column-default-status",
       dataIndex: "status",
@@ -162,7 +141,13 @@ const AccountSettingTable = ({
     },
   ];
 
-  const onHandleClickBasket = ({ accname, basket, defaultLots, maxVal, retryCount }) => {
+  const onHandleClickBasket = ({
+    accname,
+    basket,
+    defaultLots,
+    maxVal,
+    retryCount,
+  }) => {
     if (basket !== undefined) basket = basket === true ? false : true;
     callback({ accname, basket, defaultLots, maxVal, retryCount });
   };
@@ -171,6 +156,7 @@ const AccountSettingTable = ({
     emptyText: <span className="table-empty-message">ございません</span>,
   };
 
+  //console.log({waitingTime})
   return (
     <>
       <Table
@@ -182,6 +168,34 @@ const AccountSettingTable = ({
           <div className="position-table-title-control">
             <span>口座情報</span>
             <div>
+              <label>Retry Count: </label>
+              <InputNumber
+                className="account-settings-default-lots-input"
+                value={retryCount}
+                step={1}
+                min={1}
+                onChange={(v) => {
+                  onChangeGlobalSettings &&
+                    onChangeGlobalSettings({ retryCount: v });
+                }}
+                size={"small"}
+              />
+            </div>
+            <div>
+              <label>Waiting Time: </label>
+              <InputNumber
+                className="account-settings-default-lots-input"
+                value={waitingTime}
+                step={1}
+                min={0}
+                onChange={(v) => {
+                  onChangeGlobalSettings &&
+                    onChangeGlobalSettings({ waitingTime: v });
+                }}
+                size={"small"}
+              />
+            </div>
+            <div>
               <label>Max Value: </label>
               <InputNumber
                 className="account-settings-default-lots-input"
@@ -191,7 +205,8 @@ const AccountSettingTable = ({
                 step={1}
                 min={1}
                 onChange={(v) => {
-                  onChangeMaxValue && onChangeMaxValue(v);
+                  onChangeGlobalSettings &&
+                    onChangeGlobalSettings({ maxDefault: v });
                 }}
                 onStep={onHandleStep}
                 size={"small"}

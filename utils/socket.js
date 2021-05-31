@@ -10,6 +10,9 @@ class socket {
       return;
     }
 
+    if ('ORDER_COMPLETE_STATUS' === topic) {
+      console.log(topic, msg)
+    }
     this._io.emit(topic, msg);
   };
 }

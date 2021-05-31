@@ -16,9 +16,11 @@ import {
   Divider,
   Popconfirm,
   Switch,
+  Spin,
+  Modal,
 } from "antd";
 import CarouselComponent from "../../components/Carousel";
-import { CloseOutlined } from "@ant-design/icons";
+import { CloseOutlined, LoadingOutlined } from "@ant-design/icons";
 import createSocket from "../../socket";
 import { TradingCard } from "../../components";
 import "./style.css";
@@ -28,6 +30,9 @@ import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
 import { EVENTS } from "../../config-client";
 import { apiCall, Logout, getAuth, getCredential } from "../../utils/api";
+
+import { useApp } from "../../context";
+
 const dateFormat = require("dateformat");
 
 const { TabPane } = Tabs;
@@ -52,9 +57,14 @@ var lastResponse = "";
 var isAllowUpdate = true;
 
 const TradingPage = () => {
+  const [appState] = useApp();
+  const { server_status, setServerStatus } = appState;
+
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
   const [maxDefaultLots, setMaxDefautLots] = useState(100);
+  const [retryCount, setRetryCount] = useState(5);
+  const [waitingTime, setWaitingTime] = useState(0);
   const [curPriceFeed, setCurPriceFeed] = useState("");
   const xs = Grid.useBreakpoint()?.xs;
   const lg = Grid.useBreakpoint()?.lg;
@@ -77,6 +87,8 @@ const TradingPage = () => {
   const [symbolCount, setSymbolCount] = useState(0);
   const [symbolList, setSymbolList] = useState([]);
   const [logHistory, setlogHistory] = useState([]);
+
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   useEffect(() => {
     setSymbolCount(getSymbols(rates).length);
@@ -134,6 +146,8 @@ const TradingPage = () => {
       //return;
     }
 
+    setServerStatus("BUSY");
+    setIsOpenModal(true);
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
       if (res.success === true) {
         openNotification("Notice", "", "Server accepted request");
@@ -148,6 +162,11 @@ const TradingPage = () => {
   };
 
   const reqOrder = (order) => {
+    if (server_status === "BUSY") {
+      message.error("Server is processing orders now.");
+      return;
+    }
+
     const orderMsg = {
       ...order,
       Account: curAccount,
@@ -207,19 +226,18 @@ const TradingPage = () => {
       }
     }
 
+    if (topic === EVENTS.ON_ORDER_COMPLETE) {
+      console.log("Order finished account: ", message);
+      if (message === "IDLE") setServerStatus("IDLE");
+      return;
+    }
+
     if (isAllowUpdate) {
       switch (topic) {
         case EVENTS.ON_GLOBAL_SETTINGS:
           const globals = JSON.parse(message);
           console.log("event global settings", message);
-          if (globals["maxDefault"]) {
-            const val = parseFloat(globals.maxDefault);
-            !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
-          }
-          if (globals.feed) {
-            console.log("price feed", globals.feed);
-            setCurPriceFeed(globals.feed);
-          }
+          ApplyGlobalSettings(globals);
           break;
         case EVENTS.ON_USER_SETTINGS:
           const settings = JSON.parse(message);
@@ -439,17 +457,27 @@ const TradingPage = () => {
       if (res.success === true) {
         const globals = JSON.parse(res.data);
         console.log("retrieved global settings: ", globals);
-        if (globals.maxDefault) {
-          const val = parseFloat(globals.maxDefault);
-          !isNaN(val) && globals.maxDefault && setMaxDefautLots(val);
-        }
-
-        if (globals.feed) {
-          console.log("price feed", globals.feed);
-          setCurPriceFeed(globals.feed);
-        }
+        ApplyGlobalSettings(globals);
       }
     });
+  };
+
+  const ApplyGlobalSettings = (settings) => {
+    if (settings["maxDefault"]) {
+      const val = parseFloat(settings.maxDefault);
+      setMaxDefautLots(val);
+    }
+    if (settings["retryCount"]) {
+      const val = parseInt(settings.retryCount);
+      setRetryCount(val);
+    }
+    if ("waitingTime" in settings) {
+      const val = parseInt(settings.waitingTime);
+      setWaitingTime(val);
+    }
+    if ("feed" in settings) {
+      setCurPriceFeed(settings.feed);
+    }
   };
 
   const getAccountSettings = (user) => {
@@ -467,14 +495,14 @@ const TradingPage = () => {
     });
   };
 
-  const onChangeMaxValue = (maxVal) => {
+  const onChangeGlobalSettings = (settings) => {
     apiCall(
       "/api/update-global-setting",
-      { settings: { maxDefault: maxVal } },
+      { settings },
       "POST",
       (res, user, pass) => {
         if (res.success === true) {
-          console.log("set max default lots");
+          console.log("update global settings");
         }
       }
     );
@@ -626,6 +654,21 @@ const TradingPage = () => {
 
   return (
     <div className="traindg-home-page">
+      <Modal
+        centered
+        visible={isOpenModal && server_status === "BUSY"}
+        footer={[
+          <Button danger onClick={() => setIsOpenModal(false)}>
+            閉じる
+          </Button>,
+        ]}
+      >
+        <Spin
+          size="large"
+          tip="注文は処理中です..."
+          style={{ width: "100%" }}
+        />
+      </Modal>
       <Tabs
         onChange={updateAccountOrPriceFeed}
         type="card"
@@ -641,6 +684,13 @@ const TradingPage = () => {
               defaultFeed={curPriceFeed}
             />
           </div>
+          {server_status === "BUSY" && (
+            <Spin
+              tip="注文は処理中です..."
+              style={{ width: "100%" }}
+              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+            />
+          )}
           {xs ? (
             <CarouselComponent
               className="card-swiper-wrapper"
@@ -872,8 +922,8 @@ const TradingPage = () => {
                 callback={({ accname, basket, defaultLots, retryCount }) =>
                   onHandleAccSetting(accname, basket, defaultLots, retryCount)
                 }
-                onChangeMaxValue={onChangeMaxValue}
                 maxLots={maxDefaultLots}
+                {...{ retryCount, waitingTime, onChangeGlobalSettings }}
               />
               <Row></Row>
             </div>
