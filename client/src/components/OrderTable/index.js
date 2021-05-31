@@ -79,7 +79,7 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
     ),
   };
   return (
-    <>
+    <div className="order-list-table">
       <Table
         columns={columns}
         dataSource={orders}
@@ -102,7 +102,7 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
         pagination={false}
         locale={locale}
       />
-    </>
+    </div>
   );
 };
 

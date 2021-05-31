@@ -10,7 +10,7 @@ const { socket } = require("./utils/socket");
 const mainLogger = require("./utils/logger").mainLogger;
 
 // set config
-const port = process.env.SOCKET_PORT || 3000;
+const port = process.env.SOCKET_PORT || 3010;
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -26,6 +26,7 @@ const ipLogger = (req, res, next) => {
     data = JSON.parse(data);
 
     if (!data.login) {
+      
       const result = authenticate(data);
       mainLogger.info(
         ` >>> CLIENT_REQUEST: ${ip}, ${req.url}, ${data.role}, ${result.email}, ${req.body.body}`
@@ -121,7 +122,7 @@ app.post("/api/logout", (req, res) => {
 
 app.post("/api/add-account", (req, res) => {
   var data = req.body.body;
-
+  if (port !== 3000) return
   data = JSON.parse(data);
   var account = {
     broker: data.broker,
@@ -146,6 +147,7 @@ app.post("/api/add-account", (req, res) => {
  * Global settings
  */
 app.post("/api/update-global-setting", (req, res) => {
+  if (port !== 3000) return
   var data = req.body.body;
   data = JSON.parse(data);
   var isMaster = data.role === "master" ? true : false;
@@ -182,7 +184,7 @@ app.post("/api/update-global-setting", (req, res) => {
 
 app.post("/api/get-global-setting", (req, res) => {
   var data = req.body.body;
-
+  if (port !== 3000) return
   data = JSON.parse(data);
 
   const auth = db.GetAuthToken({ token: data.token });
@@ -208,7 +210,7 @@ app.post("/api/update-user-setting", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
   var isMaster = data.role === "master" ? true : false;
-
+  if (port !== 3000) return
   const auth = db.GetAuthToken({ token: data.token });
   if (auth.email) {
     db.SetUserSettings(auth.email, isMaster, data);
@@ -257,6 +259,7 @@ app.post("/api/get-user-setting", (req, res) => {
 app.post("/api/update-account", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
+  if (port !== 3000) return
   const account = {
     name: data.broker + data.number,
     basket: data.basket ? data.basket : false,
@@ -275,7 +278,7 @@ app.post("/api/update-account", (req, res) => {
 
 app.post("/api/delete-account", (req, res) => {
   var data = req.body.body;
-
+  if (port !== 3000) return
   data = JSON.parse(data);
 
   db.DeleteAccount(data);
@@ -290,7 +293,7 @@ app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
   var isMaster = data.role == "master" ? true : false;
-
+  if (port !== 3000) return
   const accName = data.Account;
   const accounts = db.GetAccounts();
   const globalSettings = db.GetGlobalSettings();
