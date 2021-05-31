@@ -1,7 +1,7 @@
-const SOCKET_PORT = 3000;
+const SOCKET_PORT = 3010;
 const RABBITMQ_HOST = "localhost";
-const RABBITMQ_USERNAME = "localhost";
-const RABBITMQ_PASSWORD = "localhost";
+const RABBITMQ_USERNAME = "jonas1";
+const RABBITMQ_PASSWORD = "jonas1";
 const EXCHANGE_NAME = "System.String, mscorlib";
 
 // event names
