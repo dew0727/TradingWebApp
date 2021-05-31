@@ -287,7 +287,7 @@ const processMessage = (topic, msg) => {
       if (sRsp !== "") {
         var response = {
           account: accName,
-          success: sRsp.split(",")[0] === "True",
+          success: sRsp.split(",")[0].toUpperCase() === "TRUE",
           message: sRsp.split(",")[1],
         };
         mainLogger.info(topic + ", " + JSON.stringify(response));
