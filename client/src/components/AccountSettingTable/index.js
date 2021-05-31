@@ -182,11 +182,11 @@ const AccountSettingTable = ({
               />
             </div>
             <div>
-              <label>Waiting Time: </label>
+              <label>Wait Time: </label>
               <InputNumber
                 className="account-settings-default-lots-input"
                 value={waitingTime}
-                step={1}
+                step={10}
                 min={0}
                 onChange={(v) => {
                   onChangeGlobalSettings &&
