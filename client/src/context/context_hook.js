@@ -12,9 +12,25 @@ function useApp() {
     });
   };
 
+  const setSoundStatus = (type) => {
+    appDispatch({
+      type: 'SET_SOUND',
+      type: type,
+    })
+
+    setTimeout(() => {
+      appDispatch({
+        type: 'SET_SOUND',
+        type: 'NONE'
+      })
+    }, 500)
+  }
+
   const initialData = {
     server_status: "IDLE",
+    soundType: 'NONE',
     setServerStatus,
+    setSoundStatus,
   };
 
   const appState = useAppState(initialData);

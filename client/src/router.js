@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { Login, TradingPage } from "./pages";
 import { AppProvider } from "./context";
+import SoundPlayer from './sound'
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   return (
@@ -26,6 +27,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 const AppRouter = () => {
   return (
     <AppProvider>
+      <SoundPlayer />
       <Router>
         <Switch>
           <PrivateRoute path="/trading" component={TradingPage} />

@@ -259,7 +259,10 @@ app.post("/api/get-user-setting", (req, res) => {
 app.post("/api/update-account", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
-  if (port !== 3000) return
+  if (port !== 3000) {
+    console.log('request ignoreed due to prevent testing request on live acounts')
+    return
+  }
   const account = {
     name: data.broker + data.number,
     basket: data.basket ? data.basket : false,
@@ -293,7 +296,10 @@ app.post("/api/order-request", (req, res) => {
   var data = req.body.body;
   data = JSON.parse(data);
   var isMaster = data.role == "master" ? true : false;
-  if (port !== 3000) return
+  if (port !== 3000) {
+    console.log('request ignoreed due to prevent testing request on live acounts')
+    return
+  }
   const accName = data.Account;
   const accounts = db.GetAccounts();
   const globalSettings = db.GetGlobalSettings();

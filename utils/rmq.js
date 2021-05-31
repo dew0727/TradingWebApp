@@ -49,6 +49,12 @@ const whenConnected = (chan) => {
 
 const publishMessage = (topic, sMsg) => {
   mainLogger.info(`publish msg:  ${topic}, ${sMsg}`);
+
+  if (config.port !== 3000) {
+    console.log('the port is testing prot. so skip publish', topic, sMsg)
+    return;
+  }
+
   channel.publish(exchange, topic, Buffer.from('"' + sMsg + '"'), {
     deliveryMode: 2,
     type: exchange,

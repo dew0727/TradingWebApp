@@ -1,5 +1,6 @@
 export const initialState = {
-    server_status: 'IDLE'
+    server_status: 'IDLE',
+    soundType: 'NONE',
   }
   
   function reducer(state = initialState, action = {}) {
@@ -8,6 +9,13 @@ export const initialState = {
         return {
           ...state,
           server_status: action.server_status,
+        }
+      }
+
+      case 'SET_SOUND': {
+        return {
+          ...state,
+          soundType: action.soundType
         }
       }
   

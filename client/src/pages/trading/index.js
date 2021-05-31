@@ -31,7 +31,7 @@ import AccountSettingTable from "../../components/AccountSettingTable";
 import { EVENTS } from "../../config-client";
 import { apiCall, Logout, getAuth, getCredential } from "../../utils/api";
 
-import { useApp } from "../../context";
+import { useApp, useAppDispatch } from "../../context";
 
 const dateFormat = require("dateformat");
 
@@ -58,7 +58,7 @@ var isAllowUpdate = true;
 
 const TradingPage = () => {
   const [appState] = useApp();
-  const { server_status, setServerStatus } = appState;
+  const { server_status, setServerStatus, setSoundStatus } = appState;
 
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
@@ -589,6 +589,9 @@ const TradingPage = () => {
     needConfirm = false,
     modalKey = null
   ) => {
+
+    // setSoundStatus('ON_CLICK');
+
     if (needConfirm) {
       const key = modalKey;
       const btn = (
