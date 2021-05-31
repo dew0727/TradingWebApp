@@ -57,7 +57,7 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
       title: "削除",
       className: "limit-order-delete",
       align: "center",
-      render: (order) => (
+      render: (order, record) => (
         <Button
           disabled={server_status === "BUSY"}
           type="primary"
@@ -66,7 +66,7 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
           icon={<CloseOutlined />}
           onClick={(e) => {
             console.log(order.ticket);
-            reqDelOrder(order.account, order.ticket);
+            reqDelOrder(order.account, order.ticket, record.symbol);
           }}
         />
       ),

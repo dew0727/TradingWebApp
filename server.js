@@ -325,7 +325,7 @@ app.post("/api/order-request", (req, res) => {
               globalSettings.waitingTime || 0
             }`;
 
-            db.RegsterOrderedAccount(acc.name)
+            db.RegsterOrderedAccount(acc.name);
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
         }
@@ -354,12 +354,13 @@ app.post("/api/order-request", (req, res) => {
           if (!isMaster && acc.name !== accName && !acc.master) {
             return;
           }
-
-          mainLogger.info(orderMsg);
-          orderMsg = `${acc.name}@ORDER_DELETE,${data.Symbol},${
+          orderMsg = `${acc.name}@ORDER_DELETE,${
+            acc.master ? "NONE" : data.Ticket
+          },${acc.master ? data.Symbol + "," : ""}${
             globalSettings.retryCount || 1
           },${globalSettings.waitingTime || 0}`;
-          db.RegsterOrderedAccount(acc.name)
+          mainLogger.info(orderMsg);
+          db.RegsterOrderedAccount(acc.name);
           rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
         }
       });
@@ -384,7 +385,7 @@ app.post("/api/order-request", (req, res) => {
               globalSettings.retryCount || 1
             },${globalSettings.waitingTime || 0}`;
 
-            db.RegsterOrderedAccount(acc.name)
+            db.RegsterOrderedAccount(acc.name);
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
         });
@@ -410,7 +411,7 @@ app.post("/api/order-request", (req, res) => {
             orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
               globalSettings.retryCount || 1
             },${globalSettings.waitingTime || 0}`;
-            db.RegsterOrderedAccount(acc.name)
+            db.RegsterOrderedAccount(acc.name);
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
         });

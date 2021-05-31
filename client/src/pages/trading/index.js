@@ -894,11 +894,12 @@ const TradingPage = () => {
               <div className="trading-table-wrapper">
                 <OrderTable
                   orders={parseOrderList()}
-                  reqDelOrder={(acc, ticket) => {
+                  reqDelOrder={(acc, ticket, symbol) => {
                     requestOrderApi({
                       Account: acc,
                       Mode: "ORDER_DELETE",
-                      Symbol: ticket,
+                      Symbol: symbol,
+                      Ticket: ticket,
                     });
                   }}
                   onClickOrderCloseAll={() => {
