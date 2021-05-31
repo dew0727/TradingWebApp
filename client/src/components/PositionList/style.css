@@ -6,3 +6,7 @@
 .position-close {
     max-width: 50px !important;
 }
+
+.position-list-table .ant-table {
+    font-size: 18px !important;
+}

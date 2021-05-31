@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Table, Grid } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
+import { numberWithCommas } from '../../utils'
 import "./style.css";
 
 import { useApp } from "../../context";
@@ -34,36 +35,43 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       dataIndex: "open_price",
       align: "center",
       key: "open_price",
+      render: (text, record) => {
+        const point = record.symbol?.toUpperCase().includes("JPY") ? 3 : 5;
+        return <span>{parseFloat(text).toFixed(point)}</span>
+      }
     },
-/*     {
-      title: isDesktop ? "評価レート" : "評価",
-      className: "column-current-price",
-      dataIndex: "current_price",
-      align: "center",
-      key: "current_price",
-    }, */
-/*     {
-      title: "損益",
-      className: "column-profit",
-      dataIndex: "profit",
-      align: "center",
-      key: "profit",
-      render: (profit) => profit.toFixed(0),
-    }, */
-/*     {
-      title: isDesktop ? "スワップ" : "スワ..",
-      className: "columnswap",
-      dataIndex: "swap",
-      align: "center",
-      key: "swap",
-      render: (swap) => swap.toFixed(0),
-    }, */
+    /*     {
+          title: isDesktop ? "評価レート" : "評価",
+          className: "column-current-price",
+          dataIndex: "current_price",
+          align: "center",
+          key: "current_price",
+        }, */
+    /*     {
+          title: "損益",
+          className: "column-profit",
+          dataIndex: "profit",
+          align: "center",
+          key: "profit",
+          render: (profit) => profit.toFixed(0),
+        }, */
+    /*     {
+          title: isDesktop ? "スワップ" : "スワ..",
+          className: "columnswap",
+          dataIndex: "swap",
+          align: "center",
+          key: "swap",
+          render: (swap) => swap.toFixed(0),
+        }, */
     {
       title: isDesktop ? "損益合計" : "損益..",
       className: "column-total-profit",
       dataIndex: "total_profit",
       align: "center",
       key: "total_profit",
+      render: (total_profit) => (
+        <span>{total_profit ? numberWithCommas(total_profit) : 0}</span>
+      ),
     },
     {
       title: isDesktop ? "口座" : "口座",
