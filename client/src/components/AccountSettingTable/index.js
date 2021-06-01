@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
-import { Table, InputNumber, Grid } from "antd";
+import { Table, Grid } from "antd";
+import InputBox from '../InputBox'
 import "./style.css";
 
 const AccountSettingTable = ({
@@ -109,7 +110,7 @@ const AccountSettingTable = ({
       align: "center",
       render: (text, record) => {
         return (
-          <InputNumber
+          <InputBox
             key={"default-lots-input-" + record.name}
             className="account-settings-default-lots-input"
             value={record.default}
@@ -169,7 +170,7 @@ const AccountSettingTable = ({
             <span>口座情報</span>
             <div>
               <label>Retry Count: </label>
-              <InputNumber
+              <InputBox
                 className="account-settings-default-lots-input"
                 value={retryCount}
                 step={1}
@@ -183,7 +184,7 @@ const AccountSettingTable = ({
             </div>
             <div>
               <label>Wait Time: </label>
-              <InputNumber
+              <InputBox
                 className="account-settings-default-lots-input"
                 value={waitingTime}
                 step={10}
@@ -198,7 +199,7 @@ const AccountSettingTable = ({
             </div>
             <div>
               <label>Max Value: </label>
-              <InputNumber
+              <InputBox
                 className="account-settings-default-lots-input"
                 ref={inputRef}
                 defaultValue={100}
