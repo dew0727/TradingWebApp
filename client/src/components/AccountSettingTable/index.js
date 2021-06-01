@@ -25,7 +25,7 @@ const AccountSettingTable = ({
       defaultSortOrder: "ascend",
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
-    {
+    /* {
       title: "残高",
       className: "column-balance",
       dataIndex: "balance",
@@ -37,7 +37,7 @@ const AccountSettingTable = ({
               .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
-    },
+    }, */
     {
       title: isDesktop ? "マージン" : "マー..",
       className: "column-margin",
@@ -193,7 +193,8 @@ const AccountSettingTable = ({
                     onChangeGlobalSettings({ waitingTime: v });
                 }}
                 size={"small"}
-              /><span>ms</span>
+              />
+              <span>ms</span>
             </div>
             <div>
               <label>Max Value: </label>
