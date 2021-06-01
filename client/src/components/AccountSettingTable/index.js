@@ -168,7 +168,7 @@ const AccountSettingTable = ({
         title={() => (
           <div className="position-table-title-control">
             <span>口座情報</span>
-            <div>
+            {/* <div>
               <label>Retry Count: </label>
               <InputBox
                 className="account-settings-default-lots-input"
@@ -196,7 +196,7 @@ const AccountSettingTable = ({
                 size={"small"}
               />
               <span>ms</span>
-            </div>
+            </div> */}
             <div>
               <label>Max Value: </label>
               <InputBox
