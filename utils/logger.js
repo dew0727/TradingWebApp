@@ -7,7 +7,7 @@ const mainLogger = createLogger({
   level: "info",
   format: format.combine(
     format.timestamp(),
-    format.timestamp({format:'MM/DD/YYYY hh:mm:ss.SSS'}),
+    format.timestamp({format:'MM/DD/YYYY HH:mm:ss.SSS'}),
     format.printf((info) => {
       return `${info.timestamp} : ${info.message}`;
     })
