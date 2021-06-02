@@ -542,11 +542,11 @@ const TradingPage = () => {
       const val = parseInt(settings.retryCount);
       setRetryCount(val);
     }
-    if ("waitingTime" in settings) {
+    if (settings["waitingTime"]) {
       const val = parseInt(settings.waitingTime);
       setWaitingTime(val);
     }
-    if ("feed" in settings) {
+    if (settings.feed) {
       setCurPriceFeed(settings.feed);
     }
   };
@@ -574,6 +574,7 @@ const TradingPage = () => {
       (res, user, pass) => {
         if (res.success === true) {
           console.log("update global settings");
+          ApplyGlobalSettings(res.data)
         }
       }
     );
