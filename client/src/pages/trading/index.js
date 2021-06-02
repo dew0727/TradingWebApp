@@ -59,7 +59,7 @@ var isAllowUpdate = true;
 
 const TradingPage = () => {
   const [appState] = useApp();
-  const { server_status, setServerStatus } = appState;
+  const { server_status, setServerStatus, playSound } = appState;
 
   const [curBroker, setcurBroker] = useState("");
   const [curAccount, setCurAccount] = useState("Basket");
@@ -217,6 +217,8 @@ const TradingPage = () => {
       //return;
     }
 
+    playSound('REQUEST_ORDER')
+
     setServerStatus("BUSY");
     setIsOpenModal(true);
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
@@ -234,6 +236,7 @@ const TradingPage = () => {
 
   const reqOrder = (order) => {
     if (server_status === "BUSY") {
+      playSound('NOTIFY')
       message.error("Server is processing orders now.");
       return;
     }
@@ -245,6 +248,7 @@ const TradingPage = () => {
 
     if (order.Mode === "ORDER_CLOSE_ALL") {
       if (parsePosList() === undefined || parsePosList().length < 1) {
+        playSound('NOTIFY')
         message.error("対象の建玉はございません");
         return;
       }
@@ -567,6 +571,7 @@ const TradingPage = () => {
   };
 
   const onChangeGlobalSettings = (settings) => {
+    playSound('UPDATE_SETTING')
     apiCall(
       "/api/update-global-setting",
       { settings },
@@ -574,13 +579,14 @@ const TradingPage = () => {
       (res, user, pass) => {
         if (res.success === true) {
           console.log("update global settings");
-          ApplyGlobalSettings(res.data)
+          ApplyGlobalSettings(res.data);
         }
       }
     );
   };
 
   const onHandleAccSetting = ({ accname, type, value }) => {
+    playSound('UPDATE_SETTING')
     if (accname === undefined) return;
     const account = getAccountByName(accname);
 
@@ -611,6 +617,7 @@ const TradingPage = () => {
       }
       case "alias": {
         account.alias = value;
+        sMsg += ` alias name is set ${value}`;
         break;
       }
       case "maxSize": {
@@ -625,7 +632,7 @@ const TradingPage = () => {
       //console.log("Master can only access master accounts");
       return;
     }
-
+    
     apiCall("/api/update-account", account, "POST", (res, user, pass) => {
       if (res.success === true) {
         setAccounts((prevState) => {
@@ -702,6 +709,7 @@ const TradingPage = () => {
           (content ? content : "")
       );
       if (enableNotify !== true) return;
+      playSound('NOTIFY')
       if (type === "Error") {
         notification.error({
           message: title,
@@ -943,6 +951,7 @@ const TradingPage = () => {
                       parsePosList() === undefined ||
                       parsePosList().length < 1
                     ) {
+                      playSound('NOTIFY')
                       message.error("対象の建玉はございません");
                       return;
                     }
@@ -962,6 +971,7 @@ const TradingPage = () => {
                       parsePosList() === undefined ||
                       parsePosList().length < 1
                     ) {
+                      playSound('NOTIFY')
                       message.error("対象の建玉はございません");
                       return;
                     }
@@ -1105,7 +1115,7 @@ const TradingPage = () => {
             </div>
           </Row>
           <Row justify="center">
-            <div style={{margin: '1vw'}}>
+            <div style={{ margin: "1vw" }}>
               <label>Retry Count: </label>
               <InputBox
                 className="account-settings-default-lots-input"
@@ -1119,7 +1129,7 @@ const TradingPage = () => {
                 size={"small"}
               />
             </div>
-            <div style={{margin: '1vw'}}>
+            <div style={{ margin: "1vw" }}>
               <label>Wait Time: </label>
               <InputBox
                 className="account-settings-default-lots-input"

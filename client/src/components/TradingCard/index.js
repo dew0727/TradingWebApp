@@ -45,7 +45,7 @@ const TradingCard = ({
   isMobile = false,
 }) => {
   const [useAppState] = useApp();
-  const { server_status } = useAppState;
+  const { server_status, playSound } = useAppState;
   const [curSym, setcurSym] = useState();
   const [orderType, setorderType] = useState("MARKET");
   const [orderContent, setOrderContent] = useState({
@@ -244,6 +244,7 @@ const TradingCard = ({
             className="btn-control"
             size={isMobile ? "large" : "middle"}
             onClick={() => {
+              playSound('button')
               newSignal(ORDER_MODE.CLOSE_ALL, "", 0);
             }}
           >
@@ -259,6 +260,7 @@ const TradingCard = ({
             className="command-header-bid"
             size={isMobile ? "large" : "middle"}
             onClick={() => {
+              playSound('button')
               newSignal(ORDER_MODE.OPEN, COMMAND.SELL, bid);
             }}
           >
@@ -272,6 +274,7 @@ const TradingCard = ({
             size={isMobile ? "large" : "middle"}
             className="command-header-ask"
             onClick={() => {
+              playSound('button')
               newSignal(ORDER_MODE.OPEN, COMMAND.BUY, ask);
             }}
           >
@@ -300,6 +303,7 @@ const TradingCard = ({
             <Button
               size={isMobile ? "large" : "middle"}
               onClick={(e) => {
+                playSound('button')
                 reset();
               }}
             >
@@ -313,6 +317,7 @@ const TradingCard = ({
               block
               size={isMobile ? "large" : "small"}
               onClick={() => {
+                playSound('button')
                 setOrderLots(0.1, 1);
               }}
             >
@@ -324,6 +329,7 @@ const TradingCard = ({
               block
               size={isMobile ? "large" : "small"}
               onClick={() => {
+                playSound('button')
                 setOrderLots(0.2, 1);
               }}
             >
@@ -335,6 +341,7 @@ const TradingCard = ({
               block
               size={isMobile ? "large" : "small"}
               onClick={() => {
+                playSound('button')
                 setOrderLots(0.5, 1);
               }}
             >
@@ -346,6 +353,7 @@ const TradingCard = ({
               block
               size={isMobile ? "large" : "small"}
               onClick={() => {
+                playSound('button')
                 setOrderLots(1, 1);
               }}
             >
@@ -357,6 +365,7 @@ const TradingCard = ({
               block
               size={isMobile ? "large" : "small"}
               onClick={() => {
+                playSound('button')
                 setOrderLots(2, 1);
               }}
             >
@@ -373,6 +382,7 @@ const TradingCard = ({
               size={isMobile ? "large" : "middle"}
               type={orderType === "MARKET" ? "primary" : "default"}
               onClick={() => {
+                playSound('button')
                 setorderType("MARKET");
                 setOrderContent({
                   ...orderContent,
@@ -389,6 +399,7 @@ const TradingCard = ({
               block
               type={orderType === "LIMIT" ? "primary" : "default"}
               onClick={() => {
+                playSound('button')
                 setorderType("LIMIT");
                 setOrderContent({
                   ...orderContent,
@@ -405,6 +416,7 @@ const TradingCard = ({
               size={isMobile ? "large" : "middle"}
               type={orderType === "STOP" ? "danger" : "default"}
               onClick={() => {
+                playSound('button')
                 setorderType("STOP");
                 setOrderContent({
                   ...orderContent,
@@ -423,6 +435,7 @@ const TradingCard = ({
               step={"0." + "0".repeat(point - 1) + "1"}
               value={orderContent.price}
               onClick={(e) => {
+                playSound('button')
                 setOrderContent({
                   ...orderContent,
                   price: bid,
