@@ -289,10 +289,13 @@ const processMessage = (topic, msg) => {
       var sRsp = msg.split("@")[1];
 
       var accounts = db.GetAccounts();
-      if (!accounts.some((acc) => acc.name === accName)) return;
+      const respAcc = accounts.find(acc => acc.name === accName)
+      if (!respAcc) return;
+
       if (sRsp !== "") {
         var response = {
           account: accName,
+          alias: respAcc.alias || '',
           success: sRsp.split(",")[0].toUpperCase() === "TRUE",
           message: sRsp.split(",")[1],
         };

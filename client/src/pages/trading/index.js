@@ -431,13 +431,13 @@ const TradingPage = () => {
           if (response.success) {
             openNotification(
               "Order",
-              `Order Response from ${response.account}`,
+              `Order Response from ${response.alias} (${response.account})`,
               response.message
             );
           } else {
             openNotification(
               "Error",
-              `Order Response from ${response.account}`,
+              `Order Response from ${response.alias} (${response.account})`,
               response.message
             );
           }
