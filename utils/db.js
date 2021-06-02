@@ -62,7 +62,9 @@ const UpdateAccount = (account) => {
   if (prev) {
     prev.basket = account.basket;
     prev.default = account.default;
-    prev.retryCount = account.retryCount;
+    prev.orderDelay = account.orderDelay;
+    prev.alias = account.alias;
+    prev.maxSize = account.maxSize;
 
     accounts = accounts.map((acc) => {
       return acc.name === account.name ? prev : acc;

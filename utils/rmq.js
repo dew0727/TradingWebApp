@@ -149,7 +149,7 @@ const processMessage = (topic, msg) => {
       db.UpdateAccountStatus(accName, true);
       var items = msg.split("@")[1].split(",");
 
-      var account = db.GetAccount(accName);
+      const account = db.GetAccount(accName);
       if (account === undefined) return;
 
       var statusAll = db.GetAccountStatusAll();
@@ -184,7 +184,8 @@ const processMessage = (topic, msg) => {
       var sContent = msg.split("@")[1];
 
       var accounts = db.GetAccounts();
-      if (!accounts.some((acc) => acc.name === accName)) return;
+      const posAcc = accounts.find(acc => acc.name === accName)
+      if (!posAcc) return;
 
       if (sContent === "") {
         var data = { account: accName, positions: [] };
@@ -217,6 +218,7 @@ const processMessage = (topic, msg) => {
           swap,
           total_profit: total_profit.toFixed(0),
           account: accName,
+          alias: posAcc.alias || ''
         };
 
         positions.push(position);
@@ -237,7 +239,8 @@ const processMessage = (topic, msg) => {
       var sContent = msg.split("@")[1];
 
       var accounts = db.GetAccounts();
-      if (!accounts.some((acc) => acc.name === accName)) return;
+      const orderAcc = accounts.find(acc => acc.name === accName)
+      if (!orderAcc) return;
 
       if (sContent === "") {
         var data = {
@@ -267,6 +270,7 @@ const processMessage = (topic, msg) => {
           open_price,
           command,
           account: accName,
+          alias: orderAcc.alias,
         };
 
         orders.push(order);

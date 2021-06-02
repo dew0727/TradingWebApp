@@ -52,6 +52,13 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
       align: "center",
       key: "account",
       sorter: (a, b) => a.account.localeCompare(b.account),
+      render: (text, record) => {
+        if (record.alias && record.alias.length > 0) {
+          return record.alias
+        } else {
+          return text
+        }
+      }
     },
     {
       title: "削除",

@@ -6,8 +6,6 @@ import "./style.css";
 const AccountSettingTable = ({
   accounts,
   maxLots,
-  retryCount,
-  waitingTime,
   callback,
   onChangeGlobalSettings,
 }) => {
@@ -19,6 +17,13 @@ const AccountSettingTable = ({
       align: "center",
       defaultSortOrder: "ascend",
       sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (text, record) => {
+        if (record.alias && record.alias.length > 0) {
+          return record.alias
+        } else {
+          return text
+        }
+      }
     },
     /* {
       title: "残高",
@@ -82,9 +87,10 @@ const AccountSettingTable = ({
         return (
           <div
             onClick={() => {
-              onHandleClickBasket({
+              callback({
                 accname: record.name,
-                basket: record.basket,
+                type: 'basket',
+                value: !record.basket,
               });
             }}
           >
@@ -113,7 +119,7 @@ const AccountSettingTable = ({
             max={maxLots}
             onChange={(val) => {
               if (!isNaN(val) && val >= 0) {
-                onHandleClickBasket({ accname: record.name, defaultLots: val });
+                callback({ accname: record.name, type: "defaultLots", value: val });
               }
             }}
             size="middle"
@@ -136,17 +142,6 @@ const AccountSettingTable = ({
     },
   ];
 
-  const onHandleClickBasket = ({
-    accname,
-    basket,
-    defaultLots,
-    maxVal,
-    retryCount,
-  }) => {
-    if (basket !== undefined) basket = basket === true ? false : true;
-    callback({ accname, basket, defaultLots, maxVal, retryCount });
-  };
-
   let locale = {
     emptyText: <span className="table-empty-message">ございません</span>,
   };
@@ -162,35 +157,6 @@ const AccountSettingTable = ({
         title={() => (
           <div className="position-table-title-control">
             <span>口座情報</span>
-            {/* <div>
-              <label>Retry Count: </label>
-              <InputBox
-                className="account-settings-default-lots-input"
-                value={retryCount}
-                step={1}
-                min={1}
-                onChange={(v) => {
-                  onChangeGlobalSettings &&
-                    onChangeGlobalSettings({ retryCount: v });
-                }}
-                size={"small"}
-              />
-            </div>
-            <div>
-              <label>Wait Time: </label>
-              <InputBox
-                className="account-settings-default-lots-input"
-                value={waitingTime}
-                step={10}
-                min={0}
-                onChange={(v) => {
-                  onChangeGlobalSettings &&
-                    onChangeGlobalSettings({ waitingTime: v });
-                }}
-                size={"small"}
-              />
-              <span>ms</span>
-            </div> */}
             <div>
               <label>Max Value: </label>
               <InputBox

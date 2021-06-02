@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Table, Grid } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { numberWithCommas } from '../../utils'
+import { numberWithCommas } from "../../utils";
 import "./style.css";
 
 import { useApp } from "../../context";
@@ -40,8 +40,8 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       key: "open_price",
       render: (text, record) => {
         const point = record.symbol?.toUpperCase().includes("JPY") ? 3 : 5;
-        return <span>{parseFloat(text).toFixed(point)}</span>
-      }
+        return <span>{parseFloat(text).toFixed(point)}</span>;
+      },
     },
     /*     {
           title: isDesktop ? "評価レート" : "評価",
@@ -82,6 +82,13 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       align: "center",
       key: "account",
       sorter: (a, b) => a.account.localeCompare(b.account),
+      render: (text, record) => {
+        if (record.alias && record.alias.length > 0) {
+          return record.alias;
+        } else {
+          return text;
+        }
+      },
     },
     {
       title: "削除",

@@ -111,8 +111,20 @@ const TradingPage = () => {
       dataIndex: "alias",
       align: "left",
       key: "alias",
-      render: (text) => {
-        return <InputBox type="text" value={text} />;
+      render: (text, record) => {
+        return (
+          <InputBox
+            type="text"
+            value={text}
+            onChange={(val) => {
+              onHandleAccSetting({
+                accname: record.name,
+                type: "alias",
+                value: val,
+              });
+            }}
+          />
+        );
       },
     },
     {
@@ -127,7 +139,13 @@ const TradingPage = () => {
             value={text}
             step={10000}
             min={0}
-            onChange={(val) => {}}
+            onChange={(val) => {
+              onHandleAccSetting({
+                accname: record.name,
+                type: "maxSize",
+                value: val,
+              });
+            }}
           />
         );
       },
@@ -146,7 +164,13 @@ const TradingPage = () => {
             value={text}
             step={10}
             min={0}
-            onChange={(val) => {}}
+            onChange={(val) => {
+              onHandleAccSetting({
+                accname: record.name,
+                type: "orderDelay",
+                value: val,
+              });
+            }}
           />
         );
       },
@@ -555,7 +579,7 @@ const TradingPage = () => {
     );
   };
 
-  const onHandleAccSetting = (accname, basket, defaultLots, retryCount) => {
+  const onHandleAccSetting = ({ accname, type, value }) => {
     if (accname === undefined) return;
     const account = getAccountByName(accname);
 
@@ -565,20 +589,35 @@ const TradingPage = () => {
       account.name === "All"
     )
       return;
+
     let sMsg = `${account.name} `;
-    if (basket !== undefined) {
-      account.basket = basket;
-      sMsg += " basket turned " + (basket ? "on" : "off");
-    }
 
-    if (defaultLots !== undefined) {
-      account.default = defaultLots;
-      sMsg += ` default value is ${defaultLots}`;
-    }
-
-    if (!isNaN(retryCount)) {
-      account.retryCount = retryCount;
-      sMsg += " retry count is " + retryCount;
+    switch (type) {
+      case "basket": {
+        account.basket = value;
+        sMsg += " basket turned " + (value ? "on" : "off");
+        break;
+      }
+      case "defaultLots": {
+        account.default = value;
+        sMsg += ` default value is ${value}`;
+        break;
+      }
+      case "orderDelay": {
+        account.orderDelay = value;
+        sMsg += ` orderDelay value set as ${value}`;
+        break;
+      }
+      case "alias": {
+        account.alias = value;
+        break;
+      }
+      case "maxSize": {
+        account.maxSize = value;
+        sMsg += ` max size is ${value}`;
+        break;
+      }
+      default:
     }
 
     if (!isTrader && !masterAccounts.hasOwnProperty(account.name)) {
@@ -967,11 +1006,9 @@ const TradingPage = () => {
             <div className="trading-table-wrapper account-setting-table-log-history">
               <AccountSettingTable
                 accounts={getAccounts()}
-                callback={({ accname, basket, defaultLots, retryCount }) =>
-                  onHandleAccSetting(accname, basket, defaultLots, retryCount)
-                }
+                callback={onHandleAccSetting}
                 maxLots={maxDefaultLots}
-                {...{ retryCount, waitingTime, onChangeGlobalSettings }}
+                {...{ onChangeGlobalSettings }}
               />
               <Row></Row>
             </div>
@@ -1064,6 +1101,37 @@ const TradingPage = () => {
                   locale={locale}
                 />
               </div>
+            </div>
+          </Row>
+          <Row justify="center">
+            <div style={{margin: '1vw'}}>
+              <label>Retry Count: </label>
+              <InputBox
+                className="account-settings-default-lots-input"
+                value={retryCount}
+                step={1}
+                min={1}
+                onChange={(v) => {
+                  onChangeGlobalSettings &&
+                    onChangeGlobalSettings({ retryCount: v });
+                }}
+                size={"small"}
+              />
+            </div>
+            <div style={{margin: '1vw'}}>
+              <label>Wait Time: </label>
+              <InputBox
+                className="account-settings-default-lots-input"
+                value={waitingTime}
+                step={10}
+                min={0}
+                onChange={(v) => {
+                  onChangeGlobalSettings &&
+                    onChangeGlobalSettings({ waitingTime: v });
+                }}
+                size={"small"}
+              />
+              <span>ms</span>
             </div>
           </Row>
           <div className="log-history-row-wrapper">

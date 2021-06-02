@@ -74,9 +74,9 @@ socket.setIo(io);
 const EVENTS = config.EVENTS;
 
 io.on(EVENTS.ON_CONNECTION, (socket) => {
-  mainLogger.info("Socket User connected");
+  // mainLogger.info("Socket User connected");
   socket.on(EVENTS.ON_DISCONNECT, () => {
-    mainLogger.info("Socket User Disconnected");
+    // mainLogger.info("Socket User Disconnected");
   });
 });
 
@@ -260,9 +260,6 @@ app.post("/api/update-account", (req, res) => {
   data = JSON.parse(data);
   const account = {
     name: data.broker + data.number,
-    basket: data.basket ? data.basket : false,
-    default: data.default ? data.default : 1,
-    retryCount: data.retryCount ? data.retryCount : 1,
     ...data,
   };
 
