@@ -709,8 +709,8 @@ const TradingPage = () => {
       addLog(
         type,
         (title ? title.replace("Order Response from", "") : "") +
-          " " +
-          (content ? content : "")
+        " " +
+        (content ? content : "")
       );
       if (enableNotify !== true) return;
       playSound("NOTIFY");
@@ -1116,7 +1116,7 @@ const TradingPage = () => {
                   locale={locale}
                 />
                 <Row justify="center">
-                  <div style={{ margin: "1vw" }}>
+                  <div style={{ margin: "10px" }}>
                     <label>Retry Count: </label>
                     <InputBox
                       className="account-settings-default-lots-input"
@@ -1127,21 +1127,21 @@ const TradingPage = () => {
                         onChangeGlobalSettings &&
                           onChangeGlobalSettings({ retryCount: v });
                       }}
-                      size={"small"}
+                      size="large"
                     />
                   </div>
-                  <div style={{ margin: "1vw" }}>
+                  <div style={{ margin: "10px" }}>
                     <label>Wait Time: </label>
                     <InputBox
                       className="account-settings-default-lots-input"
                       value={waitingTime}
                       step={10}
                       min={0}
+                      size="large"
                       onChange={(v) => {
                         onChangeGlobalSettings &&
                           onChangeGlobalSettings({ waitingTime: v });
                       }}
-                      size={"small"}
                     />
                     <span>ms</span>
                   </div>
