@@ -1,6 +1,7 @@
 import React from "react";
 import { Table, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
+import { numberWithCommas } from "../../utils";
 import "./style.css";
 
 import { useApp } from "../../context";
@@ -37,6 +38,9 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
       align: "center",
       key: "lots",
       defaultSortOrder: "ascend",
+      render: (lots) => (
+        <span>{lots ? numberWithCommas(lots * 10000) : 0}</span>
+      ),
     },
     {
       title: "評価レート",
