@@ -3,17 +3,13 @@ import useAppDispatch from "./dispatch_hook";
 import useAppState from "./state_hook";
 
 // loading sounds
-import buttonClickSfx0 from "../sounds/button_click_0.wav";
-import buttonDisabledSfx1 from "../sounds/button_disabled_0.wav";
-import alertSfx0 from "../sounds/sweetalert.wav";
-import notificationSfx0 from '../sounds/notification-sound.mp3'
+import successSfx from "../sounds/sweetalert.wav";
+import failedSfx from "../sounds/notification-sound.mp3";
 
 // Mapping queries
 function useApp() {
-  const [playButton0] = useSound(buttonClickSfx0);
-  const [playDisableBtn] = useSound(buttonDisabledSfx1);
-  const [playAlert] = useSound(alertSfx0);
-  const [playNotification] = useSound(notificationSfx0)
+  const [playSuccess] = useSound(successSfx);
+  const [playFailed] = useSound(failedSfx);
 
   const appDispatch = useAppDispatch();
 
@@ -26,26 +22,12 @@ function useApp() {
 
   const playSound = (type) => {
     switch (type) {
-      case "button": {
-        playDisableBtn();
+      case "ERROR":
+        playFailed();
         break;
-      }
-      case "UPDATE_SETTING": {
-        playButton0();
-        break;
-      }
-
-      case "REQUEST_ORDER": {
-        playAlert();
-        break;
-      }
-
-      case 'NOTIFY':
-      playNotification()
-      break
 
       default:
-        playButton0();
+        playSuccess();
     }
   };
 

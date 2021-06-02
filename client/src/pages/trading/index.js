@@ -221,8 +221,6 @@ const TradingPage = () => {
       //return;
     }
 
-    playSound("REQUEST_ORDER");
-
     setServerStatus("BUSY");
     setIsOpenModal(true);
     apiCall("/api/order-request", reqMsg, "POST", (res) => {
@@ -240,7 +238,6 @@ const TradingPage = () => {
 
   const reqOrder = (order) => {
     if (server_status === "BUSY") {
-      playSound("NOTIFY");
       message.error("Server is processing orders now.");
       return;
     }
@@ -252,7 +249,6 @@ const TradingPage = () => {
 
     if (order.Mode === "ORDER_CLOSE_ALL") {
       if (parsePosList() === undefined || parsePosList().length < 1) {
-        playSound("NOTIFY");
         message.error("対象の建玉はございません");
         return;
       }
@@ -419,7 +415,6 @@ const TradingPage = () => {
           lastResponse = message;
 
           var response = JSON.parse(message);
-          console.log(response);
           if (
             isTrader === true &&
             masterAccounts.hasOwnProperty(response.account)
@@ -428,18 +423,13 @@ const TradingPage = () => {
             return;
           }
 
+          const notifyMsg = `Order Response from ${response.alias} (${response.account})`;
           if (response.success) {
-            openNotification(
-              "Order",
-              `Order Response from ${response.alias} (${response.account})`,
-              response.message
-            );
+            if (notifyMsg.toUpperCase().includes("SAXO")) playSound();
+            openNotification("Order", notifyMsg, response.message);
           } else {
-            openNotification(
-              "Error",
-              `Order Response from ${response.alias} (${response.account})`,
-              response.message
-            );
+            if (notifyMsg.toUpperCase().includes("SAXO")) playSound("ERROR");
+            openNotification("Error", notifyMsg, response.message);
           }
           break;
         default:
@@ -575,7 +565,6 @@ const TradingPage = () => {
   };
 
   const onChangeGlobalSettings = (settings) => {
-    playSound("UPDATE_SETTING");
     apiCall(
       "/api/update-global-setting",
       { settings },
@@ -590,7 +579,6 @@ const TradingPage = () => {
   };
 
   const onHandleAccSetting = ({ accname, type, value }) => {
-    playSound("UPDATE_SETTING");
     if (accname === undefined) return;
     const account = getAccountByName(accname);
 
@@ -709,11 +697,11 @@ const TradingPage = () => {
       addLog(
         type,
         (title ? title.replace("Order Response from", "") : "") +
-        " " +
-        (content ? content : "")
+          " " +
+          (content ? content : "")
       );
       if (enableNotify !== true) return;
-      playSound("NOTIFY");
+
       if (type === "Error") {
         notification.error({
           message: title,
@@ -955,7 +943,6 @@ const TradingPage = () => {
                       parsePosList() === undefined ||
                       parsePosList().length < 1
                     ) {
-                      playSound("NOTIFY");
                       message.error("対象の建玉はございません");
                       return;
                     }
@@ -975,7 +962,6 @@ const TradingPage = () => {
                       parsePosList() === undefined ||
                       parsePosList().length < 1
                     ) {
-                      playSound("NOTIFY");
                       message.error("対象の建玉はございません");
                       return;
                     }

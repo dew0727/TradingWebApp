@@ -185,7 +185,7 @@ const processMessage = (topic, msg) => {
       var sContent = msg.split("@")[1];
 
       var accounts = db.GetAccounts();
-      const posAcc = accounts.find(acc => acc.name === accName)
+      const posAcc = accounts.find((acc) => acc.name === accName);
       if (!posAcc) return;
 
       if (sContent === "") {
@@ -219,7 +219,7 @@ const processMessage = (topic, msg) => {
           swap,
           total_profit: total_profit.toFixed(0),
           account: accName,
-          alias: posAcc.alias || ''
+          alias: posAcc.alias || "",
         };
 
         positions.push(position);
@@ -240,7 +240,7 @@ const processMessage = (topic, msg) => {
       var sContent = msg.split("@")[1];
 
       var accounts = db.GetAccounts();
-      const orderAcc = accounts.find(acc => acc.name === accName)
+      const orderAcc = accounts.find((acc) => acc.name === accName);
       if (!orderAcc) return;
 
       if (sContent === "") {
@@ -288,14 +288,12 @@ const processMessage = (topic, msg) => {
       var accName = msg.split("@")[0];
       var sRsp = msg.split("@")[1];
 
-      var accounts = db.GetAccounts();
-      const respAcc = accounts.find(acc => acc.name === accName)
+      const respAcc = db.GetAccount(accName);
       if (!respAcc) return;
-
       if (sRsp !== "") {
         var response = {
           account: accName,
-          alias: respAcc.alias || '',
+          alias: respAcc.alias || "",
           success: sRsp.split(",")[0].toUpperCase() === "TRUE",
           message: sRsp.split(",")[1],
         };
