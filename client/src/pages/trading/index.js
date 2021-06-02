@@ -130,7 +130,7 @@ const TradingPage = () => {
     {
       title: "Max Pos",
       className: "column-max-pos",
-      dataIndex: "maxPosSize",
+      dataIndex: "maxSize",
       align: "left",
       render: (text, record) => {
         return (
