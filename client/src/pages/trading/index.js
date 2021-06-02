@@ -105,30 +105,9 @@ const TradingPage = () => {
       dataIndex: "name",
       align: "left",
     },
+
     {
-      title: "Alias",
-      className: "column-account-alias",
-      dataIndex: "alias",
-      align: "left",
-      key: "alias",
-      render: (text, record) => {
-        return (
-          <InputBox
-            type="text"
-            value={text}
-            onChange={(val) => {
-              onHandleAccSetting({
-                accname: record.name,
-                type: "alias",
-                value: val,
-              });
-            }}
-          />
-        );
-      },
-    },
-    {
-      title: "Max Pos",
+      title: "Max Pos Size",
       className: "column-max-pos",
       dataIndex: "maxSize",
       align: "left",
@@ -137,8 +116,11 @@ const TradingPage = () => {
           <InputBox
             key={"max-pos-size" + record.name}
             value={text}
-            step={10000}
+            step={100}
             min={0}
+            formatter={(value) =>
+              `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            }
             onChange={(val) => {
               onHandleAccSetting({
                 accname: record.name,
@@ -168,6 +150,28 @@ const TradingPage = () => {
               onHandleAccSetting({
                 accname: record.name,
                 type: "orderDelay",
+                value: val,
+              });
+            }}
+          />
+        );
+      },
+    },
+    {
+      title: "Alias",
+      className: "column-account-alias",
+      dataIndex: "alias",
+      align: "left",
+      key: "alias",
+      render: (text, record) => {
+        return (
+          <InputBox
+            type="text"
+            value={text}
+            onChange={(val) => {
+              onHandleAccSetting({
+                accname: record.name,
+                type: "alias",
                 value: val,
               });
             }}
@@ -217,7 +221,7 @@ const TradingPage = () => {
       //return;
     }
 
-    playSound('REQUEST_ORDER')
+    playSound("REQUEST_ORDER");
 
     setServerStatus("BUSY");
     setIsOpenModal(true);
@@ -236,7 +240,7 @@ const TradingPage = () => {
 
   const reqOrder = (order) => {
     if (server_status === "BUSY") {
-      playSound('NOTIFY')
+      playSound("NOTIFY");
       message.error("Server is processing orders now.");
       return;
     }
@@ -248,7 +252,7 @@ const TradingPage = () => {
 
     if (order.Mode === "ORDER_CLOSE_ALL") {
       if (parsePosList() === undefined || parsePosList().length < 1) {
-        playSound('NOTIFY')
+        playSound("NOTIFY");
         message.error("対象の建玉はございません");
         return;
       }
@@ -571,7 +575,7 @@ const TradingPage = () => {
   };
 
   const onChangeGlobalSettings = (settings) => {
-    playSound('UPDATE_SETTING')
+    playSound("UPDATE_SETTING");
     apiCall(
       "/api/update-global-setting",
       { settings },
@@ -586,7 +590,7 @@ const TradingPage = () => {
   };
 
   const onHandleAccSetting = ({ accname, type, value }) => {
-    playSound('UPDATE_SETTING')
+    playSound("UPDATE_SETTING");
     if (accname === undefined) return;
     const account = getAccountByName(accname);
 
@@ -632,7 +636,7 @@ const TradingPage = () => {
       //console.log("Master can only access master accounts");
       return;
     }
-    
+
     apiCall("/api/update-account", account, "POST", (res, user, pass) => {
       if (res.success === true) {
         setAccounts((prevState) => {
@@ -709,7 +713,7 @@ const TradingPage = () => {
           (content ? content : "")
       );
       if (enableNotify !== true) return;
-      playSound('NOTIFY')
+      playSound("NOTIFY");
       if (type === "Error") {
         notification.error({
           message: title,
@@ -951,7 +955,7 @@ const TradingPage = () => {
                       parsePosList() === undefined ||
                       parsePosList().length < 1
                     ) {
-                      playSound('NOTIFY')
+                      playSound("NOTIFY");
                       message.error("対象の建玉はございません");
                       return;
                     }
@@ -971,7 +975,7 @@ const TradingPage = () => {
                       parsePosList() === undefined ||
                       parsePosList().length < 1
                     ) {
-                      playSound('NOTIFY')
+                      playSound("NOTIFY");
                       message.error("対象の建玉はございません");
                       return;
                     }
@@ -1111,38 +1115,38 @@ const TradingPage = () => {
                   columns={acc_columns}
                   locale={locale}
                 />
+                <Row justify="center">
+                  <div style={{ margin: "1vw" }}>
+                    <label>Retry Count: </label>
+                    <InputBox
+                      className="account-settings-default-lots-input"
+                      value={retryCount}
+                      step={1}
+                      min={1}
+                      onChange={(v) => {
+                        onChangeGlobalSettings &&
+                          onChangeGlobalSettings({ retryCount: v });
+                      }}
+                      size={"small"}
+                    />
+                  </div>
+                  <div style={{ margin: "1vw" }}>
+                    <label>Wait Time: </label>
+                    <InputBox
+                      className="account-settings-default-lots-input"
+                      value={waitingTime}
+                      step={10}
+                      min={0}
+                      onChange={(v) => {
+                        onChangeGlobalSettings &&
+                          onChangeGlobalSettings({ waitingTime: v });
+                      }}
+                      size={"small"}
+                    />
+                    <span>ms</span>
+                  </div>
+                </Row>
               </div>
-            </div>
-          </Row>
-          <Row justify="center">
-            <div style={{ margin: "1vw" }}>
-              <label>Retry Count: </label>
-              <InputBox
-                className="account-settings-default-lots-input"
-                value={retryCount}
-                step={1}
-                min={1}
-                onChange={(v) => {
-                  onChangeGlobalSettings &&
-                    onChangeGlobalSettings({ retryCount: v });
-                }}
-                size={"small"}
-              />
-            </div>
-            <div style={{ margin: "1vw" }}>
-              <label>Wait Time: </label>
-              <InputBox
-                className="account-settings-default-lots-input"
-                value={waitingTime}
-                step={10}
-                min={0}
-                onChange={(v) => {
-                  onChangeGlobalSettings &&
-                    onChangeGlobalSettings({ waitingTime: v });
-                }}
-                size={"small"}
-              />
-              <span>ms</span>
             </div>
           </Row>
           <div className="log-history-row-wrapper">

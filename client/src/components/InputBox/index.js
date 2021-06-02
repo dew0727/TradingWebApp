@@ -9,10 +9,11 @@ const InputBox = ({
   max,
   onChange,
   size,
+  formatter,
   type = "number",
 }) => {
   const [isLocked, setLock] = useState(false);
-  const [curVal, setCurVal] = useState(type === "number" ? 1 : null);
+  const [curVal, setCurVal] = useState(type === "number" ? 0 : null);
 
   const handleClick = (e) => {
     e.target.select();
@@ -59,7 +60,9 @@ const InputBox = ({
       onPressEnter={handleBlur}
       onChange={handleChange}
       value={curVal}
+      formatter={formatter || (value => `${value}`)}
       onStep={handleStep}
+      width="100%"
       {...{ step, min, max, size }}
     />
   ) : (
