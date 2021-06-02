@@ -415,6 +415,13 @@ const TradingPage = () => {
           lastResponse = message;
 
           var response = JSON.parse(message);
+
+          const notifyMsg = `Order Response from ${response.alias} (${response.account})`;
+
+          if (notifyMsg.toUpperCase().includes("SAXO")) {
+            response.success ? playSound("SUCCESS") : playSound("ERROR");
+          }
+
           if (
             isTrader === true &&
             masterAccounts.hasOwnProperty(response.account)
@@ -423,14 +430,10 @@ const TradingPage = () => {
             return;
           }
 
-          const notifyMsg = `Order Response from ${response.alias} (${response.account})`;
-          if (response.success) {
-            if (notifyMsg.toUpperCase().includes("SAXO")) playSound('SUCCESS');
-            openNotification("Order", notifyMsg, response.message);
-          } else {
-            if (notifyMsg.toUpperCase().includes("SAXO")) playSound("ERROR");
-            openNotification("Error", notifyMsg, response.message);
-          }
+          response.success
+            ? openNotification("Order", notifyMsg, response.message)
+            : openNotification("Error", notifyMsg, response.message);
+
           break;
         default:
       }
