@@ -319,42 +319,6 @@ const TradingCard = ({
               size={isMobile ? "large" : "small"}
               onClick={() => {
                 playSound('button')
-                setOrderLots(0.1, 1);
-              }}
-            >
-              +0.1
-            </Button>
-          </div>
-          <div className="trading-card-quick-set-btn">
-            <Button
-              block
-              size={isMobile ? "large" : "small"}
-              onClick={() => {
-                playSound('button')
-                setOrderLots(0.2, 1);
-              }}
-            >
-              +0.2
-            </Button>
-          </div>
-          <div className="trading-card-quick-set-btn">
-            <Button
-              block
-              size={isMobile ? "large" : "small"}
-              onClick={() => {
-                playSound('button')
-                setOrderLots(0.5, 1);
-              }}
-            >
-              +0.5
-            </Button>
-          </div>
-          <div className="trading-card-quick-set-btn">
-            <Button
-              block
-              size={isMobile ? "large" : "small"}
-              onClick={() => {
-                playSound('button')
                 setOrderLots(1, 1);
               }}
             >
@@ -371,6 +335,42 @@ const TradingCard = ({
               }}
             >
               +2
+            </Button>
+          </div>
+          <div className="trading-card-quick-set-btn">
+            <Button
+              block
+              size={isMobile ? "large" : "small"}
+              onClick={() => {
+                playSound('button')
+                setOrderLots(5, 1);
+              }}
+            >
+              +5
+            </Button>
+          </div>
+          <div className="trading-card-quick-set-btn">
+            <Button
+              block
+              size={isMobile ? "large" : "small"}
+              onClick={() => {
+                playSound('button')
+                setOrderLots(10, 1);
+              }}
+            >
+              +10
+            </Button>
+          </div>
+          <div className="trading-card-quick-set-btn">
+            <Button
+              block
+              size={isMobile ? "large" : "small"}
+              onClick={() => {
+                playSound('button')
+                setOrderLots(20, 1);
+              }}
+            >
+              +20
             </Button>
           </div>
         </div>
