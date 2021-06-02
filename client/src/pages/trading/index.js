@@ -580,7 +580,6 @@ const TradingPage = () => {
   };
 
   const onHandleAccSetting = ({ accname, type, value }) => {
-    playSound('ERROR');
     if (accname === undefined) return;
     const account = getAccountByName(accname);
 
