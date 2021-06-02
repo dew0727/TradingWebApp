@@ -129,6 +129,7 @@ app.post("/api/add-account", (req, res) => {
     loginID: data.loginID,
     password: data.password,
     name: data.broker + data.number,
+    alias: data.alias || '',
     basket: data.basket == undefined ? false : data.basket,
     default: data.default == undefined ? 1 : data.default,
     master: data.role === "master" ? true : false,
