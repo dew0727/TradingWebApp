@@ -1127,7 +1127,7 @@ const TradingPage = () => {
                         onChangeGlobalSettings &&
                           onChangeGlobalSettings({ retryCount: v });
                       }}
-                      size="large"
+                      size="middle"
                     />
                   </div>
                   <div style={{ margin: "10px" }}>
@@ -1137,7 +1137,7 @@ const TradingPage = () => {
                       value={waitingTime}
                       step={10}
                       min={0}
-                      size="large"
+                      size="middle"
                       onChange={(v) => {
                         onChangeGlobalSettings &&
                           onChangeGlobalSettings({ waitingTime: v });
