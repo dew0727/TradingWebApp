@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { InputNumber, Input } from "antd";
+let lastUpdateTime = new Date();
 
 const InputBox = ({
   value,
@@ -40,6 +41,17 @@ const InputBox = ({
     }
   }, [value, isLocked, curVal]);
 
+  const handleStep = (val) => {
+    setLock(true)
+    lastUpdateTime = new Date()
+    setTimeout(() => {
+      const curTime = new Date()
+      if (curTime - lastUpdateTime > 600) {
+        setLock(false)
+      }
+    }, 600)
+  }
+
   return type === "number" ? (
     <InputNumber
       onClick={handleClick}
@@ -47,6 +59,7 @@ const InputBox = ({
       onPressEnter={handleBlur}
       onChange={handleChange}
       value={curVal}
+      onStep={handleStep}
       {...{ step, min, max, size }}
     />
   ) : (
