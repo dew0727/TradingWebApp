@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Input, InputNumber, message } from "antd";
+import { Row, Col, Button, Input, message } from "antd";
+import InputBox from "../InputBox";
 import SymbolSelector from "../SymbolSelector";
 import "./style.css";
 import { useApp } from "../../context";
@@ -428,8 +429,10 @@ const TradingCard = ({
             </Button>
           </Col>
           <Col className="trading-card-label trading-card-value" span={9}>
-            <InputNumber
+            <InputBox
+              isPrice={true}
               size={isMobile ? "large" : "middle"}
+              min={0}
               className="lmt-price-value"
               key={`lmt-price-${curIndex}`}
               step={"0." + "0".repeat(point - 1) + "1"}

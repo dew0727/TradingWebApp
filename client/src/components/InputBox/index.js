@@ -11,6 +11,7 @@ const InputBox = ({
   size,
   formatter,
   type = "number",
+  isPrice,
 }) => {
   const [isLocked, setLock] = useState(false);
   const [curVal, setCurVal] = useState(type === "number" ? 0 : null);
@@ -43,6 +44,7 @@ const InputBox = ({
   }, [value, isLocked, curVal]);
 
   const handleStep = (val) => {
+    if (isPrice) return;
     setLock(true)
     lastUpdateTime = new Date()
     setTimeout(() => {

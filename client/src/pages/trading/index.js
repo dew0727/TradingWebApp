@@ -925,7 +925,7 @@ const TradingPage = () => {
                         }
                       </Col>
                     )}
-                    {symbolList.length > 7 && (
+                    {/* {symbolList.length > 7 && (
                       <Col>
                         {
                           <TradingCard
@@ -938,7 +938,7 @@ const TradingPage = () => {
                           />
                         }
                       </Col>
-                    )}
+                    )} */}
                   </>
                 )}
               </Row>
