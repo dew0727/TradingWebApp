@@ -3,8 +3,8 @@ import useAppDispatch from "./dispatch_hook";
 import useAppState from "./state_hook";
 
 // loading sounds
-import successSfx from "../sounds/sweetalert.wav";
-import failedSfx from "../sounds/notification-sound.mp3";
+import successSfx from "../sounds/success.wav";
+import failedSfx from "../sounds/failed.wav";
 
 // Mapping queries
 function useApp() {

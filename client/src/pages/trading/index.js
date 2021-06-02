@@ -425,7 +425,7 @@ const TradingPage = () => {
 
           const notifyMsg = `Order Response from ${response.alias} (${response.account})`;
           if (response.success) {
-            if (notifyMsg.toUpperCase().includes("SAXO")) playSound();
+            if (notifyMsg.toUpperCase().includes("SAXO")) playSound('SUCCESS');
             openNotification("Order", notifyMsg, response.message);
           } else {
             if (notifyMsg.toUpperCase().includes("SAXO")) playSound("ERROR");
