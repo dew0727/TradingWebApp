@@ -328,6 +328,7 @@ app.post("/api/order-request", (req, res) => {
             db.RegsterOrderedAccount(acc.name);
             if (acc.orderDelay > 0) {
               setTimeout(() => {
+                mainLogger.info("request delayed order");
                 rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
               }, acc.orderDelay);
             } else {
@@ -371,6 +372,7 @@ app.post("/api/order-request", (req, res) => {
           db.RegsterOrderedAccount(acc.name);
           if (acc.orderDelay > 0) {
             setTimeout(() => {
+              mainLogger.info("request delayed order");
               rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
             }, acc.orderDelay);
           } else {
@@ -404,6 +406,7 @@ app.post("/api/order-request", (req, res) => {
             db.RegsterOrderedAccount(acc.name);
             if (acc.orderDelay > 0) {
               setTimeout(() => {
+                mainLogger.info("request delayed order");
                 rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
               }, acc.orderDelay);
             } else {
@@ -438,6 +441,7 @@ app.post("/api/order-request", (req, res) => {
             db.RegsterOrderedAccount(acc.name);
             if (acc.orderDelay > 0) {
               setTimeout(() => {
+                mainLogger.info("request delayed order");
                 rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
               }, acc.orderDelay);
             } else {

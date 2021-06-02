@@ -532,6 +532,7 @@ const TradingPage = () => {
   };
 
   const ApplyGlobalSettings = (settings) => {
+    playSound("ERROR");
     if (settings["maxDefault"]) {
       const val = parseFloat(settings.maxDefault);
       setMaxDefautLots(val);
@@ -579,6 +580,7 @@ const TradingPage = () => {
   };
 
   const onHandleAccSetting = ({ accname, type, value }) => {
+    playSound('ERROR');
     if (accname === undefined) return;
     const account = getAccountByName(accname);
 
