@@ -129,7 +129,7 @@ app.post("/api/add-account", (req, res) => {
     loginID: data.loginID,
     password: data.password,
     name: data.broker + data.number,
-    alias: data.alias || '',
+    alias: data.alias || "",
     basket: data.basket == undefined ? false : data.basket,
     default: data.default == undefined ? 1 : data.default,
     master: data.role === "master" ? true : false,
@@ -321,7 +321,7 @@ app.post("/api/order-request", (req, res) => {
               data.Type
             },${globalSettings.retryCount || 1},${
               globalSettings.waitingTime || 0
-            }`;
+            },${acc.maxSize || 0},${acc.orderDelay || 0}`;
 
             db.RegsterOrderedAccount(acc.name);
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
@@ -356,7 +356,9 @@ app.post("/api/order-request", (req, res) => {
             acc.master ? "NONE" : data.Ticket
           },${acc.master ? data.Symbol + "," : ""}${
             globalSettings.retryCount || 1
-          },${globalSettings.waitingTime || 0}`;
+          },${globalSettings.waitingTime || 0},${acc.maxSize || 0},${
+            acc.orderDelay || 0
+          }`;
           mainLogger.info(orderMsg);
           db.RegsterOrderedAccount(acc.name);
           rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
@@ -381,7 +383,9 @@ app.post("/api/order-request", (req, res) => {
 
             orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
               globalSettings.retryCount || 1
-            },${globalSettings.waitingTime || 0}`;
+            },${globalSettings.waitingTime || 0},${acc.maxSize || 0},${
+              acc.orderDelay || 0
+            }`;
 
             db.RegsterOrderedAccount(acc.name);
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
@@ -408,7 +412,9 @@ app.post("/api/order-request", (req, res) => {
 
             orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
               globalSettings.retryCount || 1
-            },${globalSettings.waitingTime || 0}`;
+            },${globalSettings.waitingTime || 0},${acc.maxSize || 0},${
+              acc.orderDelay || 0
+            }`;
             db.RegsterOrderedAccount(acc.name);
             rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
           }
