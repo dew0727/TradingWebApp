@@ -28,7 +28,7 @@ import TradingMenu from "../../components/TradingMenu";
 import PositionTable from "../../components/PositionList";
 import OrderTable from "../../components/OrderTable";
 import AccountSettingTable from "../../components/AccountSettingTable";
-import InputBox from '../../components/InputBox'
+import InputBox from "../../components/InputBox";
 import { EVENTS } from "../../config-client";
 import { apiCall, Logout, getAuth, getCredential } from "../../utils/api";
 
@@ -105,15 +105,14 @@ const TradingPage = () => {
       dataIndex: "name",
       align: "left",
     },
-    /* {
+    {
       title: "Alias",
       className: "column-account-alias",
       dataIndex: "alias",
       align: "left",
+      key: "alias",
       render: (text) => {
-        return (
-          <InputBox type="text" value={text}/>
-        );
+        return <InputBox type="text" value={text} />;
       },
     },
     {
@@ -125,38 +124,33 @@ const TradingPage = () => {
         return (
           <InputBox
             key={"max-pos-size" + record.name}
-            className="account-settings-default-lots-input"
             value={text}
             step={10000}
             min={0}
-            onChange={(val) => {
-            }}
-            
+            onChange={(val) => {}}
           />
         );
       },
     },
     {
-      title: "Order Delay(ms)",
+      title: "Delay(ms)",
       className: "column-order-delay",
       dataIndex: "orderDelay",
       align: "left",
-      key: 'column-order-delay',
+      key: "column-order-delay",
       render: (text, record) => {
         return (
           <InputBox
+            className="input-box-item"
             key={"order-delay-" + record.name}
-            className="account-settings-default-lots-input"
             value={text}
             step={10}
             min={0}
-            onChange={(val) => {
-            }}
-            
+            onChange={(val) => {}}
           />
         );
       },
-    }, */
+    },
     {
       title: "削除",
       className: "account_delete",
@@ -1050,10 +1044,7 @@ const TradingPage = () => {
                   >
                     <Input placeholder="Password" />
                   </Form.Item>
-                  <Form.Item
-                    label="Account Alias"
-                    name="alias"
-                  >
+                  <Form.Item label="Account Alias" name="alias">
                     <Input placeholder="Account Alias" />
                   </Form.Item>
                   <Form.Item label=" " colon={false}>

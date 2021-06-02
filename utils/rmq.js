@@ -161,6 +161,7 @@ const processMessage = (topic, msg) => {
       var accountInfo = {
         key: accName,
         name: accName,
+        alias: account.alias,
         currency: items[0],
         balance,
         margin,

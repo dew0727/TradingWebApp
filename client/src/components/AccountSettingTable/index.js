@@ -1,6 +1,6 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Table, Grid } from "antd";
-import InputBox from '../InputBox'
+import InputBox from "../InputBox";
 import "./style.css";
 
 const AccountSettingTable = ({
@@ -11,12 +11,6 @@ const AccountSettingTable = ({
   callback,
   onChangeGlobalSettings,
 }) => {
-  const inputRef = useRef(null);
-
-  const onHandleStep = (e) => {
-    inputRef.current.blur();
-  };
-
   const isDesktop = Grid.useBreakpoint()?.sm;
   const columns = [
     {
@@ -112,8 +106,8 @@ const AccountSettingTable = ({
         return (
           <InputBox
             key={"default-lots-input-" + record.name}
-            className="account-settings-default-lots-input"
-            value={record.default}
+            className="input-box-item"
+            value={text}
             step={0.1}
             min={0}
             max={maxLots}
@@ -122,7 +116,7 @@ const AccountSettingTable = ({
                 onHandleClickBasket({ accname: record.name, defaultLots: val });
               }
             }}
-            size={"medium"}
+            size="middle"
           />
         );
       },
@@ -201,7 +195,6 @@ const AccountSettingTable = ({
               <label>Max Value: </label>
               <InputBox
                 className="account-settings-default-lots-input"
-                ref={inputRef}
                 defaultValue={100}
                 value={maxLots}
                 step={1}
@@ -210,7 +203,6 @@ const AccountSettingTable = ({
                   onChangeGlobalSettings &&
                     onChangeGlobalSettings({ maxDefault: v });
                 }}
-                onStep={onHandleStep}
                 size={"small"}
               />
             </div>

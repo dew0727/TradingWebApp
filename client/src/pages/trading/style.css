@@ -214,14 +214,6 @@
   margin-bottom: 30px;
 }
 
-.react-multiple-carousel__arrow--right {
-  right: calc(0% + 1px) !important;
-}
-
-.react-multiple-carousel__arrow--left {
-  left: calc(0% + 1px) !important;
-}
-
 .card-swiper-wrapper {
   padding: 0 1vw 0 1vw;
   margin-bottom: 30px;
@@ -229,4 +221,8 @@
 
 .loading-spin {
   margin: auto;
+}
+
+.input-box-item {
+  width: 100%;
 }

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { InputNumber, Input } from "antd";
 
 const InputBox = ({
-  defaultValue,
   value,
   step,
   min,
@@ -12,7 +11,7 @@ const InputBox = ({
   type = "number",
 }) => {
   const [isLocked, setLock] = useState(false);
-  const [curVal, setCurVal] = useState(type === "number" ? 0 : null);
+  const [curVal, setCurVal] = useState(type === "number" ? 1 : null);
 
   const handleClick = (e) => {
     e.target.select();
@@ -24,19 +23,22 @@ const InputBox = ({
   };
 
   const handleChange = (e) => {
-    if (type === 'number') {
+    if (type === "number") {
       onChange(e);
       setCurVal(e);
     } else {
       const val = e.target.value;
-      onChange && onChange(val)
-      setCurVal(val)
+      onChange && onChange(val);
+      setCurVal(val);
     }
   };
 
   useEffect(() => {
-    if (!isLocked) setCurVal(value);
-  }, [value, isLocked]);
+    if (!isLocked && value && curVal !== value) {
+      console.log("changed input value: ", value);
+      setCurVal(value);
+    }
+  }, [value, isLocked, curVal]);
 
   return type === "number" ? (
     <InputNumber
