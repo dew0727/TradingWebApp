@@ -294,6 +294,8 @@ app.post("/api/order-request", (req, res) => {
   const globalSettings = db.GetGlobalSettings();
   let orderMsg = "";
 
+  data.Lots = data.Lots / 10;
+
   switch (data.Mode) {
     case "ORDER_OPEN":
       accounts.forEach((acc) => {
@@ -324,7 +326,13 @@ app.post("/api/order-request", (req, res) => {
             },${acc.orderDelay || 0},${acc.maxSize ? acc.maxSize / 10 : 0}`;
 
             db.RegsterOrderedAccount(acc.name);
-            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            if (acc.orderDelay > 0) {
+              setTimeout(() => {
+                rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+              }, acc.orderDelay);
+            } else {
+              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            }
           }
         }
       });
@@ -361,7 +369,13 @@ app.post("/api/order-request", (req, res) => {
           }`;
           mainLogger.info(orderMsg);
           db.RegsterOrderedAccount(acc.name);
-          rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          if (acc.orderDelay > 0) {
+            setTimeout(() => {
+              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            }, acc.orderDelay);
+          } else {
+            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+          }
         }
       });
       break;
@@ -388,7 +402,13 @@ app.post("/api/order-request", (req, res) => {
             }`;
 
             db.RegsterOrderedAccount(acc.name);
-            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            if (acc.orderDelay > 0) {
+              setTimeout(() => {
+                rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+              }, acc.orderDelay);
+            } else {
+              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            }
           }
         });
       } else {
@@ -416,7 +436,13 @@ app.post("/api/order-request", (req, res) => {
               acc.maxSize ? acc.maxSize / 10 : 0
             }`;
             db.RegsterOrderedAccount(acc.name);
-            rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            if (acc.orderDelay > 0) {
+              setTimeout(() => {
+                rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+              }, acc.orderDelay);
+            } else {
+              rmq.publishMessage(EVENTS.ON_ORDER_REQUEST, orderMsg);
+            }
           }
         });
       }

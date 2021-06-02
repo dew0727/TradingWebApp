@@ -29,7 +29,7 @@ const PositionTable = ({ positions, onClickCloseOne, onClickCloseAll }) => {
       align: "center",
       key: "lots",
       render: (lots) => (
-        <span>{lots ? numberWithCommas(lots * 10000) : 0}</span>
+        <span>{lots ? numberWithCommas(lots * 10) : 0}</span>
       ),
     },
     {

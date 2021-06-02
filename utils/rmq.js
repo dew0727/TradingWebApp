@@ -169,7 +169,7 @@ const processMessage = (topic, msg) => {
         equity,
         basket: account.basket ? account.basket : false,
         default: account.default ? account.default : 1,
-        maxSize: account.maxSize || 10000,
+        maxSize: account.maxSize || 0,
         orderDelay: account.orderDelay || 0,
         master: account.master,
         status: {

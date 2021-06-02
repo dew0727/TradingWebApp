@@ -39,7 +39,7 @@ const OrderTable = ({ orders, reqDelOrder, onClickOrderCloseAll }) => {
       key: "lots",
       defaultSortOrder: "ascend",
       render: (lots) => (
-        <span>{lots ? numberWithCommas(lots * 10000) : 0}</span>
+        <span>{lots ? numberWithCommas(lots * 10) : 0}</span>
       ),
     },
     {

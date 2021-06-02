@@ -116,7 +116,7 @@ const TradingPage = () => {
           <InputBox
             key={"max-pos-size" + record.name}
             value={text}
-            step={100}
+            step={1}
             min={0}
             formatter={(value) =>
               `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -144,7 +144,7 @@ const TradingPage = () => {
             className="input-box-item"
             key={"order-delay-" + record.name}
             value={text}
-            step={10}
+            step={1}
             min={0}
             onChange={(val) => {
               onHandleAccSetting({

@@ -60,11 +60,11 @@ const UpdateAccount = (account) => {
   const prev = accounts.find((x) => x.name === account.name);
 
   if (prev) {
-    prev.basket = account.basket ? account.basket : prev.basket;
-    prev.default = account.default ? account.default : prev.default;
-    prev.orderDelay = account.orderDelay ? account.orderDelay : prev.orderDelay;
-    prev.alias = account.alias ? account.alias : prev.alias;
-    prev.maxSize = account.maxSize ? account.maxSize : prev.maxSize;
+    prev.basket = account.basket !== undefined ? account.basket : prev.basket;
+    prev.default = account.default !== undefined ? account.default : prev.default;
+    prev.orderDelay = account.orderDelay !== undefined ? account.orderDelay : prev.orderDelay;
+    prev.alias = account.alias !== undefined ? account.alias : prev.alias;
+    prev.maxSize = account.maxSize !== undefined ? account.maxSize : prev.maxSize;
 
     accounts = accounts.map((acc) => {
       return acc.name === account.name ? prev : acc;
