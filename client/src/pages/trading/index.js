@@ -91,6 +91,15 @@ const TradingPage = () => {
 
   const [isOpenModal, setIsOpenModal] = useState(false);
 
+  const [soundType, setSoundType] = useState('NONE')
+
+  useEffect(() => {
+    if (soundType && soundType !== 'NONE') {
+      playSound(soundType)
+      setTimeout(() => { setSoundType('NONE') }, 5)
+    }
+  }, [soundType, playSound])
+
   useEffect(() => {
     setSymbolCount(getSymbols(rates).length);
   }, [rates]);
@@ -419,7 +428,7 @@ const TradingPage = () => {
           const notifyMsg = `Order Response from ${response.alias} (${response.account})`;
 
           if (notifyMsg.toUpperCase().includes("SAXO")) {
-            response.success ? playSound("SUCCESS") : playSound("ERROR");
+            response.success ? setSoundType("SUCCESS") : setSoundType("ERROR");
           }
 
           if (
@@ -535,7 +544,6 @@ const TradingPage = () => {
   };
 
   const ApplyGlobalSettings = (settings) => {
-    playSound("ERROR");
     if (settings["maxDefault"]) {
       const val = parseFloat(settings.maxDefault);
       setMaxDefautLots(val);
@@ -701,8 +709,8 @@ const TradingPage = () => {
       addLog(
         type,
         (title ? title.replace("Order Response from", "") : "") +
-          " " +
-          (content ? content : "")
+        " " +
+        (content ? content : "")
       );
       if (enableNotify !== true) return;
 
