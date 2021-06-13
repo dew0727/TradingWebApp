@@ -5,7 +5,7 @@ const RABBITMQ_PASSWORD = "localhost";
 const EXCHANGE_NAME = "System.String, mscorlib";
 
 const ORDER_STATUS_CHECK_CYCLE = 5; // 5 second
-const ORDER_WAITING_LIMIT_TIME = 30 * 1000; // 30 second
+const ORDER_WAITING_LIMIT_TIME = 60 * 1000; // 30 second
 
 // event names
 const EVENTS = {

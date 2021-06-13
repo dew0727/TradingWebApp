@@ -13,25 +13,33 @@ let users = {};
 let global = {};
 
 let orderQueue = [];
+let orderMasterQueue = [];
 
 const RemoveOrderedAccount = (accountName) => {
   mainLogger.info("removing account from order queue: " + accountName);
-  return (orderQueue = orderQueue.filter((item) => item != accountName));
+  const account = GetAccount(accountName);
+  if (account?.isMaster)
+    return [(orderMasterQueue = orderMasterQueue.filter(
+      (item) => item != accountName
+    )), true];
+  else return [(orderQueue = orderQueue.filter((item) => item != accountName)), false];
 };
 
 const RegsterOrderedAccount = (accountName) => {
   mainLogger.info("regstering account to order queue: " + accountName);
-  orderQueue.push(accountName);
+  const account = GetAccount(accountName);
+  if (account?.isMaster) [orderMasterQueue.push(accountName), true];
+  else [orderQueue.push(accountName), false];
 };
 
 const InitOrderQueue = () => {
   orderQueue = [];
   mainLogger.info("Initialized order queue: ");
-  console.log('Initialized order queue')
+  console.log("Initialized order queue");
 };
 
 const GetOrderQueueCount = () => {
-  return orderQueue.length || 0;
+  return [orderQueue.length || 0, orderMasterQueue.length || 0];
 };
 
 const Init = () => {
@@ -61,10 +69,13 @@ const UpdateAccount = (account) => {
 
   if (prev) {
     prev.basket = account.basket !== undefined ? account.basket : prev.basket;
-    prev.default = account.default !== undefined ? account.default : prev.default;
-    prev.orderDelay = account.orderDelay !== undefined ? account.orderDelay : prev.orderDelay;
+    prev.default =
+      account.default !== undefined ? account.default : prev.default;
+    prev.orderDelay =
+      account.orderDelay !== undefined ? account.orderDelay : prev.orderDelay;
     prev.alias = account.alias !== undefined ? account.alias : prev.alias;
-    prev.maxSize = account.maxSize !== undefined ? account.maxSize : prev.maxSize;
+    prev.maxSize =
+      account.maxSize !== undefined ? account.maxSize : prev.maxSize;
 
     accounts = accounts.map((acc) => {
       return acc.name === account.name ? prev : acc;

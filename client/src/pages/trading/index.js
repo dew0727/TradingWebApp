@@ -312,7 +312,8 @@ const TradingPage = () => {
 
     if (topic === EVENTS.ON_ORDER_COMPLETE) {
       console.log("Order finished account: ", message);
-      if (message === "IDLE") setServerStatus("IDLE");
+      if (message === "IDLE" && isTrader) setServerStatus("IDLE");
+      if (message === "IDLE_MASTER" && !isTrader) setServerStatus("IDLE");
       return;
     }
 

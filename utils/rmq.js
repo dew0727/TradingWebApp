@@ -319,30 +319,44 @@ const processMessage = (topic, msg) => {
 };
 
 cron.schedule(`*/${config.ORDER_STATUS_CHECK_CYCLE} * * * * *`, function () {
-  checkOrderStatus();
+  checkOrderThread();
 });
 
-let isStarted = false;
-let startTime;
-let endTime;
+// Check order queue status
+const traderQueue = {
+  isStarted: false,
+  startTime: new Date(),
+  endTime: new Date(),
+};
+
+const masterQueue = {
+  isStarted: false,
+  startTime: new Date(),
+  endTime: new Date(),
+};
+
+const checkOrderThread = () => {
+  checkOrderStatus();
+};
 
 const checkOrderStatus = () => {
-  const orderCount = db.GetOrderQueueCount();
+  const [orderCount, orderMasterCount] = db.GetOrderQueueCount();
+
   if (orderCount === 0) {
-    if (isStarted) {
+    if (traderQueue.isStarted) {
       mainLogger.info("order queue is empty now, notification to clients");
       console.info("order queue is empty now, notification to clients");
       socket.emit(EVENTS.ON_ORDER_COMPLETE, "IDLE");
     }
-    isStarted = false;
+    traderQueue.isStarted = false;
   } else {
-    if (!isStarted) {
+    if (!traderQueue.isStarted) {
       console.log("Order started");
-      isStarted = true;
-      startTime = Date.now();
+      traderQueue.isStarted = true;
+      traderQueue.startTime = Date.now();
     } else {
-      endTime = Date.now();
-      const stamps = endTime - startTime;
+      traderQueue.endTime = Date.now();
+      const stamps = traderQueue.endTime - traderQueue.startTime;
       console.log("Delayed time " + stamps);
       if (stamps >= config.ORDER_WAITING_LIMIT_TIME) {
         isStarted = false;
@@ -354,8 +368,34 @@ const checkOrderStatus = () => {
       }
     }
   }
-};
 
+  if (orderMasterCount === 0) {
+    if (masterQueue.isStarted) {
+      mainLogger.info("Master order queue is empty now, notification to clients");
+      console.info("Master order queue is empty now, notification to clients");
+      socket.emit(EVENTS.ON_ORDER_COMPLETE, "IDLE_MASTER");
+    }
+    masterQueue.isStarted = false;
+  } else {
+    if (!masterQueue.isStarted) {
+      console.log("Master Order started");
+      masterQueue.isStarted = true;
+      masterQueue.startTime = Date.now();
+    } else {
+      masterQueue.endTime = Date.now();
+      const stamps = masterQueue.endTime - masterQueue.startTime;
+      console.log("Master Delayed time " + stamps);
+      if (stamps >= config.ORDER_WAITING_LIMIT_TIME) {
+        isStarted = false;
+        console.log("Master Time Over");
+        db.InitOrderQueue();
+        mainLogger.info("Master Forcely initialized order queue");
+        console.log("Master Forcely initialized order queue");
+        socket.emit(EVENTS.ON_ORDER_COMPLETE, "IDLE_MASTER");
+      }
+    }
+  }
+};
 const subscribeForUser = (user) => {
   mainLogger.info(`sbscribing user: ${user}`);
   subscribeChannel(EVENTS.ON_PRICE_TICK, user);
