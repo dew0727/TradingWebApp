@@ -19,3 +19,7 @@
 .account-status-live {
   color: greenyellow;
 }
+
+.column-default-lots {
+  max-width: 60px;
+}
