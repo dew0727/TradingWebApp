@@ -19,11 +19,11 @@ const AccountSettingTable = ({
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => {
         if (record.alias && record.alias.length > 0) {
-          return record.alias
+          return record.alias;
         } else {
-          return text
+          return text;
         }
-      }
+      },
     },
     /* {
       title: "残高",
@@ -39,19 +39,19 @@ const AccountSettingTable = ({
       },
     }, */
     {
-      title: isDesktop ? "マージン" : "マー..",
+      title: "純資産",
       className: "column-margin",
       dataIndex: "margin",
       align: "center",
       render: (text, record) => {
         return record.margin
-          ? Math.round(record.margin)
-              .toString()
-              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
-          : 0;
+          ? Math.round((record.margin * 100) / record.equity)
+              .toFixed(1)
+              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + '%'
+          : '0%';
       },
     },
-    {
+    /* {
       title: isDesktop ? "未確定損益" : "未確..",
       className: "column-profit",
       dataIndex: "profit",
@@ -63,7 +63,7 @@ const AccountSettingTable = ({
               .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
-    },
+    }, */
     {
       title: "Equity",
       className: "column-equity",
@@ -89,7 +89,7 @@ const AccountSettingTable = ({
             onClick={() => {
               callback({
                 accname: record.name,
-                type: 'basket',
+                type: "basket",
                 value: !record.basket,
               });
             }}
@@ -119,7 +119,11 @@ const AccountSettingTable = ({
             max={maxLots}
             onChange={(val) => {
               if (!isNaN(val) && val >= 0) {
-                callback({ accname: record.name, type: "defaultLots", value: val });
+                callback({
+                  accname: record.name,
+                  type: "defaultLots",
+                  value: val,
+                });
               }
             }}
             size="middle"
