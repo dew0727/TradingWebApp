@@ -23,3 +23,7 @@
 .column-default-lots {
   max-width: 60px;
 }
+
+.column-default-lots .ant-input-number {
+  max-width: 70px;
+}

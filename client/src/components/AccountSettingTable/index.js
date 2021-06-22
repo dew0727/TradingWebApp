@@ -39,7 +39,7 @@ const AccountSettingTable = ({
       },
     }, */
     {
-      title: "純資産",
+      title: "使用率",
       className: "column-margin",
       dataIndex: "margin",
       align: "center",
@@ -65,7 +65,7 @@ const AccountSettingTable = ({
       },
     }, */
     {
-      title: "Equity",
+      title: "純資産",
       className: "column-equity",
       dataIndex: "equity",
       align: "center",
