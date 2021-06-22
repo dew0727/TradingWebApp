@@ -45,9 +45,9 @@ const AccountSettingTable = ({
       align: "center",
       render: (text, record) => {
         return record.margin
-          ? Math.round((record.margin * 100) / record.equity)
-              .toFixed(1)
-              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + '%'
+          ? (record.margin / record.equity * 100.0)
+            .toFixed(2)
+            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + '%'
           : '0%';
       },
     },
@@ -72,8 +72,8 @@ const AccountSettingTable = ({
       render: (text, record) => {
         return record.equity
           ? Math.round(record.equity)
-              .toString()
-              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+            .toString()
+            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
           : 0;
       },
     },
