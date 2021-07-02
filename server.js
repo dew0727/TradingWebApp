@@ -292,9 +292,10 @@ app.post("/api/order-request", (req, res) => {
   const accName = data.Account;
   const accounts = db.GetAccounts();
   const globalSettings = db.GetGlobalSettings();
-  let orderMsg = "";
 
   data.Lots = data.Lots / 10;
+
+  let isRquested = false;
 
   switch (data.Mode) {
     case "ORDER_OPEN":
@@ -317,7 +318,7 @@ app.post("/api/order-request", (req, res) => {
               return;
             }
 
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+            const orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
               data.Command
             },${data.Lots * acc.default},${data.Price},${data.SL},${data.TP},${
               data.Type
@@ -325,6 +326,7 @@ app.post("/api/order-request", (req, res) => {
               globalSettings.waitingTime || 0
             },${acc.orderDelay || 0},${acc.maxSize ? acc.maxSize / 10 : 0}`;
 
+            isRquested = true
             db.RegsterOrderedAccount(acc.name);
             if (acc.orderDelay > 0) {
               setTimeout(() => {
@@ -361,7 +363,7 @@ app.post("/api/order-request", (req, res) => {
           if (!isMaster && acc.name !== accName && !acc.master) {
             return;
           }
-          orderMsg = `${acc.name}@ORDER_DELETE,${
+          const orderMsg = `${acc.name}@ORDER_DELETE,${
             acc.master ? "NONE" : data.Ticket
           },${acc.master ? data.Symbol + "," : "NONE"}${
             globalSettings.retryCount || 1
@@ -369,6 +371,8 @@ app.post("/api/order-request", (req, res) => {
             acc.maxSize ? acc.maxSize / 10 : 0
           }`;
           mainLogger.info(orderMsg);
+
+          isRquested = true
           db.RegsterOrderedAccount(acc.name);
           if (acc.orderDelay > 0) {
             setTimeout(() => {
@@ -397,12 +401,13 @@ app.post("/api/order-request", (req, res) => {
               return;
             }
 
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+            const orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
               globalSettings.retryCount || 1
             },${globalSettings.waitingTime || 0},${acc.orderDelay || 0},${
               acc.maxSize ? acc.maxSize / 10 : 0
             }`;
 
+            isRquested = true
             db.RegsterOrderedAccount(acc.name);
             if (acc.orderDelay > 0) {
               setTimeout(() => {
@@ -433,11 +438,13 @@ app.post("/api/order-request", (req, res) => {
               return;
             }
 
-            orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
+            const orderMsg = `${acc.name}@${data.Mode},${data.Symbol},${
               globalSettings.retryCount || 1
             },${globalSettings.waitingTime || 0},${acc.orderDelay || 0},${
               acc.maxSize ? acc.maxSize / 10 : 0
             }`;
+
+            isRquested = true
             db.RegsterOrderedAccount(acc.name);
             if (acc.orderDelay > 0) {
               setTimeout(() => {
@@ -451,6 +458,11 @@ app.post("/api/order-request", (req, res) => {
         });
       }
       break;
+  }
+
+  if (!isRquested) {
+    mainLogger.info('no order exucuted, so notify to client idle')
+    socket.emit(EVENTS.ON_ORDER_COMPLETE, "IDLE");
   }
 
   res.json({
