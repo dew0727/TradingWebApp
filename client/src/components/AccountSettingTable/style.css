@@ -27,3 +27,11 @@
 .column-default-lots .ant-input-number {
   max-width: 70px;
 }
+
+.accname-master {
+  color: yellow;
+}
+
+.accname-trader {
+  color: white;
+}

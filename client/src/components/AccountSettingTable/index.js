@@ -18,11 +18,9 @@ const AccountSettingTable = ({
       defaultSortOrder: "ascend",
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => {
-        if (record.alias && record.alias.length > 0) {
-          return record.alias;
-        } else {
-          return text;
-        }
+        const accText = record.alias && record.alias.length > 0 ? record.alias : text;
+        
+        return <span className={record.master ? "accname-master" : "accname-trader"}>{accText}</span>
       },
     },
     /* {
