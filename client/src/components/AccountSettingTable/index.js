@@ -114,7 +114,7 @@ const AccountSettingTable = ({
             key={"default-lots-input-" + record.name}
             className="input-box-item"
             value={text}
-            step={0.1}
+            step={0.01}
             min={0}
             max={maxLots}
             onChange={(val) => {
