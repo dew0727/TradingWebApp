@@ -167,6 +167,31 @@ const TradingPage = () => {
       },
     },
     {
+      title: "Leverage",
+      className: "column-account-leverage",
+      dataIndex: "leverage",
+      align: "left",
+      key: "column-account-leverage",
+      render: (text, record) => {
+        return (
+          <InputBox
+            className="input-box-item"
+            key={"accoun-leverage" + record.name}
+            value={text}
+            step={1}
+            min={1}
+            onChange={(val) => {
+              onHandleAccSetting({
+                accname: record.name,
+                type: "acccountLeverage",
+                value: val,
+              });
+            }}
+          />
+        );
+      },
+    },
+    {
       title: "Alias",
       className: "column-account-alias",
       dataIndex: "alias",
@@ -627,6 +652,11 @@ const TradingPage = () => {
       case "maxSize": {
         account.maxSize = value;
         sMsg += ` max size is ${value}`;
+        break;
+      }
+      case "accountLeverage": {
+        account.leverage = value;
+        sMsg += ` account leverage value set with ${value}`;
         break;
       }
       default:

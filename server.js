@@ -263,6 +263,7 @@ app.post("/api/update-account", (req, res) => {
     ...data,
   };
 
+  console.log(data);
   const { success, error } = db.UpdateAccount(account);
 
   res.json({
