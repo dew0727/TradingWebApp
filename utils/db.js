@@ -65,6 +65,7 @@ const UpdateAccount = (account) => {
     prev.orderDelay = account.orderDelay !== undefined ? account.orderDelay : prev.orderDelay;
     prev.alias = account.alias !== undefined ? account.alias : prev.alias;
     prev.maxSize = account.maxSize !== undefined ? account.maxSize : prev.maxSize;
+    prev.leverage = account.leverage !== undefined ? account.leverage : prev.leverage;
 
     accounts = accounts.map((acc) => {
       return acc.name === account.name ? prev : acc;

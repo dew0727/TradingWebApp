@@ -176,6 +176,7 @@ const processMessage = (topic, msg) => {
           status: db.GetAccountStatus(accName),
           time: Date.now(),
         },
+        leverage: account.leverage || 100,
       };
       socket.emit(topic, JSON.stringify(accountInfo));
       socket.emit(EVENTS.ON_STATUS, JSON.stringify(statusAll));

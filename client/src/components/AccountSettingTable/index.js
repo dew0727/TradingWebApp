@@ -42,8 +42,8 @@ const AccountSettingTable = ({
       dataIndex: "margin",
       align: "center",
       render: (text, record) => {
-        return record.margin
-          ? (record.margin / record.equity * (record.leverage || 100.0))
+        return (record.margin && record.equity)
+          ? ((record.margin * (record.leverage || 100.0)) / record.equity)
             .toFixed(2)
             .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") + '%'
           : '0%';

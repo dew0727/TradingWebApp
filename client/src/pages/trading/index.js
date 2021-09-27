@@ -183,7 +183,7 @@ const TradingPage = () => {
             onChange={(val) => {
               onHandleAccSetting({
                 accname: record.name,
-                type: "acccountLeverage",
+                type: "accountLeverage",
                 value: val,
               });
             }}
@@ -389,7 +389,6 @@ const TradingPage = () => {
           break;
         case EVENTS.ON_ACCOUNT:
           var account = JSON.parse(message);
-
           if (account.master) {
             masterAccounts[account.name] = true;
             if (isTrader) {
